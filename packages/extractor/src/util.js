@@ -13,4 +13,4 @@
  * @typedef {`${SvelteFilepath}.tsx`} TSXFilepath
  */
 
-export {};
+export const IS_BROWSER = globalThis.window !== undefined;
