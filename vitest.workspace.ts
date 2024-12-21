@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 
 const SHARED = {
 	env: Object.assign(process.env, loadEnv("", path.resolve(__dirname), "")),
+	setupFiles: [path.resolve(__dirname, "tests", "setup.ts")],
 	snapshotSerializers: [path.resolve(__dirname, "tests", "snapshot-serializer.ts")],
 	typecheck: {
 		enabled: true,
