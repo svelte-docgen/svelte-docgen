@@ -1,3 +1,9 @@
+// FIXME:
+// Find a better workaround.
+// Current issue: https://github.com/vitest-dev/vitest/issues/6953
+// We want to remove it, for the cross-runtime compatibility.
+import module from "node:module";
+
 /**
  * @import { Tag } from "./component-doc.js";
  * @import { Source } from "../util.js";
@@ -181,9 +187,9 @@ class Extractor {
 	 * @returns {ts.Program}
 	 */
 	#create_program() {
-		this.#cache.root_names.add(this.compiler.filepath);
+		const root_names = [...create_default_root_names(), this.compiler.filepath];
 		const program = ts.createProgram({
-			rootNames: Array.from(this.#cache.root_names),
+			rootNames: root_names,
 			options: this.#get_ts_options(),
 			host: this.#create_host(),
 			oldProgram: this.#cache.program,
@@ -431,4 +437,24 @@ class Extractor {
  */
 export function extract(source, user_options) {
 	return new Extractor(source, new Options(user_options));
+}
+
+/**
+ * @param {string} specifier
+ * @returns {URL}
+ */
+function get_node_module_filepath(specifier) {
+	if (typeof import.meta.resolve === "function") return new URL(import.meta.resolve(specifier));
+	const require = module.createRequire(import.meta.url);
+	return new URL(`file://${require.resolve(specifier)}`);
+}
+
+/**
+ * @returns {string[]}
+ */
+function create_default_root_names() {
+	return [
+		//
+		get_node_module_filepath("svelte2tsx/svelte-shims-v4.d.ts").pathname,
+	];
 }

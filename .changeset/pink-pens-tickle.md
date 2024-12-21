@@ -2,4 +2,4 @@
 "@svelte-docgen/extractor": patch
 ---
 
-Fix cache key in get_ts_config to use file path instead of source content
+Fixed a cache key bug and resolved an issue caused by root_names reuse
