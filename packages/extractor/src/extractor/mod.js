@@ -1,3 +1,27 @@
+import { IS_BROWSER } from "../util.js";
+
+/**
+ * @internal
+ * Get the URI of the module, with environment in mind. Whether is it browser or other JavaScript runtime.
+ * @param {string} specifier
+ * @returns {URL}
+ */
+function get_module_url(specifier) {
+	if (IS_BROWSER) {
+		return new URL(specifier, `file://${globalThis.window.location.href}`);
+	}
+	if (globalThis.process?.env.VITEST) {
+		// @ts-expect-error FIXME: Ugly workaround for `import.meta.resolve` not working in Vitest: https://github.com/vitest-dev/vitest/issues/6953
+		//eslint-disable-next-line no-undef
+		__vite_ssr_import_meta__.resolve = (path) =>
+			globalThis
+				// @ts-expect-error FIXME: 👆
+				.createRequire(import.meta.url)
+				.resolve(path);
+	}
+	return new URL(`file://${import.meta.resolve(specifier)}`);
+}
+
 /**
  * @import { Tag } from "./component-doc.js";
  * @import { Source } from "../util.js";
@@ -184,9 +208,10 @@ class Extractor {
 	 * @returns {ts.Program}
 	 */
 	#create_program() {
-		this.#cache.root_names.add(this.compiler.filepath);
+		/** @type {Set<string>} */
+		const root_names = [get_module_url("svelte2tsx/svelte-shims-v4.d.ts").pathname, this.compiler.filepath];
 		const program = ts.createProgram({
-			rootNames: Array.from(this.#cache.root_names),
+			rootNames: root_names,
 			options: this.#get_ts_options(),
 			host: this.#create_host(),
 			oldProgram: this.#cache.program,

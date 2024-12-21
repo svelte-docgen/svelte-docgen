@@ -1,29 +1,5 @@
 import ts from "typescript";
 
-import { IS_BROWSER } from "./util.js";
-
-/**
- * @internal
- * Get the URI of the module, with environment in mind. Whether is it browser or other JavaScript runtime.
- * @param {string} specifier
- * @returns {URL}
- */
-function get_module_url(specifier) {
-	if (IS_BROWSER) {
-		return new URL(specifier, `file://${globalThis.window.location.href}`);
-	}
-	if (globalThis.process?.env.VITEST) {
-		// @ts-expect-error FIXME: Ugly workaround for `import.meta.resolve` not working in Vitest: https://github.com/vitest-dev/vitest/issues/6953
-		//eslint-disable-next-line no-undef
-		__vite_ssr_import_meta__.resolve = (path) =>
-			globalThis
-				// @ts-expect-error FIXME: 👆
-				.createRequire(import.meta.url)
-				.resolve(path);
-	}
-	return new URL(`file://${import.meta.resolve(specifier)}`);
-}
-
 /**
  * @typedef CachedFile
  * @prop {Date} [last_modified]
@@ -37,8 +13,6 @@ class Cache {
 	#cached = new Map();
 	/** @type {ts.Program | undefined} */
 	program;
-	/** @type {Set<string>} */
-	root_names = new Set([get_module_url("svelte2tsx/svelte-shims-v4.d.ts").pathname]);
 	/** @type {ts.System} */
 	#system;
 
