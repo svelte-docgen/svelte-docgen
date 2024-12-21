@@ -18,7 +18,7 @@
 		(async () => {
 			const fsmap = await tsvfs.createDefaultMapFromCDN(
 				{
-					lib: ["esnext", "DOM", "DOM.Iterable"],
+					lib: ["ESNext", "DOM", "DOM.Iterable"],
 					target: ts.ScriptTarget.ESNext,
 				},
 				ts.version,

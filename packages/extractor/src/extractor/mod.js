@@ -196,10 +196,10 @@ class Extractor {
 
 	/** @returns {ts.CompilerOptions} */
 	#get_ts_options() {
-		const cached = this.#cache.get(this.source)?.options;
+		const cached = this.#cache.get(this.compiler.filepath)?.options;
 		if (cached) return cached;
 		const options = this.#build_ts_options();
-		this.#cache.set(this.source, { options });
+		this.#cache.set(this.compiler.filepath, { options });
 		return options;
 	}
 
