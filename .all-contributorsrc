@@ -1,39 +1,29 @@
 {
-  "projectName": "svelte-docgen",
-  "projectOwner": "svelte-docgen",
-  "repoType": "github",
-  "repoHost": "https://github.com",
-  "files": [
-    "README.md"
-  ],
-  "imageSize": 50,
-  "commit": true,
-  "commitConvention": "angular",
-  "contributors": [
-    {
-      "login": "xeho91",
-      "name": "Mateusz Kadlubowski",
-      "avatar_url": "https://avatars.githubusercontent.com/u/18627568?v=4",
-      "profile": "https://github.com/xeho91",
-      "contributions": [
-        "code",
-        "infra",
-        "maintenance"
-      ]
-    },
-    {
-      "login": "ciscorn",
-      "name": "Taku Fukada",
-      "avatar_url": "https://avatars.githubusercontent.com/u/5351911?v=4",
-      "profile": "https://github.com/ciscorn",
-      "contributions": [
-        "code",
-        "infra",
-        "maintenance"
-      ]
-    }
-  ],
-  "contributorsPerLine": 7,
-  "linkToUsage": false,
-  "commitType": "docs"
+	"projectName": "svelte-docgen",
+	"projectOwner": "svelte-docgen",
+	"repoType": "github",
+	"repoHost": "https://github.com",
+	"files": ["README.md"],
+	"imageSize": 50,
+	"commit": true,
+	"commitConvention": "angular",
+	"contributors": [
+		{
+			"login": "xeho91",
+			"name": "Mateusz Kadlubowski",
+			"avatar_url": "https://avatars.githubusercontent.com/u/18627568?v=4",
+			"profile": "https://github.com/xeho91",
+			"contributions": ["code", "infra", "maintenance"]
+		},
+		{
+			"login": "ciscorn",
+			"name": "Taku Fukada",
+			"avatar_url": "https://avatars.githubusercontent.com/u/5351911?v=4",
+			"profile": "https://github.com/ciscorn",
+			"contributions": ["code", "infra", "maintenance"]
+		}
+	],
+	"contributorsPerLine": 7,
+	"linkToUsage": false,
+	"commitType": "docs"
 }

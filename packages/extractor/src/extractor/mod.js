@@ -209,9 +209,8 @@ class Extractor {
 	 * @returns {ts.Program}
 	 */
 	#create_program() {
-		const root_names = [get_module_url("svelte2tsx/svelte-shims-v4.d.ts").pathname, this.compiler.filepath];
 		const program = ts.createProgram({
-			rootNames: root_names,
+			rootNames: [get_module_url("svelte2tsx/svelte-shims-v4.d.ts").pathname, this.compiler.filepath],
 			options: this.#get_ts_options(),
 			host: this.#create_host(),
 			oldProgram: this.#cache.program,

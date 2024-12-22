@@ -172,6 +172,7 @@ export function get_sources(declarations, root_path_url) {
  */
 export function get_root_path_url(sys) {
 	if (!IS_NODE_LIKE) {
+		// Set the root of the virtual file system (VFS) as the root
 		return new URL("file:///");
 	}
 	let directory = path.resolve(process.cwd());
