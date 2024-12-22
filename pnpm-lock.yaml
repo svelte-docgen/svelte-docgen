@@ -127,8 +127,8 @@ importers:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
       runed:
-        specifier: ^0.21.0
-        version: 0.21.0(svelte@5.14.4)
+        specifier: ^0.22.0
+        version: 0.22.0(svelte@5.14.4)
       svelte:
         specifier: 'catalog:'
         version: 5.14.4
@@ -148,8 +148,8 @@ importers:
         specifier: 'catalog:'
         version: 5.14.4
       svelte2tsx:
-        specifier: ^0.7.26
-        version: 0.7.30(svelte@5.14.4)(typescript@5.7.2)
+        specifier: ^0.7.31
+        version: 0.7.31(svelte@5.14.4)(typescript@5.7.2)
       typescript:
         specifier: 'catalog:'
         version: 5.7.2
@@ -170,7 +170,7 @@ importers:
         specifier: ^0.5.1
         version: 0.5.1(hono@4.6.14)(valibot@1.0.0-beta.9(typescript@5.7.2))
       hono:
-        specifier: ^4.6.13
+        specifier: ^4.6.14
         version: 4.6.14
       svelte-docgen:
         specifier: workspace:*
@@ -4275,8 +4275,8 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
-  runed@0.21.0:
-    resolution: {integrity: sha512-jqegxzCmUMrt11hGunWNVs9QVNJqOzqpC1a/UlPpDzHQ0YlSlsNhkfyt12bSaHlwHRdHcr7ZVxCxKVhWOVLcmw==}
+  runed@0.22.0:
+    resolution: {integrity: sha512-ZWVXWhOr0P5xdNgtviz6D1ivLUDWKLCbeC5SUEJ3zBkqLReVqWHenFxMNFeFaiC5bfxhFxyxzyzB+98uYFtwdA==}
     peerDependencies:
       svelte: ^5.7.0
 
@@ -4526,12 +4526,6 @@ packages:
     peerDependenciesMeta:
       svelte:
         optional: true
-
-  svelte2tsx@0.7.30:
-    resolution: {integrity: sha512-sHXK/vw/sVJmFuPSq6zeKrtuZKvo0jJyEi8ybN0dfrqSYVvHu8zFbO0zQKAL8y/fYackYojH41EJGe6v8rd5fw==}
-    peerDependencies:
-      svelte: ^3.55 || ^4.0.0-next.0 || ^4.0 || ^5.0.0-next.0
-      typescript: ^4.9.4 || ^5.0.0
 
   svelte2tsx@0.7.31:
     resolution: {integrity: sha512-exrN1o9mdCLAA7hTCudz731FIxomH/0SN9ZIX+WrY/XnlLuno/NNC1PF6JXPZVqp/4sMMDKteqyKoG44hliljQ==}
@@ -9763,7 +9757,7 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
-  runed@0.21.0(svelte@5.14.4):
+  runed@0.22.0(svelte@5.14.4):
     dependencies:
       esm-env: 1.2.1
       svelte: 5.14.4
@@ -10068,13 +10062,6 @@ snapshots:
       postcss-scss: 4.0.9(postcss@8.4.49)
     optionalDependencies:
       svelte: 5.14.4
-
-  svelte2tsx@0.7.30(svelte@5.14.4)(typescript@5.7.2):
-    dependencies:
-      dedent-js: 1.0.1
-      pascal-case: 3.1.2
-      svelte: 5.14.4
-      typescript: 5.7.2
 
   svelte2tsx@0.7.31(svelte@5.14.4)(typescript@5.7.2):
     dependencies:

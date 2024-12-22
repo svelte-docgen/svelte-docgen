@@ -22,7 +22,7 @@
 		"@sveltepress/vite": "^1.1.2",
 		"@typescript/vfs": "^1.6.0",
 		"autoprefixer": "^10.4.20",
-		"runed": "^0.21.0",
+		"runed": "^0.22.0",
 		"svelte": "catalog:",
 		"svelte-docgen": "workspace:*",
 		"svelte2tsx": "^0.7.31"
