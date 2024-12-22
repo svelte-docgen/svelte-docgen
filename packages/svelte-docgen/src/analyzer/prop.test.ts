@@ -75,6 +75,20 @@ describe(analyzeProperty.name, () => {
 			if (custom) {
 				const analyzer = analyzeProperty(custom);
 				expect(analyzer.isExtendedBySvelte).toBe(false);
+				expect(custom).toMatchInlineSnapshot(`
+					{
+					  "isBindable": false,
+					  "isExtended": true,
+					  "isOptional": false,
+					  "sources": Set {
+					    "/packages/svelte-docgen/tests/custom-extended.ts",
+					  },
+					  "tags": [],
+					  "type": {
+					    "kind": "string",
+					  },
+					}
+				`);
 			}
 		});
 	});
