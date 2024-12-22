@@ -2,7 +2,7 @@ import { IS_NODE_LIKE } from "../util.js";
 
 /**
  * @internal
- * Get the file path to the module, with  in mind. Whether is it Node-compatible or not.
+ * Get the file path to the module, with vfs environments in mind.
  * @param {string} specifier
  * @returns {URL}
  */
