@@ -1,0 +1,34 @@
+"package:docgen":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package/svelte-docgen/**"
+
+"package:extractor":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package/extractor/**"
+
+"package:vite-plugin":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package/vite-plugin-svelte-docgen/**"
+
+"package:server":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package/server/**"
+
+"apps:docs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package/apps/docs/**"
+
+"documentation":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/README.md"
+
+"ci/cd":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"
