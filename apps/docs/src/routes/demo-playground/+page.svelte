@@ -19,6 +19,7 @@
 			const fsmap = await tsvfs.createDefaultMapFromCDN(
 				{
 					lib: ["ESNext", "DOM", "DOM.Iterable"],
+					moduleResolution: ts.ModuleResolutionKind.Bundler,
 					target: ts.ScriptTarget.ESNext,
 				},
 				ts.version,
@@ -45,6 +46,7 @@
 			error = "";
 		} catch (e) {
 			error = String(e);
+			throw e;
 		}
 	});
 </script>

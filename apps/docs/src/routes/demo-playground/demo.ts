@@ -6,7 +6,7 @@ import { parse, createCacheStorage, encode } from "svelte-docgen";
 import shim from "svelte2tsx/svelte-shims-v4.d.ts?raw";
 
 export function prepareDocgen(fsmap: Map<string, string>) {
-	fsmap.set("/svelte2tsx/svelte-shims-v4.d.ts", shim);
+	fsmap.set("/node_modules/svelte2tsx/svelte-shims-v4.d.ts", shim);
 
 	const system = tsvfs.createSystem(fsmap);
 	const cache = createCacheStorage(system);

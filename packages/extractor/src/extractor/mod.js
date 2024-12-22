@@ -1,25 +1,26 @@
-import { IS_BROWSER } from "../util.js";
+import { IS_NODE_LIKE } from "../util.js";
 
 /**
  * @internal
- * Get the URI of the module, with environment in mind. Whether is it browser or other JavaScript runtime.
+ * Get the file path to the module, with  in mind. Whether is it Node-compatible or not.
  * @param {string} specifier
  * @returns {URL}
  */
 function get_module_url(specifier) {
-	if (IS_BROWSER) {
-		return new URL(specifier, `file://${globalThis.window.location.href}`);
+	if (!IS_NODE_LIKE) {
+		return new URL(`file:///node_modules/${specifier}`); // Refer to virtual file system
 	}
 	if (globalThis.process?.env.VITEST) {
 		// @ts-expect-error FIXME: Ugly workaround for `import.meta.resolve` not working in Vitest: https://github.com/vitest-dev/vitest/issues/6953
 		//eslint-disable-next-line no-undef
 		__vite_ssr_import_meta__.resolve = (path) =>
+			"file://" +
 			globalThis
 				// @ts-expect-error FIXME: 👆
 				.createRequire(import.meta.url)
 				.resolve(path);
 	}
-	return new URL(`file://${import.meta.resolve(specifier)}`);
+	return new URL(import.meta.resolve(specifier));
 }
 
 /**
@@ -208,7 +209,6 @@ class Extractor {
 	 * @returns {ts.Program}
 	 */
 	#create_program() {
-		/** @type {Set<string>} */
 		const root_names = [get_module_url("svelte2tsx/svelte-shims-v4.d.ts").pathname, this.compiler.filepath];
 		const program = ts.createProgram({
 			rootNames: root_names,
