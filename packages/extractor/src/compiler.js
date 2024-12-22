@@ -10,8 +10,6 @@ import { svelte2tsx } from "svelte2tsx";
 export class Compiler {
 	/** @type {ReturnType<typeof svelte2tsx>} */
 	tsx;
-	/** @type {TSXFilepath} */
-	filepath;
 
 	/**
 	 * @param {Source} source
@@ -19,7 +17,6 @@ export class Compiler {
 	 * @param {Options} options
 	 */
 	constructor(source, parser, options) {
-		this.filepath = `${options.filepath}.tsx`;
 		this.tsx = this.#compile_to_tsx(source, parser, options.filepath);
 	}
 

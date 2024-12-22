@@ -21,14 +21,6 @@ const EXAMPLE = `
 `;
 
 describe(Compiler.name, () => {
-	describe("filepath", () => {
-		it("should add `.tsx` extension to the original Svelte filepath", ({ expect }) => {
-			const { filepath } = new Compiler(EXAMPLE, new Parser(EXAMPLE), create_options("filepath.svelte"));
-			expect(filepath).toMatchInlineSnapshot(`"filepath.svelte.tsx"`);
-			expect(filepath.endsWith(".tsx")).toBe(true);
-		});
-	});
-
 	describe("tsx.code", () => {
 		it("returns compiled code with `svelte2tsx`", ({ expect }) => {
 			const { tsx } = new Compiler(EXAMPLE, new Parser(EXAMPLE), create_options("tsx-code.svelte"));
