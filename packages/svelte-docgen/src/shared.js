@@ -2,10 +2,7 @@
  * @import { extract } from "@svelte-docgen/extractor";
  */
 
-import fs from "node:fs";
-import url from "node:url";
 import path from "pathe";
-
 import ts from "typescript";
 
 const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
@@ -155,8 +152,9 @@ export function get_sources(declarations, root_path_url) {
 	return new Set(
 		declarations.map((d) => {
 			/* prettier-ignore */
-			return d.getSourceFile().fileName
-				.replace(".tsx", "")
+			return d
+				.getSourceFile()
+				.fileName.replace(".tsx", "")
 				.replace(root_path_url.pathname, "");
 		}),
 	);
@@ -168,40 +166,38 @@ export function get_sources(declarations, root_path_url) {
  * It covers monorepo case _(based on existence of `pnpm-workspace.yaml` or field `package.json#workspaces`)_.
  * Field `package.json#workspaces` is also case for: npm, yarn, Deno, and Bun.
  *
+ * @param {ts.System} sys TypeScript system for I/O operations.
  * @returns {URL} URI with path of either monorepo root or a basename of nearest `package.json` file.
  * @throws {Error} If it cannot find nearest `package.json` file if project isn't a monorepo.
  */
-export function get_root_path_url() {
+export function get_root_path_url(sys) {
 	if (!IS_NODE_LIKE) {
 		return new URL("file:///");
 	}
-
 	let directory = path.resolve(process.cwd());
 	const { root } = path.parse(directory);
 	/** @type {string | undefined} */
 	let package_json_filepath;
 	while (directory && directory !== root) {
-		try {
-			const pnpm_workspace_filepath = path.join(directory, "pnpm-workspace.yaml");
-			const stats = fs.statSync(pnpm_workspace_filepath, { throwIfNoEntry: false });
-			if (stats?.isFile()) return url.pathToFileURL(directory);
-		} catch {
-			/** Is okay, do nothing. Check for other possibilities. */
+		// Case 1: pnpm workspace
+		const pnpm_workspace_filepath = path.join(directory, "pnpm-workspace.yaml");
+		if (sys.fileExists(pnpm_workspace_filepath)) {
+			return new URL(`file://${directory}`);
 		}
-		try {
-			package_json_filepath = path.join(directory, "package.json");
-			const stats = fs.statSync(package_json_filepath, { throwIfNoEntry: false });
-			if (stats?.isFile()) {
-				const content = fs.readFileSync(package_json_filepath, "utf-8");
-				if (JSON.parse(content).workspaces) return url.pathToFileURL(directory);
+		// Case 2: Others
+		package_json_filepath = path.join(directory, "package.json");
+		if (sys.fileExists(package_json_filepath)) {
+			const content = sys.readFile(package_json_filepath, "utf-8");
+			if (content && JSON.parse(content).workspaces) {
+				return new URL(`file://${directory}`);
 			}
-		} catch {
-			/** Is okay, do nothing. Check parent up. */
 		}
 		// NOTE: This goes root up
 		directory = path.dirname(directory);
 	}
-	if (package_json_filepath) return url.pathToFileURL(path.dirname(package_json_filepath));
+	if (package_json_filepath) {
+		return new URL(`file://${path.dirname(package_json_filepath)}`);
+	}
 	// TODO: Document error
 	throw new Error("Could not determine the the root path.");
 }
