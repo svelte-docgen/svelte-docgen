@@ -1,27 +1,27 @@
 "package:docgen":
   - changed-files:
       - any-glob-to-any-file:
-          - "package/svelte-docgen/**"
+          - "packages/svelte-docgen/**"
 
 "package:extractor":
   - changed-files:
       - any-glob-to-any-file:
-          - "package/extractor/**"
+          - "packages/extractor/**"
 
 "package:vite-plugin":
   - changed-files:
       - any-glob-to-any-file:
-          - "package/vite-plugin-svelte-docgen/**"
+          - "packages/vite-plugin-svelte-docgen/**"
 
 "package:server":
   - changed-files:
       - any-glob-to-any-file:
-          - "package/server/**"
+          - "packages/server/**"
 
-"apps:docs":
+"app:docs":
   - changed-files:
       - any-glob-to-any-file:
-          - "package/apps/docs/**"
+          - "apps/docs/**"
 
 "documentation":
   - changed-files:
