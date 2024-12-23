@@ -1,23 +1,15 @@
-// FIXME:
-// Find a better workaround.
-// Current issue: https://github.com/vitest-dev/vitest/issues/6953
-// We want to remove it, for the cross-runtime compatibility.
-import module from "node:module";
+import ts from "typescript";
+
+import { ComponentDocExtractor } from "./component-doc.js";
+import { Compiler } from "../compiler.js";
+import { Options } from "../options.js";
+import { Parser } from "../parser.js";
 
 /**
  * @import { Tag } from "./component-doc.js";
  * @import { Source } from "../util.js";
  * @import { createCacheStorage } from "../cache.js";
  */
-
-import path from "node:path";
-
-import ts from "typescript";
-
-import { Compiler } from "../compiler.js";
-import { Options } from "../options.js";
-import { Parser } from "../parser.js";
-import { ComponentDocExtractor } from "./component-doc.js";
 
 class Extractor {
 	/** @type {Source} */
@@ -28,6 +20,8 @@ class Extractor {
 	parser;
 	/** @type {Compiler} */
 	compiler;
+	/** @type {ts.System} */
+	system;
 
 	/**
 	 * @param {Source} source
@@ -35,6 +29,7 @@ class Extractor {
 	 */
 	constructor(source, options) {
 		this.source = source;
+		this.system = options.system;
 		this.#options = new Options(options);
 		this.parser = new Parser(this.source);
 		this.compiler = new Compiler(this.source, this.parser, this.#options);
@@ -187,85 +182,25 @@ class Extractor {
 	 * @returns {ts.Program}
 	 */
 	#create_program() {
-		const root_names = [...create_default_root_names(), this.compiler.filepath];
 		const program = ts.createProgram({
-			rootNames: root_names,
-			options: this.#get_ts_options(),
+			rootNames: [this.#options.shims_path, this.#options.tsx_filepath],
+			options: this.#options.get_ts_options(),
 			host: this.#create_host(),
 			oldProgram: this.#cache.program,
 		});
 		return program;
 	}
 
-	/** @returns {ts.CompilerOptions} */
-	#get_ts_options() {
-		const cached = this.#cache.get(this.compiler.filepath)?.options;
-		if (cached) return cached;
-		const options = this.#build_ts_options();
-		this.#cache.set(this.compiler.filepath, { options });
-		return options;
-	}
-
-	/** @type {ts.CompilerOptions} */
-	#forced_ts_options = {
-		allowJs: true,
-		checkJs: true,
-		noEmit: true,
-		skipDefaultLibCheck: true,
-		skipLibCheck: true,
-		sourceMap: false,
-		strict: true,
-	};
-
-	/** @returns {ts.CompilerOptions} */
-	#build_ts_options() {
-		const configpath = this.#find_ts_config_path();
-		if (configpath) {
-			const config_file = ts.readConfigFile(configpath, ts.sys.readFile);
-			const parsed = ts.parseJsonConfigFileContent(
-				config_file.config,
-				ts.sys,
-				path.dirname(configpath),
-				undefined,
-				configpath,
-				undefined,
-				[
-					{
-						extension: "svelte",
-						isMixedContent: true,
-						scriptKind: ts.ScriptKind.Deferred,
-					},
-				],
-			);
-			return {
-				...parsed.options,
-				...this.#forced_ts_options,
-			};
-			// TODO: Create a warning when tsconfig.json `compilerOptions.lib` doesn't include DOM
-		}
-		return this.#forced_ts_options;
-	}
-
-	/**
-	 * @returns {string | undefined}
-	 */
-	#find_ts_config_path() {
-		return (
-			ts.findConfigFile(this.compiler.filepath, ts.sys.fileExists) ||
-			ts.findConfigFile(this.compiler.filepath, ts.sys.fileExists, "jsconfig.json")
-		);
-	}
-
 	/**
 	 * @returns {ts.CompilerHost}
 	 */
 	#create_host() {
-		const default_host = ts.createCompilerHost(this.#get_ts_options());
+		const default_host = this.#options.host || ts.createCompilerHost(this.#options.get_ts_options());
 		/** @type {Partial<ts.CompilerHost>} */
 		const overridden_methods = {
 			fileExists: (filepath) => {
 				if (this.#cache.has(filepath)) return true;
-				if (filepath === this.compiler.filepath) return true;
+				if (filepath === this.#options.tsx_filepath) return true;
 				return default_host.fileExists(filepath);
 			},
 			getSourceFile: (filepath, language_version, on_error) => {
@@ -273,10 +208,10 @@ class Extractor {
 				if (cached?.source) return cached.source;
 				/** @type {ts.SourceFile | undefined} */
 				let source;
-				if (filepath === this.compiler.filepath) {
+				if (filepath === this.#options.tsx_filepath) {
 					const content = this.compiler.tsx.code;
 					source = ts.createSourceFile(
-						this.compiler.filepath,
+						this.#options.tsx_filepath,
 						content,
 						language_version,
 						true,
@@ -295,7 +230,7 @@ class Extractor {
 				if (cached?.content) return cached.content;
 				/** @type {string | undefined} */
 				let content;
-				if (filepath === this.compiler.filepath) content = this.compiler.tsx.code;
+				if (filepath === this.#options.tsx_filepath) content = this.compiler.tsx.code;
 				else content = default_host.readFile(filepath);
 				if (content) this.#cache.set(filepath, { content });
 				return content;
@@ -324,13 +259,13 @@ class Extractor {
 	/** @returns {ts.SourceFile} */
 	get #source_file() {
 		if (this.#cached_source_file) return this.#cached_source_file;
-		const from_cache = this.#cache.get(this.compiler.filepath)?.source;
+		const from_cache = this.#cache.get(this.#options.tsx_filepath)?.source;
 		if (from_cache) return from_cache;
-		const from_program = this.#program.getSourceFile(this.compiler.filepath);
+		const from_program = this.#program.getSourceFile(this.#options.tsx_filepath);
 		//O TODO: Document it
 		if (!from_program)
-			throw new Error(`Source file could not be found by TypeScript program: ${this.compiler.filepath}`);
-		this.#cached_source_file = this.#cache.set(this.compiler.filepath, {
+			throw new Error(`Source file could not be found by TypeScript program: ${this.#options.tsx_filepath}`);
+		this.#cached_source_file = this.#cache.set(this.#options.tsx_filepath, {
 			source: from_program,
 		}).source;
 		return from_program;
@@ -437,24 +372,4 @@ class Extractor {
  */
 export function extract(source, user_options) {
 	return new Extractor(source, new Options(user_options));
-}
-
-/**
- * @param {string} specifier
- * @returns {URL}
- */
-function get_node_module_filepath(specifier) {
-	if (typeof import.meta.resolve === "function") return new URL(import.meta.resolve(specifier));
-	const require = module.createRequire(import.meta.url);
-	return new URL(`file://${require.resolve(specifier)}`);
-}
-
-/**
- * @returns {string[]}
- */
-function create_default_root_names() {
-	return [
-		//
-		get_node_module_filepath("svelte2tsx/svelte-shims-v4.d.ts").pathname,
-	];
 }

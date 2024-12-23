@@ -3,6 +3,17 @@ import { sveltepress } from "@sveltepress/vite";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+	resolve: {
+		alias: {
+			// Because `svelte2tsx` relies on "node:path", we need to polyfill `node:path` with `pathe`.
+			// 
+			// TODO: Remove this alias when we transition away from `svelte2tsx`.
+			// Discussion: https://github.com/svelte-docgen/svelte-docgen/pull/45/files#r1894924147
+			"path": "pathe",
+			"node:path": "pathe",
+		},
+	},
+
 	plugins: [
 		sveltepress({
 			siteConfig: {
@@ -17,6 +28,10 @@ export default defineConfig({
 					{
 						title: "Docs",
 						to: "/docs/",
+					},
+					{
+						title: "Demo Playground",
+						to: "/demo-playground/",
 					},
 					{
 						title: "Examples",

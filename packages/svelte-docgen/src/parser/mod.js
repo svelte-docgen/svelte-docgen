@@ -43,7 +43,7 @@ class Parser {
 	constructor(source, options) {
 		this.#options = options;
 		this.#extractor = extract(source, this.#options);
-		this.#root_path_url = get_root_path_url();
+		this.#root_path_url = get_root_path_url(this.#options.system);
 	}
 
 	/** @returns {ParsedComponent} */
