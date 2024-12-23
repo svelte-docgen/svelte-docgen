@@ -16,7 +16,7 @@ export function prepareDocgen(fsmap: Map<string, string>) {
 		const parsed = parse(source, {
 			cache,
 			filepath: "/src/Demo.svelte",
-			system: system,
+			sys: system,
 			host: tsvfs.createVirtualCompilerHost(system, {}, ts).compilerHost,
 		});
 		return encode(parsed, { indent: 2 });

@@ -21,7 +21,7 @@ class Extractor {
 	/** @type {Compiler} */
 	compiler;
 	/** @type {ts.System} */
-	system;
+	sys;
 
 	/**
 	 * @param {Source} source
@@ -29,7 +29,7 @@ class Extractor {
 	 */
 	constructor(source, options) {
 		this.source = source;
-		this.system = options.system;
+		this.sys = options.sys;
 		this.#options = new Options(options);
 		this.parser = new Parser(this.source);
 		this.compiler = new Compiler(this.source, this.parser, this.#options);
@@ -184,7 +184,7 @@ class Extractor {
 	#create_program() {
 		const program = ts.createProgram({
 			rootNames: [this.#options.shims_path, this.#options.tsx_filepath],
-			options: this.#options.get_ts_options(),
+			options: this.#options.ts_options,
 			host: this.#create_host(),
 			oldProgram: this.#cache.program,
 		});
@@ -195,13 +195,12 @@ class Extractor {
 	 * @returns {ts.CompilerHost}
 	 */
 	#create_host() {
-		const default_host = this.#options.host || ts.createCompilerHost(this.#options.get_ts_options());
 		/** @type {Partial<ts.CompilerHost>} */
 		const overridden_methods = {
 			fileExists: (filepath) => {
 				if (this.#cache.has(filepath)) return true;
 				if (filepath === this.#options.tsx_filepath) return true;
-				return default_host.fileExists(filepath);
+				return this.#options.host.fileExists(filepath);
 			},
 			getSourceFile: (filepath, language_version, on_error) => {
 				const cached = this.#cache.get(filepath);
@@ -219,7 +218,7 @@ class Extractor {
 						this.parser.isLangTypeScript ? ts.ScriptKind.TS : ts.ScriptKind.JS,
 					);
 				} else {
-					source = default_host.getSourceFile(filepath, language_version, on_error);
+					source = this.#options.host.getSourceFile(filepath, language_version, on_error);
 				}
 				if (!source) throw new Error(`Source file was not found by program: ${filepath}`);
 				this.#cache.set(filepath, { source });
@@ -231,7 +230,7 @@ class Extractor {
 				/** @type {string | undefined} */
 				let content;
 				if (filepath === this.#options.tsx_filepath) content = this.compiler.tsx.code;
-				else content = default_host.readFile(filepath);
+				else content = this.#options.host.readFile(filepath);
 				if (content) this.#cache.set(filepath, { content });
 				return content;
 			},
@@ -240,7 +239,7 @@ class Extractor {
 			},
 		};
 		return {
-			...default_host,
+			...this.#options.host,
 			...overridden_methods,
 		};
 	}
