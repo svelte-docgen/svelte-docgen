@@ -24,11 +24,13 @@ describe("defaults", () => {
 				import type { MouseEventHandler } from "svelte/elements";
 				interface Props {
 					id?: string;
+					class?: string;
 					onclick?: MouseEventHandler<HTMLButtonElement>;
 					disabled?: boolean;
 				}
 				let {
 					id = "button-123",
+					class: className = "primary",
 					onclick = () => {},
 					disabled,
 				}: Props = $props();
@@ -36,8 +38,9 @@ describe("defaults", () => {
 			<button {id} {onclick} {disabled}>Click me</button>
 		`;
 		const { defaults } = extract(source, create_options("modern-defaults.svelte"));
-		expect(defaults).toHaveLength(2);
+		expect(defaults).toHaveLength(3);
 		expect(defaults.get("id")?.getText()).toMatchInlineSnapshot(`""button-123""`);
+		expect(defaults.get("class")?.getText()).toMatchInlineSnapshot(`""primary""`);
 		expect(defaults.get("onclick")?.getText()).toMatchInlineSnapshot(`"() => {}"`);
 		expect(defaults.has("disabled")).toBe(false);
 	});

@@ -65,7 +65,7 @@ class Extractor {
 		if (this.#props_obj) {
 			for (const binding of this.#props_obj?.elements ?? []) {
 				if (!binding.initializer) continue;
-				const name = binding.name.getText();
+				const name = binding.propertyName?.getText() || binding.name.getText();
 				results.set(name, binding.initializer);
 			}
 		} else {
