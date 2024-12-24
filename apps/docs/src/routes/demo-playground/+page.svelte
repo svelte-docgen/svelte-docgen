@@ -5,7 +5,7 @@
 	import { browser } from "$app/environment";
 	import { Debounced } from "runed";
 
-	import { prepareDocgen } from "./demo";
+	import { prepareDocgen, COMPILER_OPTIONS } from "./demo";
 	import initial from "./initial.txt?raw";
 
 	let docgen: ((source: string) => string) | undefined = $state();
@@ -17,13 +17,9 @@
 	if (browser) {
 		(async () => {
 			const fsmap = await tsvfs.createDefaultMapFromCDN(
-				{
-					lib: ["ESNext", "DOM", "DOM.Iterable"],
-					moduleResolution: ts.ModuleResolutionKind.Bundler,
-					target: ts.ScriptTarget.ESNext,
-				},
+				COMPILER_OPTIONS,
 				ts.version,
-				true,
+				false,
 				ts,
 				// lzstring
 			);

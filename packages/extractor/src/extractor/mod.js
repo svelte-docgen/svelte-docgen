@@ -202,7 +202,7 @@ class Extractor {
 				if (filepath === this.#options.tsx_filepath) return true;
 				return this.#options.host.fileExists(filepath);
 			},
-			getSourceFile: (filepath, language_version, on_error) => {
+			getSourceFile: (filepath, language_version_or_options, on_error) => {
 				const cached = this.#cache.get(filepath);
 				if (cached?.source) return cached.source;
 				/** @type {ts.SourceFile | undefined} */
@@ -212,13 +212,13 @@ class Extractor {
 					source = ts.createSourceFile(
 						this.#options.tsx_filepath,
 						content,
-						language_version,
+						language_version_or_options,
 						true,
 						// Set to 'JS' to enable TypeScript to parse JSDoc.
 						this.parser.isLangTypeScript ? ts.ScriptKind.TS : ts.ScriptKind.JS,
 					);
 				} else {
-					source = this.#options.host.getSourceFile(filepath, language_version, on_error);
+					source = this.#options.host.getSourceFile(filepath, language_version_or_options, on_error);
 				}
 				if (!source) throw new Error(`Source file was not found by program: ${filepath}`);
 				this.#cache.set(filepath, { source });

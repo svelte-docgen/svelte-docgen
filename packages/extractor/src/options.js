@@ -28,7 +28,10 @@ export class Options {
 	constructor(user_options) {
 		this.sys = user_options.sys ?? ts.sys;
 		this.cache = user_options.cache ?? createCacheStorage(this.sys);
-		this.ts_options = user_options.ts_options || this.#get_ts_options();
+		this.ts_options = {
+			...(user_options.ts_options || this.#get_ts_options_from_file()),
+			...this.#forced_ts_options,
+		};
 		this.host = user_options.host ?? ts.createCompilerHost(this.ts_options);
 		if (user_options.filepath) {
 			const filepath = this.#parse_filepath(user_options.filepath);
@@ -73,10 +76,10 @@ export class Options {
 	}
 
 	/** @returns {ts.CompilerOptions} */
-	#get_ts_options() {
+	#get_ts_options_from_file() {
 		const cached = this.cache.get(this.tsx_filepath)?.options;
 		if (cached) return cached;
-		const options = this.#build_ts_options();
+		const options = this.#build_ts_options_from_file();
 		this.cache.set(this.tsx_filepath, { options });
 		return options;
 	}
@@ -93,7 +96,7 @@ export class Options {
 	};
 
 	/** @returns {ts.CompilerOptions} */
-	#build_ts_options() {
+	#build_ts_options_from_file() {
 		const configpath = this.#find_ts_config_path();
 		if (configpath) {
 			const config_file = ts.readConfigFile(configpath, this.sys.readFile);
@@ -112,13 +115,10 @@ export class Options {
 					},
 				],
 			);
-			return {
-				...parsed.options,
-				...this.#forced_ts_options,
-			};
+			return parsed.options;
 			// TODO: Create a warning when tsconfig.json `compilerOptions.lib` doesn't include DOM
 		}
-		return this.#forced_ts_options;
+		return {};
 	}
 
 	/**

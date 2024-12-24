@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
-  let { name, age }: {
-    children: Snippet
-    /** Your name */
-    name?: string,
+  let { }: {
     /** Your age */
     age?: number,
+    /** Members */
+    members?: Set<string>,
+    children: Snippet
   } = $props();
 </script>
