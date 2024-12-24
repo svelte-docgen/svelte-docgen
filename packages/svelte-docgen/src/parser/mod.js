@@ -228,10 +228,21 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Fn} if it is an _anonymous_ one.
+	 * Otherwise it returns a reference {@link Doc.TypeRef}.
+	 *
 	 * @param {ts.Type} type
-	 * @returns {Doc.Fn}
+	 * @returns {Doc.Fn | Doc.TypeRef}
 	 */
 	#get_fn_doc(type) {
+		const symbol = type.aliasSymbol ?? type.getSymbol();
+		const alias = symbol && this.#get_symbol_name(symbol);
+		if (alias) {
+			// NOTE: Is referenced already, we can stop at this point.
+			if (this.types.has(alias)) return alias;
+			// @ts-expect-error  WARN: We will update later. This is to prevent recursion.
+			this.types.set(alias, {});
+		}
 		const calls = type.getCallSignatures().map((s) => {
 			return {
 				parameters: s.getParameters().map((p) => this.#get_fn_param_doc(p)),
@@ -243,16 +254,14 @@ class Parser {
 			kind: "function",
 			calls,
 		};
-		const symbol = type.getSymbol();
-		if (symbol || type.aliasSymbol) {
-			if (symbol && symbol.name !== "__type") results.alias = symbol.name;
-			if (type.aliasSymbol && type.aliasSymbol.name !== "__type")
-				results.alias = type.aliasSymbol.name;
+		if (alias) {
+			results.alias = alias;
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
 		}
-		const sources = this.#get_type_sources(type);
-		// NOTE: Alias is needed, because the symbol is defined and named as "__type"
-		if (sources && results.alias) results.sources = sources;
-		return results;
+		if (!alias) return results;
+		this.types.set(alias, results);
+		return alias;
 	}
 
 	/**
