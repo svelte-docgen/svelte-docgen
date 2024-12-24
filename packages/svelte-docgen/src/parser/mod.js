@@ -155,36 +155,32 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Constructible}
+	 * @returns {Doc.TypeRef}
 	 */
 	#get_constructible_doc(type) {
 		const symbol = get_type_symbol(type);
-		const name = symbol.getName() ?? this.#checker.getFullyQualifiedName(symbol);
+		const name = this.#get_symbol_name(symbol);
+		// TODO: Document error
+		if (!name) throw new Error();
+		// NOTE: Is referenced already, we can stop at this point.
+		if (this.types.has(name)) return name;
+		const kind = "constructible";
+		// @ts-expect-error  WARN: We will update later. This is needed to prevent recursion.
+		this.types.set(name, { kind });
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
-		if (this.latest_alias.constructible === name) {
-			return {
-				kind: "constructible",
-				name,
-				constructors: "self",
-				sources,
-			};
-		}
 		/** @type {Doc.Constructible['constructors']} */
-		const constructors = get_construct_signatures(type, this.#extractor).map((s) => {
-			return s.getParameters().map((p) => {
-				this.latest_alias.constructible = this.#checker.getFullyQualifiedName(symbol);
-				return this.#get_fn_param_doc(p);
-			});
-		});
-		this.latest_alias.constructible = undefined;
-		return {
+		const constructors = get_construct_signatures(type, this.#extractor).map((s) =>
+			s.getParameters().map((p) => this.#get_fn_param_doc(p)),
+		);
+		this.types.set(name, {
 			kind: "constructible",
 			name,
 			constructors,
 			sources,
-		};
+		});
+		return name;
 	}
 
 	/**
@@ -217,14 +213,8 @@ class Parser {
 	 */
 	#get_fn_doc(type) {
 		const calls = type.getCallSignatures().map((s) => {
-			// const returns_type = s.getReturnType();
 			return {
 				parameters: s.getParameters().map((p) => this.#get_fn_param_doc(p)),
-				// returns:
-				// 	returns_type.aliasSymbol &&
-				// 	returns_type.aliasSymbol.name === this.#latest_symbol_name
-				// 		? "self"
-				// 		: this.#get_type_doc(returns_type),
 				returns: this.#get_type_doc(s.getReturnType()),
 			};
 		});
@@ -250,12 +240,11 @@ class Parser {
 	 */
 	#get_interface_doc(type) {
 		const sym = this.#get_type_symbol(type);
-		const alias = sym && this.#get_symbol_alias(sym);
-		const is_referenced = alias && this.types.has(alias);
-		console.log({ alias, is_referenced });
+		const alias = sym && this.#get_symbol_name(sym);
+		// NOTE: Is referenced already, we can stop at this point.
+		if (alias && this.types.has(alias)) return alias;
 		const kind = "interface";
-		if (is_referenced) return alias;
-		// WARN: We will update later. This is needed to prevent recursion.
+		// @ts-expect-error  WARN: We will update later. This is needed to prevent recursion.
 		if (alias) this.types.set(alias, { kind });
 		/** @type {Doc.Interface['members']} */
 		const members = new Map(
@@ -507,7 +496,7 @@ class Parser {
 	 * @param {ts.Symbol} symbol
 	 * @returns {string | undefined}
 	 */
-	#get_symbol_alias(symbol) {
+	#get_symbol_name(symbol) {
 		const from_get_name = symbol.getName();
 		// WARN: I have no idea why sometimes is called `__type`.
 		if (from_get_name !== "__type") return from_get_name;
