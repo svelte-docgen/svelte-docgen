@@ -16,17 +16,20 @@ export class Options {
 	/** @type {SvelteFilepath} */
 	filepath;
 	/** @type {ts.System} */
-	system;
-	/** @type {ts.CompilerHost | undefined} */
+	sys;
+	/** @type {ts.CompilerHost} */
 	host;
+	/** @type {ts.CompilerOptions} */
+	ts_options;
 	/** @type {string} */
 	shims_path = get_module_url("svelte2tsx/svelte-shims-v4.d.ts").pathname;
 
 	/** @param {UserOptions} user_options */
 	constructor(user_options) {
-		this.system = user_options.system ?? ts.sys;
-		this.cache = user_options.cache ?? createCacheStorage(this.system);
-		this.host = user_options.host;
+		this.sys = user_options.sys ?? ts.sys;
+		this.cache = user_options.cache ?? createCacheStorage(this.sys);
+		this.ts_options = user_options.ts_options || this.#get_ts_options();
+		this.host = user_options.host ?? ts.createCompilerHost(this.ts_options);
 		if (user_options.filepath) {
 			const filepath = this.#parse_filepath(user_options.filepath);
 			this.#validate_filepath(filepath);
@@ -70,7 +73,7 @@ export class Options {
 	}
 
 	/** @returns {ts.CompilerOptions} */
-	get_ts_options() {
+	#get_ts_options() {
 		const cached = this.cache.get(this.tsx_filepath)?.options;
 		if (cached) return cached;
 		const options = this.#build_ts_options();
@@ -93,10 +96,10 @@ export class Options {
 	#build_ts_options() {
 		const configpath = this.#find_ts_config_path();
 		if (configpath) {
-			const config_file = ts.readConfigFile(configpath, this.system.readFile);
+			const config_file = ts.readConfigFile(configpath, this.sys.readFile);
 			const parsed = ts.parseJsonConfigFileContent(
 				config_file.config,
-				this.system,
+				this.sys,
 				path.dirname(configpath),
 				undefined,
 				configpath,
@@ -123,8 +126,8 @@ export class Options {
 	 */
 	#find_ts_config_path() {
 		return (
-			ts.findConfigFile(this.tsx_filepath, this.system.fileExists) ||
-			ts.findConfigFile(this.tsx_filepath, this.system.fileExists, "jsconfig.json")
+			ts.findConfigFile(this.tsx_filepath, this.sys.fileExists) ||
+			ts.findConfigFile(this.tsx_filepath, this.sys.fileExists, "jsconfig.json")
 		);
 	}
 }
