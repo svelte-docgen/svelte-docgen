@@ -5,7 +5,7 @@ import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
 
 describe("Union", () => {
-	const { props } = parse(
+	const { props, types } = parse(
 		`
 			<script lang="ts">
 				type Aliased = "red" | "green" | "blue";
@@ -44,42 +44,53 @@ describe("Union", () => {
 			  ],
 			}
 		`);
-		expect(anonymous?.type.kind).toBe("union");
-		expect((anonymous?.type as Doc.Union)?.alias).not.toBeDefined();
-		expect((anonymous?.type as Doc.Union)?.sources).not.toBeDefined();
+		if (typeof anonymous?.type !== "string") {
+			expect(anonymous?.type.kind).toBe("union");
+			expect((anonymous?.type as Doc.Union)?.alias).not.toBeDefined();
+			expect((anonymous?.type as Doc.Union)?.sources).not.toBeDefined();
+		}
 	});
 
 	it("recognizes aliased union", ({ expect }) => {
 		const aliased = props.get("aliased");
 		expect(aliased).toBeDefined();
-		expect(aliased?.type).toMatchInlineSnapshot(`
-			{
-			  "alias": "Aliased",
-			  "kind": "union",
-			  "sources": Set {
-			    "union.svelte",
-			  },
-			  "types": [
-			    {
-			      "kind": "literal",
-			      "subkind": "string",
-			      "value": "red",
-			    },
-			    {
-			      "kind": "literal",
-			      "subkind": "string",
-			      "value": "green",
-			    },
-			    {
-			      "kind": "literal",
-			      "subkind": "string",
-			      "value": "blue",
-			    },
-			  ],
+		expect(aliased?.type).toBe("Aliased");
+		if (typeof aliased?.type === "string") {
+			const type = types.get(aliased.type);
+			expect(type).toBeDefined();
+			expect(type).toMatchInlineSnapshot(`
+				{
+				  "alias": "Aliased",
+				  "kind": "union",
+				  "sources": Set {
+				    "union.svelte",
+				  },
+				  "types": [
+				    {
+				      "kind": "literal",
+				      "subkind": "string",
+				      "value": "red",
+				    },
+				    {
+				      "kind": "literal",
+				      "subkind": "string",
+				      "value": "green",
+				    },
+				    {
+				      "kind": "literal",
+				      "subkind": "string",
+				      "value": "blue",
+				    },
+				  ],
+				}
+			`);
+			if (type) {
+				expect(type.kind).toBe("union");
+				if (type.kind === "union") {
+					expect(type.alias).toBe(aliased.type);
+					expect(type.sources).toBeDefined();
+				}
 			}
-		`);
-		expect(aliased?.type.kind).toBe("union");
-		expect((aliased?.type as Doc.Union)?.alias).toBe("Aliased");
-		expect((aliased?.type as Doc.Union)?.sources).toBeDefined();
+		}
 	});
 });

@@ -154,6 +154,10 @@ class Parser {
 	}
 
 	/**
+	 * Generates a reference {@link Doc.TypeRef}.
+	 * Because it can create a circularity, we need to prevent it.
+	 * For example, you can invoke `new Date(date)` where `date` is typeof {@link Date}.
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.TypeRef}
 	 */
@@ -164,9 +168,8 @@ class Parser {
 		if (!name) throw new Error();
 		// NOTE: Is referenced already, we can stop at this point.
 		if (this.types.has(name)) return name;
-		const kind = "constructible";
 		// @ts-expect-error  WARN: We will update later. This is needed to prevent recursion.
-		this.types.set(name, { kind });
+		this.types.set(name, {});
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
@@ -235,17 +238,19 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Interface} if it is an _anonymous_ one.
+	 * Otherwise it returns a reference {@link Doc.TypeRef}.
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Interface | Doc.TypeRef}
 	 */
 	#get_interface_doc(type) {
-		const sym = this.#get_type_symbol(type);
-		const alias = sym && this.#get_symbol_name(sym);
+		const symbol = type.aliasSymbol ?? type.getSymbol();
+		const alias = symbol && this.#get_symbol_name(symbol);
 		// NOTE: Is referenced already, we can stop at this point.
 		if (alias && this.types.has(alias)) return alias;
-		const kind = "interface";
 		// @ts-expect-error  WARN: We will update later. This is needed to prevent recursion.
-		if (alias) this.types.set(alias, { kind });
+		if (alias) this.types.set(alias, {});
 		/** @type {Doc.Interface['members']} */
 		const members = new Map(
 			Iterator.from(type.getProperties()).map((p) => {
@@ -258,8 +263,8 @@ class Parser {
 			}),
 		);
 		/** @type {Doc.Interface} */
-		let results = { kind, members };
-		if (alias && alias !== "__type") {
+		let results = { kind: "interface", members };
+		if (alias) {
 			results.alias = alias;
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
@@ -443,12 +448,23 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Union} if is an _anonymous_ one.
+	 * Otherwise it returns a reference {@link Doc.TypeRef}.
+	 *
 	 * @param {ts.Type} type
-	 * @returns {Doc.Union}
+	 * @returns {Doc.Union | Doc.TypeRef}
 	 */
 	#get_union_doc(type) {
-		// TODO: Document error
-		if (!type.isUnion()) throw new Error(`Expected union type, got ${this.#checker.typeToString(type)}`);
+		if (!type.isUnion()) {
+			// TODO: Document error
+			throw new Error(`Expected union type, got ${this.#checker.typeToString(type)}`);
+		}
+		const symbol = type.aliasSymbol ?? type.getSymbol();
+		const alias = symbol && this.#get_symbol_name(symbol);
+		// NOTE: Is referenced already, we can stop at this point.
+		if (alias && this.types.has(alias)) return alias;
+		// @ts-expect-error  WARN: We will update later. This is needed to prevent recursion.
+		if (alias) this.types.set(alias, {});
 		const types = type.types.map((t) => this.#get_type_doc(t));
 		/** @type {Doc.Union} */
 		let results = {
@@ -459,8 +475,12 @@ class Parser {
 		const sources = this.#get_type_sources(type);
 		if (sources) results.sources = sources;
 		const nonNullable = type.getNonNullableType();
-		if (nonNullable !== type) results.nonNullable = this.#get_type_doc(nonNullable);
-		return results;
+		if (nonNullable !== type) {
+			results.nonNullable = this.#get_type_doc(nonNullable);
+		}
+		if (!alias) return results;
+		this.types.set(alias, results);
+		return alias;
 	}
 	/**
 	 * @param {ts.Type} type
@@ -493,25 +513,18 @@ class Parser {
 	}
 
 	/**
+	 * Ergonomic fn to get the name _(can be alias too)_ of the symbol.
+	 * And ignore the `__type`. I have no idea actually why and what for is it.
+	 *
 	 * @param {ts.Symbol} symbol
 	 * @returns {string | undefined}
 	 */
 	#get_symbol_name(symbol) {
 		const from_get_name = symbol.getName();
-		// WARN: I have no idea why sometimes is called `__type`.
 		if (from_get_name !== "__type") return from_get_name;
 		const fqn = this.#checker.getFullyQualifiedName(symbol);
-		// WARN: I have no idea why sometimes is called `__type`.
 		if (fqn === "__type") return;
 		return fqn;
-	}
-
-	/**
-	 * @param {ts.Type} type
-	 * @returns {ts.Symbol | undefined}
-	 */
-	#get_type_symbol(type) {
-		return type.aliasSymbol ?? type.getSymbol();
 	}
 }
 
