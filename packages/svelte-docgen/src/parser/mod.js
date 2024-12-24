@@ -24,17 +24,22 @@ class Parser {
 	/** @type {ReturnType<typeof extract>} */
 	#extractor;
 	/**
-	 * This is a fail-safe from looping over the same type inside constructor/fn params (e.g. `Date`)
-	 * @type {string | undefined}
+	 * @see {@link Options}
+	 * @type {Options}
 	 */
-	#latest_symbol_name;
-	/** @type {Options} */
 	#options;
 	/**
 	 * Cached root path url, so we don't need to call it every time.
 	 * @type {URL}
 	 */
 	#root_path_url;
+
+	/**
+	 * Some of types which extends `WithAlias` or `WithName` can cause recursion.
+	 * We isolate them in this map, so we can prevent this from happening.
+	 * @type {Doc.Types}
+	 */
+	types = new Map();
 
 	/**
 	 * @param {string} source
@@ -48,7 +53,7 @@ class Parser {
 
 	/** @returns {ParsedComponent} */
 	toJSON() {
-		const { description, isLegacy, exports, props, tags } = this;
+		const { description, isLegacy, exports, props, tags, types } = this;
 		if (isLegacy) {
 			return /** @type {LegacyComponent} */ ({
 				description,
@@ -58,6 +63,7 @@ class Parser {
 				props,
 				slots: this.slots,
 				tags,
+				types,
 			});
 		}
 		return /** @type {ModernComponent} */ ({
@@ -153,18 +159,26 @@ class Parser {
 	 */
 	#get_constructible_doc(type) {
 		const symbol = get_type_symbol(type);
-		const name = this.#checker.getFullyQualifiedName(symbol);
+		const name = symbol.getName() ?? this.#checker.getFullyQualifiedName(symbol);
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
-		if (this.#latest_symbol_name.constructible === name) {
+		if (this.latest_alias.constructible === name) {
+			return {
+				kind: "constructible",
+				name,
+				constructors: "self",
+				sources,
+			};
+		}
 		/** @type {Doc.Constructible['constructors']} */
 		const constructors = get_construct_signatures(type, this.#extractor).map((s) => {
 			return s.getParameters().map((p) => {
-				this.#latest_symbol_name = name;
+				this.latest_alias.constructible = this.#checker.getFullyQualifiedName(symbol);
 				return this.#get_fn_param_doc(p);
 			});
 		});
+		this.latest_alias.constructible = undefined;
 		return {
 			kind: "constructible",
 			name,
@@ -201,10 +215,16 @@ class Parser {
 	 * @param {ts.Type} type
 	 * @returns {Doc.Fn}
 	 */
-	#get_function_doc(type) {
+	#get_fn_doc(type) {
 		const calls = type.getCallSignatures().map((s) => {
+			// const returns_type = s.getReturnType();
 			return {
 				parameters: s.getParameters().map((p) => this.#get_fn_param_doc(p)),
+				// returns:
+				// 	returns_type.aliasSymbol &&
+				// 	returns_type.aliasSymbol.name === this.#latest_symbol_name
+				// 		? "self"
+				// 		: this.#get_type_doc(returns_type),
 				returns: this.#get_type_doc(s.getReturnType()),
 			};
 		});
@@ -226,24 +246,38 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Interface}
+	 * @returns {Doc.Interface | Doc.TypeRef}
 	 */
 	#get_interface_doc(type) {
-		const alias = type.aliasSymbol?.name ?? this.#checker.getFullyQualifiedName(type.symbol);
-		this.#latest_symbol_name = alias;
+		const sym = this.#get_type_symbol(type);
+		const alias = sym && this.#get_symbol_alias(sym);
+		const is_referenced = alias && this.types.has(alias);
+		console.log({ alias, is_referenced });
+		const kind = "interface";
+		if (is_referenced) return alias;
+		// WARN: We will update later. This is needed to prevent recursion.
+		if (alias) this.types.set(alias, { kind });
 		/** @type {Doc.Interface['members']} */
-		const members = new Map(Iterator.from(type.getProperties()).map((p) => [p.name, this.#get_member_doc(p)]));
+		const members = new Map(
+			Iterator.from(type.getProperties()).map((p) => {
+				return [
+					// Key
+					p.name,
+					// Value
+					this.#get_member_doc(p),
+				];
+			}),
+		);
 		/** @type {Doc.Interface} */
-		let results = {
-			kind: "interface",
-			members,
-		};
+		let results = { kind, members };
 		if (alias && alias !== "__type") {
 			results.alias = alias;
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
-		return results;
+		if (!alias) return results;
+		this.types.set(alias, results);
+		return alias;
 	}
 
 	/**
@@ -300,7 +334,7 @@ class Parser {
 		return {
 			isOptional: is_symbol_optional(symbol),
 			isReadonly: is_symbol_readonly(symbol),
-			type: type.aliasSymbol?.name === this.#latest_symbol_name ? "self" : this.#get_type_doc(type),
+			type: this.#get_type_doc(type),
 		};
 	}
 
@@ -441,7 +475,7 @@ class Parser {
 	}
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Type}
+	 * @returns {Doc.Type | Doc.TypeRef}
 	 */
 	#get_type_doc(type) {
 		const kind = get_type_kind({ type, extractor: this.#extractor });
@@ -451,7 +485,7 @@ class Parser {
 			case "constructible":
 				return this.#get_constructible_doc(type);
 			case "function":
-				return this.#get_function_doc(type);
+				return this.#get_fn_doc(type);
 			case "interface":
 				return this.#get_interface_doc(type);
 			case "intersection":
@@ -468,6 +502,28 @@ class Parser {
 				return { kind };
 		}
 	}
+
+	/**
+	 * @param {ts.Symbol} symbol
+	 * @returns {string | undefined}
+	 */
+	#get_symbol_alias(symbol) {
+		const from_get_name = symbol.getName();
+		// WARN: I have no idea why sometimes is called `__type`.
+		if (from_get_name !== "__type") return from_get_name;
+		const fqn = this.#checker.getFullyQualifiedName(symbol);
+		// WARN: I have no idea why sometimes is called `__type`.
+		if (fqn === "__type") return;
+		return fqn;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {ts.Symbol | undefined}
+	 */
+	#get_type_symbol(type) {
+		return type.aliasSymbol ?? type.getSymbol();
+	}
 }
 
 /**
@@ -479,6 +535,7 @@ class Parser {
  * @prop {Doc.Exports} exports
  * @prop {Doc.Events} events
  * @prop {Doc.Slots} slots
+ * @prop {Doc.Types} types
  */
 
 /**
@@ -490,6 +547,7 @@ class Parser {
  * @prop {Doc.Exports} exports
  * @prop {never} events
  * @prop {never} slots
+ * @prop {Doc.Types} types
  */
 
 /** @typedef {LegacyComponent | ModernComponent} ParsedComponent */
