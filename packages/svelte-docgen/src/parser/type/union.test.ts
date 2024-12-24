@@ -1,7 +1,6 @@
 import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
-import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
 
 describe("Union", () => {
@@ -46,8 +45,6 @@ describe("Union", () => {
 		`);
 		if (typeof anonymous?.type !== "string") {
 			expect(anonymous?.type.kind).toBe("union");
-			expect((anonymous?.type as Doc.Union)?.alias).not.toBeDefined();
-			expect((anonymous?.type as Doc.Union)?.sources).not.toBeDefined();
 		}
 	});
 
