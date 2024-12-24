@@ -23,6 +23,9 @@ describe("Interface", () => {
 				interface Empty {}
 				type EmptyType = {};
 				type Aliased = A;
+				interface Recursive {
+					recursive: Recursive;
+				}
 				interface Props {
 					anonymous: { name: "Guy"; surname: "Fawkes" };
 					a: A;
@@ -31,6 +34,7 @@ describe("Interface", () => {
 					"empty-aliased": Empty;
 					"empty-type": EmptyType;
 					aliased: Aliased;
+					recursive: Recursive;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -279,5 +283,29 @@ describe("Interface", () => {
 			}
 		`);
 		expect((aliased?.type as Doc.Interface)?.alias).toBe("A");
+	});
+
+	it("members with same interface type (recursive) are assigned as 'self'", ({ expect }) => {
+		const recursive = props.get("recursive");
+		expect(recursive).toBeDefined();
+		expect(recursive?.type.kind).toBe("interface");
+		expect(recursive?.type).toMatchInlineSnapshot(`
+			{
+			  "alias": "Recursive",
+			  "kind": "interface",
+			  "members": Map {
+			    "recursive" => {
+			      "isOptional": false,
+			      "isReadonly": false,
+			      "type": "self",
+			    },
+			  },
+			  "sources": Set {
+			    "interface.svelte",
+			  },
+			}
+		`);
+		expect((recursive?.type as Doc.Interface)?.alias).toBe("Recursive");
+		expect((recursive?.type as Doc.Interface)?.members.get("recursive")?.type).toBe("self");
 	});
 });
