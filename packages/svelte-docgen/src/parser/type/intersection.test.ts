@@ -5,7 +5,7 @@ import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
 
 describe("Intersection", () => {
-	const { props } = parse(
+	const { props, types } = parse(
 		`
 			<script lang="ts">
 				type Aliased = number & {};
@@ -41,27 +41,31 @@ describe("Intersection", () => {
 	});
 
 	it("recognizes aliased", ({ expect }) => {
-		const aliased = props.get("aliased");
-		expect(aliased).toBeDefined();
-		expect(aliased?.type).toMatchInlineSnapshot(`
+		expect(props.get("aliased")!.type).toBe("Aliased");
+	});
+
+	it("collects aliases", ({ expect }) => {
+		expect(types).toMatchInlineSnapshot(`
 			{
-			  "alias": "Aliased",
-			  "kind": "intersection",
-			  "sources": Set {
-			    "intersection.svelte",
+			  "Aliased": {
+			    "alias": "Aliased",
+			    "kind": "intersection",
+			    "sources": Set {
+			      "intersection.svelte",
+			    },
+			    "types": [
+			      {
+			        "kind": "number",
+			      },
+			      {
+			        "kind": "object",
+			      },
+			    ],
 			  },
-			  "types": [
-			    {
-			      "kind": "number",
-			    },
-			    {
-			      "kind": "object",
-			    },
-			  ],
 			}
 		`);
-		expect((aliased?.type as Doc.Intersection).types.length).toBeGreaterThan(0);
-		expect((aliased?.type as Doc.Intersection).alias).toBe("Aliased");
-		expect((aliased?.type as Doc.Intersection).sources).toBeDefined();
+		const aliased = types["Aliased"] as Doc.Intersection;
+		expect(aliased.sources).toBeDefined();
+		expect(aliased.types.length).greaterThan(0);
 	});
 });

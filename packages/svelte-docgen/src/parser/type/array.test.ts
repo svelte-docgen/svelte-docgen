@@ -3,9 +3,10 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
+import { isAlias } from "../../doc/type.js";
 
 describe("Array", () => {
-	const { props } = parse(
+	const { props, types } = parse(
 		`
 		<script lang="ts">
 			type Letter = "a" | "b" | "c";
@@ -25,36 +26,14 @@ describe("Array", () => {
 		expect(letters).toBeDefined();
 		expect(letters?.type).toMatchInlineSnapshot(`
 			{
-			  "element": {
-			    "alias": "Letter",
-			    "kind": "union",
-			    "sources": Set {
-			      "array.svelte",
-			    },
-			    "types": [
-			      {
-			        "kind": "literal",
-			        "subkind": "string",
-			        "value": "a",
-			      },
-			      {
-			        "kind": "literal",
-			        "subkind": "string",
-			        "value": "b",
-			      },
-			      {
-			        "kind": "literal",
-			        "subkind": "string",
-			        "value": "c",
-			      },
-			    ],
-			  },
+			  "element": "Letter",
 			  "isReadonly": false,
 			  "kind": "array",
 			}
 		`);
-		expect(letters?.type.kind).toBe("array");
-		expect((letters?.type as Doc.ArrayType).isReadonly).toBe(false);
+		if (!letters || isAlias(letters?.type)) throw new Error("expected a type");
+		expect(letters.type.kind).toBe("array");
+		expect((letters.type as Doc.ArrayType).isReadonly).toBe(false);
 	});
 
 	it("recognizes 'readonly'", ({ expect }) => {
@@ -62,35 +41,68 @@ describe("Array", () => {
 		expect(numbers).toBeDefined();
 		expect(numbers?.type).toMatchInlineSnapshot(`
 			{
-			  "element": {
-			    "alias": "Num",
-			    "kind": "union",
-			    "sources": Set {
-			      "array.svelte",
-			    },
-			    "types": [
-			      {
-			        "kind": "literal",
-			        "subkind": "number",
-			        "value": 0,
-			      },
-			      {
-			        "kind": "literal",
-			        "subkind": "number",
-			        "value": 1,
-			      },
-			      {
-			        "kind": "literal",
-			        "subkind": "number",
-			        "value": 2,
-			      },
-			    ],
-			  },
+			  "element": "Num",
 			  "isReadonly": true,
 			  "kind": "array",
 			}
 		`);
-		expect(numbers?.type.kind).toBe("array");
-		expect((numbers?.type as Doc.ArrayType).isReadonly).toBe(true);
+		if (!numbers || isAlias(numbers?.type)) throw new Error("expected a type");
+		expect(numbers.type.kind).toBe("array");
+		expect((numbers.type as Doc.ArrayType).isReadonly).toBe(true);
+	});
+
+	it("types", ({ expect }) => {
+		expect(types["Letter"]).toMatchInlineSnapshot(`
+			{
+			  "alias": "Letter",
+			  "kind": "union",
+			  "sources": Set {
+			    "array.svelte",
+			  },
+			  "types": [
+			    {
+			      "kind": "literal",
+			      "subkind": "string",
+			      "value": "a",
+			    },
+			    {
+			      "kind": "literal",
+			      "subkind": "string",
+			      "value": "b",
+			    },
+			    {
+			      "kind": "literal",
+			      "subkind": "string",
+			      "value": "c",
+			    },
+			  ],
+			}
+		`);
+		expect(types["Num"]).toMatchInlineSnapshot(`
+			{
+			  "alias": "Num",
+			  "kind": "union",
+			  "sources": Set {
+			    "array.svelte",
+			  },
+			  "types": [
+			    {
+			      "kind": "literal",
+			      "subkind": "number",
+			      "value": 0,
+			    },
+			    {
+			      "kind": "literal",
+			      "subkind": "number",
+			      "value": 1,
+			    },
+			    {
+			      "kind": "literal",
+			      "subkind": "number",
+			      "value": 2,
+			    },
+			  ],
+			}
+		`);
 	});
 });

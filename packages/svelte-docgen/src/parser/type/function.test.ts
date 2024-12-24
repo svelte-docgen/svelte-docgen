@@ -3,9 +3,10 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
+import { isAlias } from "../../doc/type.js";
 
 describe("Fn", () => {
-	const { props } = parse(
+	const { props, types } = parse(
 		`
 			<script lang="ts">
 				type Baz = string | number;
@@ -25,8 +26,8 @@ describe("Fn", () => {
 
 	it("documents 'function' - retuning void", ({ expect }) => {
 		const void_ = props.get("void");
-		expect(void_).toBeDefined();
-		expect(void_?.type).toMatchInlineSnapshot(`
+		if (!void_ || isAlias(void_?.type)) throw new Error("expected a type");
+		expect(void_.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
 			    {
@@ -39,13 +40,13 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		expect(void_?.type.kind).toBe("function");
+		expect(void_.type.kind).toBe("function");
 	});
 
 	it("recognizes return type other than 'void'", ({ expect }) => {
 		const returning = props.get("returning");
-		expect(returning).toBeDefined();
-		expect(returning?.type).toMatchInlineSnapshot(`
+		if (!returning || isAlias(returning?.type)) throw new Error("expected a type");
+		expect(returning.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
 			    {
@@ -58,7 +59,7 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		expect(returning?.type.kind).toBe("function");
+		expect(returning.type.kind).toBe("function");
 	});
 
 	it("documents parameter(s) type if specified", ({ expect }) => {
@@ -81,21 +82,7 @@ describe("Fn", () => {
 			          "name": "bar",
 			          "type": {
 			            "kind": "union",
-			            "nonNullable": {
-			              "alias": "Baz",
-			              "kind": "union",
-			              "sources": Set {
-			                "function.svelte",
-			              },
-			              "types": [
-			                {
-			                  "kind": "string",
-			                },
-			                {
-			                  "kind": "number",
-			                },
-			              ],
-			            },
+			            "nonNullable": "Baz",
 			            "types": [
 			              {
 			                "kind": "undefined",
@@ -118,11 +105,12 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
+		if (!parametized || isAlias(parametized?.type)) throw new Error("expected a type");
 		expect(parametized?.type.kind).toBe("function");
 
 		const spread = props.get("spread");
-		expect(spread).toBeDefined();
-		expect(spread?.type).toMatchInlineSnapshot(`
+		if (!spread || isAlias(spread?.type)) throw new Error("expected a type");
+		expect(spread.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
 			    {
@@ -147,28 +135,47 @@ describe("Fn", () => {
 	});
 
 	it("recognizes aliased type", ({ expect }) => {
-		const aliased = props.get("aliased");
-		expect(aliased).toBeDefined();
-		expect(aliased?.type).toMatchInlineSnapshot(`
+		expect(props.get("aliased")?.type).toBe("Aliased");
+		const aliased = types["Aliased"];
+		if (!aliased || isAlias(aliased)) throw new Error("expected a type");
+		expect((aliased as Doc.Fn).alias).toBe("Aliased");
+		expect((aliased as Doc.Fn).sources).toBeDefined();
+	});
+
+	it("collects aliased types", ({ expect }) => {
+		expect(types).toMatchInlineSnapshot(`
 			{
-			  "alias": "Aliased",
-			  "calls": [
-			    {
-			      "parameters": [],
-			      "returns": {
-			        "kind": "void",
+			  "Aliased": {
+			    "alias": "Aliased",
+			    "calls": [
+			      {
+			        "parameters": [],
+			        "returns": {
+			          "kind": "void",
+			        },
 			      },
+			    ],
+			    "kind": "function",
+			    "sources": Set {
+			      "function.svelte",
 			    },
-			  ],
-			  "kind": "function",
-			  "sources": Set {
-			    "function.svelte",
+			  },
+			  "Baz": {
+			    "alias": "Baz",
+			    "kind": "union",
+			    "sources": Set {
+			      "function.svelte",
+			    },
+			    "types": [
+			      {
+			        "kind": "string",
+			      },
+			      {
+			        "kind": "number",
+			      },
+			    ],
 			  },
 			}
 		`);
-		expect(aliased?.type.kind).toBe("function");
-		expect((aliased?.type as Doc.Fn).alias).toBeDefined();
-		expect((aliased?.type as Doc.Fn).alias).toBe("Aliased");
-		expect((aliased?.type as Doc.Fn).sources).toBeDefined();
 	});
 });

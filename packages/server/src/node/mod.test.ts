@@ -60,7 +60,7 @@ describe("NodeServer", () => {
 				      "type": {
 				        "kind": "union",
 				        "nonNullable": {
-				          "alias": "Snippet",
+				          "alias": ""svelte".Snippet",
 				          "calls": [
 				            {
 				              "parameters": [
@@ -109,7 +109,7 @@ describe("NodeServer", () => {
 				            "kind": "undefined",
 				          },
 				          {
-				            "alias": "Snippet",
+				            "alias": ""svelte".Snippet",
 				            "calls": [
 				              {
 				                "parameters": [
@@ -157,6 +157,7 @@ describe("NodeServer", () => {
 				      },
 				    },
 				  },
+				  "types": {},
 				}
 			`);
 			server.shutdown();

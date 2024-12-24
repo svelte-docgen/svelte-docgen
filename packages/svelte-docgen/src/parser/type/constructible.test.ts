@@ -3,6 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
+import { isAlias } from "../../doc/type.js";
 
 describe("Constructible", () => {
 	const { props } = parse(
@@ -32,8 +33,8 @@ describe("Constructible", () => {
 
 	it("documents 'constructible' - custom", ({ expect }) => {
 		const custom = props.get("custom");
-		expect(custom).toBeDefined();
-		expect(custom?.type).toMatchInlineSnapshot(`
+		if (!custom || isAlias(custom.type)) throw new Error("expected a type");
+		expect(custom.type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
 			    [
@@ -83,14 +84,14 @@ describe("Constructible", () => {
 			  },
 			}
 		`);
-		expect(custom?.type.kind).toBe("constructible");
-		expect((custom?.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
+		expect(custom.type.kind).toBe("constructible");
+		expect((custom.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes builtin `Date`", ({ expect }) => {
 		const date = props.get("date");
-		expect(date).toBeDefined();
-		expect(date?.type).toMatchInlineSnapshot(`
+		if (!date || isAlias(date.type)) throw new Error("expected a type");
+		expect(date.type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
 			    [],
@@ -254,14 +255,14 @@ describe("Constructible", () => {
 			  },
 			}
 		`);
-		expect(date?.type.kind).toBe("constructible");
-		expect((date?.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
+		expect(date.type.kind).toBe("constructible");
+		expect((date.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes builtin `Map`", ({ expect }) => {
 		const map = props.get("map");
-		expect(map).toBeDefined();
-		expect(map?.type).toMatchInlineSnapshot(`
+		if (!map || isAlias(map.type)) throw new Error("expected a type");
+		expect(map.type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
 			    [],
@@ -349,7 +350,7 @@ describe("Constructible", () => {
 			                "isOptional": false,
 			                "isReadonly": false,
 			                "type": {
-			                  "alias": "__@iterator@22",
+			                  "alias": "Iterable.[Symbol.iterator]",
 			                  "calls": [
 			                    {
 			                      "parameters": [],
@@ -389,7 +390,7 @@ describe("Constructible", () => {
 			                  "isOptional": false,
 			                  "isReadonly": false,
 			                  "type": {
-			                    "alias": "__@iterator@22",
+			                    "alias": "Iterable.[Symbol.iterator]",
 			                    "calls": [
 			                      {
 			                        "parameters": [],
@@ -428,14 +429,14 @@ describe("Constructible", () => {
 			  },
 			}
 		`);
-		expect(map?.type.kind).toBe("constructible");
-		expect((map?.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
+		expect(map.type.kind).toBe("constructible");
+		expect((map.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes builtin `Set`", ({ expect }) => {
 		const set = props.get("set");
-		expect(set).toBeDefined();
-		expect(set?.type).toMatchInlineSnapshot(`
+		if (!set || isAlias(set.type)) throw new Error("expected a type");
+		expect(set.type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
 			    [
@@ -499,7 +500,7 @@ describe("Constructible", () => {
 			                "isOptional": false,
 			                "isReadonly": false,
 			                "type": {
-			                  "alias": "__@iterator@22",
+			                  "alias": "Iterable.[Symbol.iterator]",
 			                  "calls": [
 			                    {
 			                      "parameters": [],
@@ -539,7 +540,7 @@ describe("Constructible", () => {
 			                  "isOptional": false,
 			                  "isReadonly": false,
 			                  "type": {
-			                    "alias": "__@iterator@22",
+			                    "alias": "Iterable.[Symbol.iterator]",
 			                    "calls": [
 			                      {
 			                        "parameters": [],
@@ -579,7 +580,7 @@ describe("Constructible", () => {
 			  },
 			}
 		`);
-		expect(set?.type.kind).toBe("constructible");
-		expect((set?.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
+		expect(set.type.kind).toBe("constructible");
+		expect((set.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
 	});
 });

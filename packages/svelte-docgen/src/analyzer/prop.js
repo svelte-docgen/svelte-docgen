@@ -4,13 +4,22 @@
 
 import path from "pathe";
 
+/** @typedef { Omit<Doc.Prop, 'type'> & { type: Doc.Type } } Prop */
+
 class PropAnalyzer {
-	/** @type {Doc.Prop} */
+	/** @type {Prop} */
 	#prop;
 
-	/** @param {Doc.Prop} prop */
-	constructor(prop) {
+	/** @type {Doc.Types} */
+	#types;
+
+	/**
+	 * @param {Prop} prop
+	 * @param {Doc.Types} types
+	 * */
+	constructor(prop, types) {
 		this.#prop = prop;
+		this.#types = types;
 	}
 
 	/** @returns {boolean} */
@@ -31,7 +40,11 @@ class PropAnalyzer {
 	/** @returns {boolean} */
 	get isSnippet() {
 		if (this.#prop.type.kind === "union" && this.#prop.type.nonNullable) {
-			return this.#is_snippet(this.#prop.type.nonNullable);
+			let non_nullable = this.#prop.type.nonNullable;
+			if (typeof non_nullable === "string") {
+				non_nullable = this.#types[non_nullable];
+			}
+			return this.#is_snippet(non_nullable);
 		}
 		return this.#is_snippet(this.#prop.type);
 	}
@@ -46,8 +59,12 @@ class PropAnalyzer {
 		const params = call.parameters[0];
 		if (params === "self") throw new Error("Self-referencing snippet is not supported");
 		// NOTE: Parameters is always a single item and tuple
-		if (params.type.kind !== "tuple") throw new Error("Not a tuple");
-		return params.type;
+		let params_type = params.type;
+		if (typeof params_type === "string") {
+			params_type = this.#types[params_type];
+		}
+		if (params_type.kind !== "tuple") throw new Error("Not a tuple");
+		return params_type;
 	}
 
 	/** @returns {Doc.Fn} */
@@ -77,7 +94,7 @@ class PropAnalyzer {
 	 * @returns {boolean}
 	 */
 	#is_snippet(type) {
-		if (type.kind !== "function" || type.alias !== "Snippet") return false;
+		if (type.kind !== "function" || type.alias !== '"svelte".Snippet') return false;
 		if (!type.sources) return false;
 		return Iterator.from(type.sources).some((f) => this.#is_source_from_svelte(f));
 	}
@@ -111,9 +128,16 @@ class PropAnalyzer {
 
 /**
  * @param {Doc.Prop} prop
+ * @param {Doc.Types} types
  * @returns {PropAnalysis}
  */
-export function analyzeProperty(prop) {
+export function analyzeProperty(prop, types) {
+	if (typeof prop.type === "string") {
+		prop = {
+			...prop,
+			type: types[prop.type],
+		};
+	}
 	// @ts-expect-error: WARN: Hard to type (cast), but should be fine from usage perspective
 	return new PropAnalyzer(prop);
 }

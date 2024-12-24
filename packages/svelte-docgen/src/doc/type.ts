@@ -10,7 +10,7 @@ export interface Docable {
 }
 
 export interface OptionalProp {
-	default?: Type;
+	default?: TypeOrAlias;
 	isOptional: true;
 }
 export interface RequiredProp {
@@ -28,18 +28,17 @@ export interface ExtendedProp {
 }
 export type Prop = Docable & {
 	isBindable: boolean;
-	type: Type;
+	type: TypeOrAlias;
 } & (OptionalProp | RequiredProp) &
 	(LocalProp | ExtendedProp);
 
-export type Events = Map<string, Type>;
-export type Exports = Map<string, Type>;
+export type Events = Map<string, TypeOrAlias>;
+export type Exports = Map<string, TypeOrAlias>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
-export type Aliases = Record<string, Type>;
+export type Types = Record<string, Type>;
 
 export type Type =
-	| Alias
 	| BaseType
 	| ArrayType
 	| Constructible
@@ -50,6 +49,12 @@ export type Type =
 	| Tuple
 	| TypeParam
 	| Union;
+
+export type TypeOrAlias = Type | Alias;
+
+export function isAlias(type?: TypeOrAlias): type is Alias {
+	return typeof type === "string";
+}
 
 export interface WithAlias {
 	alias?: string;
@@ -88,7 +93,7 @@ export type Alias = string;
 export interface ArrayType {
 	kind: "array";
 	isReadonly: boolean;
-	element: Type;
+	element: TypeOrAlias;
 }
 
 export interface Constructible extends WithName {
@@ -99,7 +104,7 @@ export interface Constructible extends WithName {
 
 export interface OptionalFnParam {
 	isOptional: true;
-	default?: Type;
+	default?: TypeOrAlias;
 }
 export interface RequiredFnParam {
 	isOptional: false;
@@ -108,13 +113,13 @@ export interface RequiredFnParam {
 export type FnParam = {
 	name: string;
 	isOptional: boolean;
-	default?: Type;
-	type: Type;
+	default?: TypeOrAlias;
+	type: TypeOrAlias;
 } & (OptionalFnParam | RequiredFnParam);
 
 export interface FnCall {
 	parameters: (FnParam | "self")[];
-	returns: Type;
+	returns: TypeOrAlias;
 }
 export interface Fn extends WithAlias {
 	kind: "function";
@@ -128,7 +133,7 @@ export interface Interface extends WithAlias {
 
 export interface Intersection extends WithAlias {
 	kind: "intersection";
-	types: Type[];
+	types: TypeOrAlias[];
 }
 
 export interface LiteralBigInt {
@@ -161,25 +166,25 @@ export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralSt
 export interface Member {
 	isOptional: boolean;
 	isReadonly: boolean;
-	type: Type;
+	type: TypeOrAlias;
 }
 
 export interface Tuple extends WithAlias {
 	kind: "tuple";
 	isReadonly: boolean;
-	elements: Type[];
+	elements: TypeOrAlias[];
 }
 
 export interface TypeParam {
 	kind: "type-parameter";
 	name: string;
 	isConst: boolean;
-	constraint: Type;
-	default?: Type;
+	constraint: TypeOrAlias;
+	default?: TypeOrAlias;
 }
 
 export interface Union extends WithAlias {
 	kind: "union";
-	types: Type[];
-	nonNullable?: Type;
+	types: TypeOrAlias[];
+	nonNullable?: TypeOrAlias;
 }

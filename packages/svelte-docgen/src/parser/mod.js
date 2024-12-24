@@ -20,6 +20,8 @@ import {
 	is_type_reference,
 } from "../shared.js";
 
+const AnonTypeLiteralSymbolName = ts.InternalSymbolName.Type;
+
 class Parser {
 	/** @type {ReturnType<typeof extract>} */
 	#extractor;
@@ -35,8 +37,8 @@ class Parser {
 	 * @type {URL}
 	 */
 	#root_path_url;
-	/** @type {Doc.Aliases} */
-	#aliases;
+	/** @type {Doc.Types} */
+	#types;
 
 	/**
 	 * @param {string} source
@@ -46,12 +48,12 @@ class Parser {
 		this.#options = options;
 		this.#extractor = extract(source, this.#options);
 		this.#root_path_url = get_root_path_url(this.#options.sys);
-		this.#aliases = {};
+		this.#types = {};
 	}
 
 	/** @returns {ParsedComponent} */
 	toJSON() {
-		const { description, isLegacy, exports, props, tags, aliases } = this;
+		const { description, isLegacy, exports, props, tags, types } = this;
 		if (isLegacy) {
 			return /** @type {LegacyComponent} */ ({
 				description,
@@ -61,7 +63,7 @@ class Parser {
 				props,
 				slots: this.slots,
 				tags,
-				aliases,
+				types,
 			});
 		}
 		return /** @type {ModernComponent} */ ({
@@ -70,7 +72,7 @@ class Parser {
 			isLegacy,
 			props,
 			tags,
-			aliases,
+			types,
 		});
 	}
 
@@ -133,8 +135,8 @@ class Parser {
 	}
 
 	/** @returns {Record<string, Doc.Type>} */
-	get aliases() {
-		return this.#aliases;
+	get types() {
+		return this.#types;
 	}
 
 	/** @type {ts.TypeChecker} */
@@ -223,7 +225,7 @@ class Parser {
 			kind: "function",
 			calls,
 		};
-		if (type.aliasSymbol || type.symbol.name !== "__type") {
+		if (type.aliasSymbol || type.symbol.name !== AnonTypeLiteralSymbolName) {
 			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
@@ -243,7 +245,7 @@ class Parser {
 			kind: "interface",
 			members,
 		};
-		if (type.aliasSymbol || type.symbol.name !== "__type") {
+		if (type.aliasSymbol || type.symbol.name !== AnonTypeLiteralSymbolName) {
 			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
@@ -295,7 +297,6 @@ class Parser {
 			return {
 				kind,
 				subkind: "symbol",
-				alias: this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol),
 			};
 		}
 		// TODO: Document error
@@ -421,7 +422,7 @@ class Parser {
 	#get_type_sources(type) {
 		/** @type {ts.Symbol | undefined} */
 		let symbol = type.getSymbol();
-		if (!symbol || symbol.name === "__type") symbol = type.aliasSymbol;
+		if (!symbol || symbol.name === AnonTypeLiteralSymbolName) symbol = type.aliasSymbol;
 		if (symbol) {
 			const declared_type = this.#checker.getDeclaredTypeOfSymbol(symbol);
 			const declared_type_symbol = declared_type.getSymbol() || declared_type.aliasSymbol;
@@ -455,7 +456,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Type}
+	 * @returns {Doc.TypeOrAlias}
 	 */
 	#get_type_doc(type) {
 		if (!type.aliasSymbol) {
@@ -475,10 +476,10 @@ class Parser {
 						.join(", ") +
 					">"
 				: "");
-		if (this.#aliases[name] === undefined) {
-			this.#aliases[name] = { kind: "unknown" }; // reservation to prevent infinite loop
+		if (this.#types[name] === undefined) {
+			this.#types[name] = { kind: "unknown" }; // reservation to prevent infinite loop
 			const doc = this.#get_type_doc_internal(type);
-			this.#aliases[name] = doc;
+			this.#types[name] = doc;
 		}
 		return name;
 	}
@@ -523,7 +524,7 @@ class Parser {
  * @prop {Doc.Exports} exports
  * @prop {Doc.Events} events
  * @prop {Doc.Slots} slots
- * @prop {Doc.Aliases} aliases
+ * @prop {Doc.Types} types
  */
 
 /**
@@ -535,7 +536,7 @@ class Parser {
  * @prop {Doc.Exports} exports
  * @prop {never} events
  * @prop {never} slots
- * @prop {Doc.Aliases} aliases
+ * @prop {Doc.Types} types
  */
 
 /** @typedef {LegacyComponent | ModernComponent} ParsedComponent */

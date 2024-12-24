@@ -64,26 +64,7 @@ describe("events", () => {
 			                  "isReadonly": false,
 			                  "type": {
 			                    "kind": "union",
-			                    "nonNullable": {
-			                      "alias": "NonNullable",
-			                      "kind": "intersection",
-			                      "sources": Set {
-			                        /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts,
-			                      },
-			                      "types": [
-			                        {
-			                          "constraint": {
-			                            "kind": "unknown",
-			                          },
-			                          "isConst": false,
-			                          "kind": "type-parameter",
-			                          "name": "T",
-			                        },
-			                        {
-			                          "kind": "object",
-			                        },
-			                      ],
-			                    },
+			                    "nonNullable": "NonNullable<T>",
 			                    "types": [
 			                      {
 			                        "kind": "undefined",
@@ -192,26 +173,7 @@ describe("events", () => {
 			                    "isReadonly": false,
 			                    "type": {
 			                      "kind": "union",
-			                      "nonNullable": {
-			                        "alias": "NonNullable",
-			                        "kind": "intersection",
-			                        "sources": Set {
-			                          /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts,
-			                        },
-			                        "types": [
-			                          {
-			                            "constraint": {
-			                              "kind": "unknown",
-			                            },
-			                            "isConst": false,
-			                            "kind": "type-parameter",
-			                            "name": "T",
-			                          },
-			                          {
-			                            "kind": "object",
-			                          },
-			                        ],
-			                      },
+			                      "nonNullable": "NonNullable<T>",
 			                      "types": [
 			                        {
 			                          "kind": "undefined",
