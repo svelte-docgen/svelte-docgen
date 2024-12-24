@@ -36,8 +36,10 @@ export type Events = Map<string, Type>;
 export type Exports = Map<string, Type>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
+export type Aliases = Record<string, Type>;
 
 export type Type =
+	| Alias
 	| BaseType
 	| ArrayType
 	| Constructible
@@ -80,6 +82,8 @@ export interface BaseType {
 		| "union"
 	>;
 }
+
+export type Alias = string;
 
 export interface ArrayType {
 	kind: "array";
@@ -150,6 +154,7 @@ export interface LiteralString {
 export interface LiteralSymbol {
 	kind: "literal";
 	subkind: "symbol";
+	alias?: string;
 }
 export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralString | LiteralSymbol;
 

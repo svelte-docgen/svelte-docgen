@@ -35,6 +35,8 @@ class Parser {
 	 * @type {URL}
 	 */
 	#root_path_url;
+	/** @type {Doc.Aliases} */
+	#aliases;
 
 	/**
 	 * @param {string} source
@@ -44,11 +46,12 @@ class Parser {
 		this.#options = options;
 		this.#extractor = extract(source, this.#options);
 		this.#root_path_url = get_root_path_url(this.#options.sys);
+		this.#aliases = {};
 	}
 
 	/** @returns {ParsedComponent} */
 	toJSON() {
-		const { description, isLegacy, exports, props, tags } = this;
+		const { description, isLegacy, exports, props, tags, aliases } = this;
 		if (isLegacy) {
 			return /** @type {LegacyComponent} */ ({
 				description,
@@ -58,6 +61,7 @@ class Parser {
 				props,
 				slots: this.slots,
 				tags,
+				aliases,
 			});
 		}
 		return /** @type {ModernComponent} */ ({
@@ -66,6 +70,7 @@ class Parser {
 			isLegacy,
 			props,
 			tags,
+			aliases,
 		});
 	}
 
@@ -125,6 +130,11 @@ class Parser {
 	/** @returns {Doc.Docable['tags']} */
 	get tags() {
 		return this.#extractor.tags;
+	}
+
+	/** @returns {Record<string, Doc.Type>} */
+	get aliases() {
+		return this.#aliases;
 	}
 
 	/** @type {ts.TypeChecker} */
@@ -213,14 +223,11 @@ class Parser {
 			kind: "function",
 			calls,
 		};
-		const symbol = type.getSymbol();
-		if (symbol || type.aliasSymbol) {
-			if (symbol && symbol.name !== "__type") results.alias = symbol.name;
-			if (type.aliasSymbol && type.aliasSymbol.name !== "__type") results.alias = type.aliasSymbol.name;
+		if (type.aliasSymbol || type.symbol.name !== "__type") {
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
 		}
-		const sources = this.#get_type_sources(type);
-		// NOTE: Alias is needed, because the symbol is defined and named as "__type"
-		if (sources && results.alias) results.sources = sources;
 		return results;
 	}
 
@@ -236,9 +243,8 @@ class Parser {
 			kind: "interface",
 			members,
 		};
-		const alias = type.aliasSymbol?.name ?? this.#checker.getFullyQualifiedName(type.symbol);
-		if (alias && alias !== "__type") {
-			results.alias = alias;
+		if (type.aliasSymbol || type.symbol.name !== "__type") {
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -256,9 +262,11 @@ class Parser {
 		const types = type.types.map((t) => this.#get_type_doc(t));
 		/** @type {Doc.Intersection} */
 		let results = { kind: "intersection", types };
-		if (type.aliasSymbol) results.alias = type.aliasSymbol.name;
-		const source = this.#get_type_sources(type);
-		if (source) results.sources = source;
+		if (type.aliasSymbol) {
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
+		}
 		return results;
 	}
 
@@ -284,7 +292,11 @@ class Parser {
 			return { kind, subkind: "boolean", value: type.intrinsicName === "true" };
 		}
 		if (type.flags & ts.TypeFlags.UniqueESSymbol) {
-			return { kind, subkind: "symbol" };
+			return {
+				kind,
+				subkind: "symbol",
+				alias: this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol),
+			};
 		}
 		// TODO: Document error
 		throw new Error(`Unknown literal type: ${this.#checker.typeToString(type)}`);
@@ -374,7 +386,7 @@ class Parser {
 			elements,
 		};
 		if (type.aliasSymbol) {
-			results.alias = type.aliasSymbol.name;
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -431,18 +443,51 @@ class Parser {
 			kind: "union",
 			types,
 		};
-		if (type.aliasSymbol) results.alias = type.aliasSymbol.name;
-		const sources = this.#get_type_sources(type);
-		if (sources) results.sources = sources;
+		if (type.aliasSymbol) {
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
+		}
 		const nonNullable = type.getNonNullableType();
 		if (nonNullable !== type) results.nonNullable = this.#get_type_doc(nonNullable);
 		return results;
 	}
+
 	/**
 	 * @param {ts.Type} type
 	 * @returns {Doc.Type}
 	 */
 	#get_type_doc(type) {
+		if (!type.aliasSymbol) {
+			// immediate type
+			return this.#get_type_doc_internal(type);
+		}
+
+		// aliased type
+		const name =
+			this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
+			(type.aliasTypeArguments
+				? "<" +
+					type.aliasTypeArguments
+						.map((type) => {
+							return this.#checker.typeToString(type);
+						})
+						.join(", ") +
+					">"
+				: "");
+		if (this.#aliases[name] === undefined) {
+			this.#aliases[name] = { kind: "unknown" }; // reservation to prevent infinite loop
+			const doc = this.#get_type_doc_internal(type);
+			this.#aliases[name] = doc;
+		}
+		return name;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.Type}
+	 */
+	#get_type_doc_internal(type) {
 		const kind = get_type_kind({ type, extractor: this.#extractor });
 		switch (kind) {
 			case "array":
@@ -478,6 +523,7 @@ class Parser {
  * @prop {Doc.Exports} exports
  * @prop {Doc.Events} events
  * @prop {Doc.Slots} slots
+ * @prop {Doc.Aliases} aliases
  */
 
 /**
@@ -489,6 +535,7 @@ class Parser {
  * @prop {Doc.Exports} exports
  * @prop {never} events
  * @prop {never} slots
+ * @prop {Doc.Aliases} aliases
  */
 
 /** @typedef {LegacyComponent | ModernComponent} ParsedComponent */
