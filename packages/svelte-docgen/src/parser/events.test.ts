@@ -319,7 +319,277 @@ describe("events", () => {
 			    },
 			  },
 			  "on:increment" => {
-			    "constructors": "self",
+			    "constructors": [
+			      [
+			        {
+			          "isOptional": false,
+			          "name": "type",
+			          "type": {
+			            "kind": "string",
+			          },
+			        },
+			        {
+			          "isOptional": true,
+			          "name": "eventInitDict",
+			          "type": {
+			            "kind": "union",
+			            "nonNullable": {
+			              "alias": "CustomEventInit",
+			              "kind": "interface",
+			              "members": Map {
+			                "detail" => {
+			                  "isOptional": true,
+			                  "isReadonly": false,
+			                  "type": {
+			                    "kind": "union",
+			                    "nonNullable": {
+			                      "alias": "NonNullable",
+			                      "kind": "intersection",
+			                      "sources": Set {
+			                        /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts,
+			                      },
+			                      "types": [
+			                        {
+			                          "constraint": {
+			                            "kind": "unknown",
+			                          },
+			                          "isConst": false,
+			                          "kind": "type-parameter",
+			                          "name": "T",
+			                        },
+			                        {
+			                          "kind": "object",
+			                        },
+			                      ],
+			                    },
+			                    "types": [
+			                      {
+			                        "kind": "undefined",
+			                      },
+			                      {
+			                        "constraint": {
+			                          "kind": "unknown",
+			                        },
+			                        "isConst": false,
+			                        "kind": "type-parameter",
+			                        "name": "T",
+			                      },
+			                    ],
+			                  },
+			                },
+			                "bubbles" => {
+			                  "isOptional": true,
+			                  "isReadonly": false,
+			                  "type": {
+			                    "kind": "union",
+			                    "nonNullable": {
+			                      "kind": "boolean",
+			                    },
+			                    "types": [
+			                      {
+			                        "kind": "undefined",
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": false,
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": true,
+			                      },
+			                    ],
+			                  },
+			                },
+			                "cancelable" => {
+			                  "isOptional": true,
+			                  "isReadonly": false,
+			                  "type": {
+			                    "kind": "union",
+			                    "nonNullable": {
+			                      "kind": "boolean",
+			                    },
+			                    "types": [
+			                      {
+			                        "kind": "undefined",
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": false,
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": true,
+			                      },
+			                    ],
+			                  },
+			                },
+			                "composed" => {
+			                  "isOptional": true,
+			                  "isReadonly": false,
+			                  "type": {
+			                    "kind": "union",
+			                    "nonNullable": {
+			                      "kind": "boolean",
+			                    },
+			                    "types": [
+			                      {
+			                        "kind": "undefined",
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": false,
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": true,
+			                      },
+			                    ],
+			                  },
+			                },
+			              },
+			              "sources": Set {
+			                /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.dom.d.ts,
+			              },
+			            },
+			            "types": [
+			              {
+			                "kind": "undefined",
+			              },
+			              {
+			                "alias": "CustomEventInit",
+			                "kind": "interface",
+			                "members": Map {
+			                  "detail" => {
+			                    "isOptional": true,
+			                    "isReadonly": false,
+			                    "type": {
+			                      "kind": "union",
+			                      "nonNullable": {
+			                        "alias": "NonNullable",
+			                        "kind": "intersection",
+			                        "sources": Set {
+			                          /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts,
+			                        },
+			                        "types": [
+			                          {
+			                            "constraint": {
+			                              "kind": "unknown",
+			                            },
+			                            "isConst": false,
+			                            "kind": "type-parameter",
+			                            "name": "T",
+			                          },
+			                          {
+			                            "kind": "object",
+			                          },
+			                        ],
+			                      },
+			                      "types": [
+			                        {
+			                          "kind": "undefined",
+			                        },
+			                        {
+			                          "constraint": {
+			                            "kind": "unknown",
+			                          },
+			                          "isConst": false,
+			                          "kind": "type-parameter",
+			                          "name": "T",
+			                        },
+			                      ],
+			                    },
+			                  },
+			                  "bubbles" => {
+			                    "isOptional": true,
+			                    "isReadonly": false,
+			                    "type": {
+			                      "kind": "union",
+			                      "nonNullable": {
+			                        "kind": "boolean",
+			                      },
+			                      "types": [
+			                        {
+			                          "kind": "undefined",
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": false,
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": true,
+			                        },
+			                      ],
+			                    },
+			                  },
+			                  "cancelable" => {
+			                    "isOptional": true,
+			                    "isReadonly": false,
+			                    "type": {
+			                      "kind": "union",
+			                      "nonNullable": {
+			                        "kind": "boolean",
+			                      },
+			                      "types": [
+			                        {
+			                          "kind": "undefined",
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": false,
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": true,
+			                        },
+			                      ],
+			                    },
+			                  },
+			                  "composed" => {
+			                    "isOptional": true,
+			                    "isReadonly": false,
+			                    "type": {
+			                      "kind": "union",
+			                      "nonNullable": {
+			                        "kind": "boolean",
+			                      },
+			                      "types": [
+			                        {
+			                          "kind": "undefined",
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": false,
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": true,
+			                        },
+			                      ],
+			                    },
+			                  },
+			                },
+			                "sources": Set {
+			                  /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.dom.d.ts,
+			                },
+			              },
+			            ],
+			          },
+			        },
+			      ],
+			    ],
 			    "kind": "constructible",
 			    "name": "CustomEvent",
 			    "sources": Set {
