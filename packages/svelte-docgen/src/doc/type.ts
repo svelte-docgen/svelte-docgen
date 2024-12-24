@@ -32,10 +32,16 @@ export type Prop = Docable & {
 } & (OptionalProp | RequiredProp) &
 	(LocalProp | ExtendedProp);
 
-export type Events = Map<string, Type>;
-export type Exports = Map<string, Type>;
+/**
+ * Type reference to the map {@link Types} keys.
+ */
+export type TypeRef = string;
+
+export type Events = Map<string, Type | TypeRef>;
+export type Exports = Map<string, Type | TypeRef>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
+export type Types = Map<TypeRef, (Type & WithAlias) | (Type & WithName)>;
 
 export type Type =
 	| BaseType
@@ -49,7 +55,11 @@ export type Type =
 	| TypeParam
 	| Union;
 
+/**
+ * Type where `alias` is _optional_.
+ */
 export interface WithAlias {
+	kind: string;
 	alias?: string;
 	/**
 	 * Where is this type declared?
@@ -57,7 +67,11 @@ export interface WithAlias {
 	sources?: Set<string>;
 }
 
+/**
+ * Type where `name` is **required**.
+ */
 export interface WithName {
+	kind: string;
 	name: string;
 	/**
 	 * Where is this type declared?
@@ -84,18 +98,18 @@ export interface BaseType {
 export interface ArrayType {
 	kind: "array";
 	isReadonly: boolean;
-	element: Type;
+	element: Type | TypeRef;
 }
 
 export interface Constructible extends WithName {
 	kind: "constructible";
 	name: string;
-	constructors: Array<FnParam[]> | "self";
+	constructors: Array<FnParam[]>;
 }
 
 export interface OptionalFnParam {
 	isOptional: true;
-	default?: Type;
+	default?: Type | TypeRef;
 }
 export interface RequiredFnParam {
 	isOptional: false;
@@ -104,13 +118,13 @@ export interface RequiredFnParam {
 export type FnParam = {
 	name: string;
 	isOptional: boolean;
-	default?: Type;
-	type: Type;
+	default?: Type | TypeRef;
+	type: Type | TypeRef;
 } & (OptionalFnParam | RequiredFnParam);
 
 export interface FnCall {
-	parameters: (FnParam | "self")[];
-	returns: Type;
+	parameters: FnParam[];
+	returns: Type | TypeRef;
 }
 export interface Fn extends WithAlias {
 	kind: "function";
@@ -124,7 +138,7 @@ export interface Interface extends WithAlias {
 
 export interface Intersection extends WithAlias {
 	kind: "intersection";
-	types: Type[];
+	types: (Type | TypeRef)[];
 }
 
 export interface LiteralBigInt {
@@ -156,25 +170,25 @@ export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralSt
 export interface Member {
 	isOptional: boolean;
 	isReadonly: boolean;
-	type: Type | "self";
+	type: Type | TypeRef;
 }
 
 export interface Tuple extends WithAlias {
 	kind: "tuple";
 	isReadonly: boolean;
-	elements: Type[];
+	elements: (Type | TypeRef)[];
 }
 
 export interface TypeParam {
 	kind: "type-parameter";
 	name: string;
 	isConst: boolean;
-	constraint: Type;
-	default?: Type;
+	constraint: Type | TypeRef;
+	default?: Type | TypeRef;
 }
 
 export interface Union extends WithAlias {
 	kind: "union";
-	types: Type[];
-	nonNullable?: Type;
+	types: (Type | TypeRef)[];
+	nonNullable?: Type | TypeRef;
 }

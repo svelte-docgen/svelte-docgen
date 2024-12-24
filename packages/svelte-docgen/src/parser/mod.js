@@ -157,7 +157,7 @@ class Parser {
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
-		if (this.#latest_symbol_name === name) return { kind: "constructible", name, constructors: "self", sources };
+		if (this.#latest_symbol_name.constructible === name) {
 		/** @type {Doc.Constructible['constructors']} */
 		const constructors = get_construct_signatures(type, this.#extractor).map((s) => {
 			return s.getParameters().map((p) => {
