@@ -91,10 +91,7 @@ class Parser {
 		if (!this.isLegacy) throw new Error();
 		return new Map(
 			Iterator.from(this.#extractor.events).map(([name, symbol]) => {
-				return [
-					`on:${name}`,
-					this.#get_type_doc(this.#checker.getTypeOfSymbol(symbol)),
-				];
+				return [`on:${name}`, this.#get_type_doc(this.#checker.getTypeOfSymbol(symbol))];
 			}),
 		);
 	}
@@ -103,10 +100,7 @@ class Parser {
 	get exports() {
 		return new Map(
 			Iterator.from(this.#extractor.exports).map(([name, symbol]) => {
-				return [
-					name,
-					this.#get_type_doc(this.#checker.getTypeOfSymbol(symbol)),
-				];
+				return [name, this.#get_type_doc(this.#checker.getTypeOfSymbol(symbol))];
 			}),
 		);
 	}
@@ -127,10 +121,7 @@ class Parser {
 		return new Map(
 			Iterator.from(this.#extractor.slots).map(([name, props]) => {
 				const documented_props = new Map(
-					Iterator.from(props).map(([name, prop]) => [
-						name,
-						this.#get_prop_doc(prop),
-					]),
+					Iterator.from(props).map(([name, prop]) => [name, this.#get_prop_doc(prop)]),
 				);
 				return [name, documented_props];
 			}),
@@ -151,15 +142,9 @@ class Parser {
 	 * @returns {Doc.ArrayType}
 	 */
 	#get_array_doc(type) {
-		const index_info = this.#checker.getIndexInfoOfType(
-			type,
-			ts.IndexKind.Number,
-		);
+		const index_info = this.#checker.getIndexInfoOfType(type, ts.IndexKind.Number);
 		// TODO: Document error
-		if (!index_info)
-			throw new Error(
-				`Could not get index info of type ${this.#checker.typeToString(type)}`,
-			);
+		if (!index_info) throw new Error(`Could not get index info of type ${this.#checker.typeToString(type)}`);
 		const { isReadonly } = index_info;
 		return {
 			kind: "array",
@@ -189,8 +174,8 @@ class Parser {
 		// TODO: Document error
 		if (!sources) throw new Error();
 		/** @type {Doc.Constructible['constructors']} */
-		const constructors = get_construct_signatures(type, this.#extractor).map(
-			(s) => s.getParameters().map((p) => this.#get_fn_param_doc(p)),
+		const constructors = get_construct_signatures(type, this.#extractor).map((s) =>
+			s.getParameters().map((p) => this.#get_fn_param_doc(p)),
 		);
 		this.types.set(name, {
 			kind: "constructible",
@@ -219,9 +204,7 @@ class Parser {
 			type: this.#get_type_doc(type),
 		};
 		if (symbol.valueDeclaration.initializer) {
-			const default_ = this.#checker.getTypeAtLocation(
-				symbol.valueDeclaration.initializer,
-			);
+			const default_ = this.#checker.getTypeAtLocation(symbol.valueDeclaration.initializer);
 			data.default = this.#get_type_doc(default_);
 		}
 		return data;
@@ -311,9 +294,7 @@ class Parser {
 	#get_intersection_doc(type) {
 		if (!type.isIntersection()) {
 			// TODO: Document error
-			throw new Error(
-				`Expected intersection type, got ${this.#checker.typeToString(type)}`,
-			);
+			throw new Error(`Expected intersection type, got ${this.#checker.typeToString(type)}`);
 		}
 		const symbol = type.aliasSymbol ?? type.getSymbol();
 		const alias = symbol && this.#get_symbol_name(symbol);
@@ -339,20 +320,14 @@ class Parser {
 	#get_literal_doc(type) {
 		const kind = "literal";
 		if (type.isLiteral()) {
-			if (type.isStringLiteral())
-				return { kind, subkind: "string", value: type.value };
-			if (type.isNumberLiteral())
-				return { kind, subkind: "number", value: type.value };
+			if (type.isStringLiteral()) return { kind, subkind: "string", value: type.value };
+			if (type.isNumberLiteral()) return { kind, subkind: "number", value: type.value };
 			if (
 				type.flags & ts.TypeFlags.BigIntLiteral &&
 				typeof type.value !== "string" &&
 				typeof type.value !== "number"
 			) {
-				const value = BigInt(
-					type.value.negative
-						? `-${type.value.base10Value}`
-						: type.value.base10Value,
-				);
+				const value = BigInt(type.value.negative ? `-${type.value.base10Value}` : type.value.base10Value);
 				return { kind, subkind: "bigint", value };
 			}
 		}
@@ -363,9 +338,7 @@ class Parser {
 			return { kind, subkind: "symbol" };
 		}
 		// TODO: Document error
-		throw new Error(
-			`Unknown literal type: ${this.#checker.typeToString(type)}`,
-		);
+		throw new Error(`Unknown literal type: ${this.#checker.typeToString(type)}`);
 	}
 
 	/**
@@ -397,19 +370,12 @@ class Parser {
 	 */
 	#get_prop_doc(symbol) {
 		const type = this.#checker.getTypeOfSymbol(symbol);
-		const sources = get_sources(
-			symbol.getDeclarations() ?? [],
-			this.#root_path_url,
-		);
+		const sources = get_sources(symbol.getDeclarations() ?? [], this.#root_path_url);
 		/** @type {Doc.Prop} */
 		let results = {
 			tags: this.#get_prop_tags(symbol),
-			isBindable:
-				this.#extractor.bindings.has(symbol.name) ||
-				symbol.name.startsWith("bind:"),
-			isExtended: sources
-				? Iterator.from(sources).some((f) => f !== this.#options.filepath)
-				: false,
+			isBindable: this.#extractor.bindings.has(symbol.name) || symbol.name.startsWith("bind:"),
+			isExtended: sources ? Iterator.from(sources).some((f) => f !== this.#options.filepath) : false,
 			isOptional: is_symbol_optional(symbol),
 			type: this.#get_type_doc(type),
 		};
@@ -446,18 +412,12 @@ class Parser {
 	#get_tuple_doc(type) {
 		// TODO: Document error
 		if (!is_type_reference(type))
-			throw new Error(
-				`Expected type reference, got ${this.#checker.typeToString(type)}`,
-			);
+			throw new Error(`Expected type reference, got ${this.#checker.typeToString(type)}`);
 		// TODO: Document error
 		if (!is_tuple_type(type.target))
-			throw new Error(
-				`Expected tuple type, got ${this.#checker.typeToString(type)}`,
-			);
+			throw new Error(`Expected tuple type, got ${this.#checker.typeToString(type)}`);
 		const isReadonly = type.target.readonly;
-		const elements = this.#checker
-			.getTypeArguments(type)
-			.map((t) => this.#get_type_doc(t));
+		const elements = this.#checker.getTypeArguments(type).map((t) => this.#get_type_doc(t));
 		/** @type {Doc.Tuple} */
 		let results = {
 			kind: "tuple",
@@ -479,17 +439,13 @@ class Parser {
 	#get_type_param_doc(type) {
 		// TODO: Document error
 		if (!type.isTypeParameter())
-			throw new Error(
-				`Expected type parameter, got ${this.#checker.typeToString(type)}`,
-			);
+			throw new Error(`Expected type parameter, got ${this.#checker.typeToString(type)}`);
 		const constraint = type.getConstraint();
 		/** @type {Doc.TypeParam} */
 		let results = {
 			kind: "type-parameter",
 			name: type.symbol.name,
-			constraint: constraint
-				? this.#get_type_doc(constraint)
-				: { kind: "unknown" },
+			constraint: constraint ? this.#get_type_doc(constraint) : { kind: "unknown" },
 			isConst: is_const_type_param(type),
 		};
 		const default_ = type.getDefault();
@@ -507,13 +463,9 @@ class Parser {
 		if (!symbol || symbol.name === "__type") symbol = type.aliasSymbol;
 		if (symbol) {
 			const declared_type = this.#checker.getDeclaredTypeOfSymbol(symbol);
-			const declared_type_symbol =
-				declared_type.getSymbol() || declared_type.aliasSymbol;
+			const declared_type_symbol = declared_type.getSymbol() || declared_type.aliasSymbol;
 			if (declared_type_symbol)
-				return get_sources(
-					declared_type_symbol.getDeclarations() ?? [],
-					this.#root_path_url,
-				);
+				return get_sources(declared_type_symbol.getDeclarations() ?? [], this.#root_path_url);
 		}
 	}
 
@@ -527,9 +479,7 @@ class Parser {
 	#get_union_doc(type) {
 		if (!type.isUnion()) {
 			// TODO: Document error
-			throw new Error(
-				`Expected union type, got ${this.#checker.typeToString(type)}`,
-			);
+			throw new Error(`Expected union type, got ${this.#checker.typeToString(type)}`);
 		}
 		const symbol = type.aliasSymbol ?? type.getSymbol();
 		const alias = symbol && this.#get_symbol_name(symbol);
