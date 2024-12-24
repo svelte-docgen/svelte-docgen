@@ -156,7 +156,7 @@ export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralSt
 export interface Member {
 	isOptional: boolean;
 	isReadonly: boolean;
-	type: Type;
+	type: Type | "self";
 }
 
 export interface Tuple extends WithAlias {
