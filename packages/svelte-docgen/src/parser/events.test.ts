@@ -600,6 +600,14 @@ describe("events", () => {
 		`);
 		for (const key of events.keys()) {
 			expect(key.startsWith("on:")).toBe(true);
+			const event = events.get(key);
+			expect(event).toBeDefined();
+			if (event) {
+				expect(event.kind).toBe("constructible");
+				if (event.kind === "constructible") {
+					expect(event.constructors).not.toBe("self");
+				}
+			}
 		}
 	});
 });
