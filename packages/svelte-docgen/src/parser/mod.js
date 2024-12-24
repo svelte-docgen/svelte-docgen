@@ -229,6 +229,8 @@ class Parser {
 	 * @returns {Doc.Interface}
 	 */
 	#get_interface_doc(type) {
+		const alias = type.aliasSymbol?.name ?? this.#checker.getFullyQualifiedName(type.symbol);
+		this.#latest_symbol_name = alias;
 		/** @type {Doc.Interface['members']} */
 		const members = new Map(Iterator.from(type.getProperties()).map((p) => [p.name, this.#get_member_doc(p)]));
 		/** @type {Doc.Interface} */
@@ -236,7 +238,6 @@ class Parser {
 			kind: "interface",
 			members,
 		};
-		const alias = type.aliasSymbol?.name ?? this.#checker.getFullyQualifiedName(type.symbol);
 		if (alias && alias !== "__type") {
 			results.alias = alias;
 			const sources = this.#get_type_sources(type);
@@ -299,7 +300,7 @@ class Parser {
 		return {
 			isOptional: is_symbol_optional(symbol),
 			isReadonly: is_symbol_readonly(symbol),
-			type: this.#get_type_doc(type),
+			type: type.aliasSymbol?.name === this.#latest_symbol_name ? "self" : this.#get_type_doc(type),
 		};
 	}
 
