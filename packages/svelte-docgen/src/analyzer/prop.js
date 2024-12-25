@@ -3,7 +3,7 @@
  */
 
 import path from "pathe";
-import { isTypeRef } from "../doc/type.ts";
+import { isTypeRef } from "../doc/utils.js";
 
 /** @typedef { Omit<Doc.Prop, 'type'> & { type: Doc.Type } } Prop */
 

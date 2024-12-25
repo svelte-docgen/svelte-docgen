@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import { parse } from "../mod.js";
 import type * as Doc from "../../doc/type.js";
-import { isTypeRef } from "../../doc/type.js";
+import { isTypeRef } from "../../doc/utils.js";
 
 describe("Fn", () => {
 	const { props, types } = parse(
