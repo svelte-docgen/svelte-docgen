@@ -2,6 +2,55 @@ import type { extract } from "@svelte-docgen/extractor";
 
 import type { TypeKind } from "./kind.js";
 
+/**
+ * Type reference as key in the map {@link Types}.
+ * The purpose of this reference is to solve circularity issue with types with optional alias {@link WithAlias}
+ * or types with required name {@link WithName}.
+ */
+export type TypeRef = string;
+
+/**
+ * Union of all possible types recognized by `svelte-docgen`.
+ */
+export type Type =
+	| BaseType
+	| ArrayType
+	| Constructible
+	| Fn
+	| Interface
+	| Intersection
+	| Literal
+	| Tuple
+	| TypeParam
+	| Union;
+
+export type TypeOrRef = Type | TypeRef;
+
+/**
+ * Type where `alias` is _optional_.
+ */
+export interface WithAlias {
+	alias?: string;
+	/**
+	 * Where is this type declared?
+	 */
+	sources?: Set<string>;
+}
+
+/**
+ * Type where `name` is **required**.
+ */
+export interface WithName {
+	name: string;
+	/**
+	 * Where is this type declared?
+	 */
+	sources: Set<string>;
+}
+
+/**
+ * Represents a documentation tag in JSDoc
+ */
 export type Tag = NonNullable<ReturnType<typeof extract>["tags"]>[number];
 
 export interface Docable {
@@ -10,7 +59,7 @@ export interface Docable {
 }
 
 export interface OptionalProp {
-	default?: Type;
+	default?: TypeOrRef;
 	isOptional: true;
 }
 export interface RequiredProp {
@@ -28,26 +77,15 @@ export interface ExtendedProp {
 }
 export type Prop = Docable & {
 	isBindable: boolean;
-	type: Type;
+	type: TypeOrRef;
 } & (OptionalProp | RequiredProp) &
 	(LocalProp | ExtendedProp);
 
-export type Events = Map<string, Type>;
-export type Exports = Map<string, Type>;
+export type Events = Map<string, TypeOrRef>;
+export type Exports = Map<string, TypeOrRef>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
-
-export type Type =
-	| BaseType
-	| ArrayType
-	| Constructible
-	| Fn
-	| Interface
-	| Intersection
-	| Literal
-	| Tuple
-	| TypeParam
-	| Union;
+export type Types = Map<TypeRef, (Type & WithAlias) | (Type & WithName)>;
 
 export interface WithAlias {
 	alias?: string;
@@ -84,18 +122,18 @@ export interface BaseType {
 export interface ArrayType {
 	kind: "array";
 	isReadonly: boolean;
-	element: Type;
+	element: TypeOrRef;
 }
 
 export interface Constructible extends WithName {
 	kind: "constructible";
 	name: string;
-	constructors: Array<FnParam[]> | "self";
+	constructors: globalThis.Array<FnParam[]>;
 }
 
 export interface OptionalFnParam {
 	isOptional: true;
-	default?: Type;
+	default?: TypeOrRef;
 }
 export interface RequiredFnParam {
 	isOptional: false;
@@ -104,13 +142,13 @@ export interface RequiredFnParam {
 export type FnParam = {
 	name: string;
 	isOptional: boolean;
-	default?: Type;
-	type: Type;
+	default?: TypeOrRef;
+	type: TypeOrRef;
 } & (OptionalFnParam | RequiredFnParam);
 
 export interface FnCall {
 	parameters: (FnParam | "self")[];
-	returns: Type;
+	returns: TypeOrRef;
 }
 export interface Fn extends WithAlias {
 	kind: "function";
@@ -124,7 +162,7 @@ export interface Interface extends WithAlias {
 
 export interface Intersection extends WithAlias {
 	kind: "intersection";
-	types: Type[];
+	types: TypeOrRef[];
 }
 
 export interface LiteralBigInt {
@@ -150,31 +188,32 @@ export interface LiteralString {
 export interface LiteralSymbol {
 	kind: "literal";
 	subkind: "symbol";
+	alias?: string;
 }
 export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralString | LiteralSymbol;
 
 export interface Member {
 	isOptional: boolean;
 	isReadonly: boolean;
-	type: Type;
+	type: TypeOrRef;
 }
 
 export interface Tuple extends WithAlias {
 	kind: "tuple";
 	isReadonly: boolean;
-	elements: Type[];
+	elements: TypeOrRef[];
 }
 
 export interface TypeParam {
 	kind: "type-parameter";
 	name: string;
 	isConst: boolean;
-	constraint: Type;
-	default?: Type;
+	constraint: TypeOrRef;
+	default?: TypeOrRef;
 }
 
 export interface Union extends WithAlias {
 	kind: "union";
-	types: Type[];
-	nonNullable?: Type;
+	types: TypeOrRef[];
+	nonNullable?: TypeOrRef;
 }

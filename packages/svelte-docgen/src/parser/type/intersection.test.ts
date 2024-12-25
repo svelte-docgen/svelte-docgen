@@ -1,11 +1,11 @@
 import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
-import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
+import type * as Doc from "../../doc/type.js";
 
 describe("Intersection", () => {
-	const { props } = parse(
+	const { props, types } = parse(
 		`
 			<script lang="ts">
 				type Aliased = number & {};
@@ -19,7 +19,7 @@ describe("Intersection", () => {
 		create_options("intersection.svelte"),
 	);
 
-	it("documents anonmous 'intersection'", ({ expect }) => {
+	it("documents anonymous 'intersection'", ({ expect }) => {
 		const anonymous = props.get("anonymous");
 		expect(anonymous).toBeDefined();
 		expect(anonymous?.type).toMatchInlineSnapshot(`
@@ -35,33 +35,42 @@ describe("Intersection", () => {
 			  ],
 			}
 		`);
-		expect((anonymous?.type as Doc.Intersection).alias).not.toBeDefined();
-		expect((anonymous?.type as Doc.Intersection).types.length).toBeGreaterThan(0);
-		expect((anonymous?.type as Doc.Intersection).sources).not.toBeDefined();
+		if (anonymous && typeof anonymous?.type !== "string") {
+			expect(anonymous?.type.kind).toBe("intersection");
+			if (anonymous.type.kind === "intersection") {
+				expect(anonymous?.type.alias).not.toBeDefined();
+				expect(anonymous?.type.types.length).toBeGreaterThan(0);
+				expect(anonymous?.type.sources).not.toBeDefined();
+			}
+		}
 	});
 
 	it("recognizes aliased", ({ expect }) => {
-		const aliased = props.get("aliased");
-		expect(aliased).toBeDefined();
-		expect(aliased?.type).toMatchInlineSnapshot(`
-			{
-			  "alias": "Aliased",
-			  "kind": "intersection",
-			  "sources": Set {
-			    "intersection.svelte",
+		expect(props.get("aliased")!.type).toBe("Aliased");
+	});
+
+	it("collects aliases", ({ expect }) => {
+		expect(types).toMatchInlineSnapshot(`
+			Map {
+			  "Aliased" => {
+			    "alias": "Aliased",
+			    "kind": "intersection",
+			    "sources": Set {
+			      "intersection.svelte",
+			    },
+			    "types": [
+			      {
+			        "kind": "number",
+			      },
+			      {
+			        "kind": "object",
+			      },
+			    ],
 			  },
-			  "types": [
-			    {
-			      "kind": "number",
-			    },
-			    {
-			      "kind": "object",
-			    },
-			  ],
 			}
 		`);
-		expect((aliased?.type as Doc.Intersection).types.length).toBeGreaterThan(0);
-		expect((aliased?.type as Doc.Intersection).alias).toBe("Aliased");
-		expect((aliased?.type as Doc.Intersection).sources).toBeDefined();
+		const aliased = types.get("Aliased") as Doc.Intersection;
+		expect(aliased.sources).toBeDefined();
+		expect(aliased.types.length).greaterThan(0);
 	});
 });

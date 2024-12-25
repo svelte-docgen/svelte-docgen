@@ -62,37 +62,19 @@ describe("props", () => {
 			    },
 			  },
 			  "group" => {
-			    "default": {
-			      "element": {
-			        "kind": "string",
-			      },
-			      "isReadonly": false,
-			      "kind": "array",
-			    },
+			    "default": "Array<string>",
 			    "isBindable": true,
 			    "isExtended": false,
 			    "isOptional": true,
 			    "tags": [],
 			    "type": {
 			      "kind": "union",
-			      "nonNullable": {
-			        "element": {
-			          "kind": "string",
-			        },
-			        "isReadonly": false,
-			        "kind": "array",
-			      },
+			      "nonNullable": "Array<string>",
 			      "types": [
 			        {
 			          "kind": "undefined",
 			        },
-			        {
-			          "element": {
-			            "kind": "string",
-			          },
-			          "isReadonly": false,
-			          "kind": "array",
-			        },
+			        "Array<string>",
 			      ],
 			    },
 			  },

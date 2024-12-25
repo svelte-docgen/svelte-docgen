@@ -1,6 +1,9 @@
 {
 	"$schema": "https://turborepo.org/schema.json",
 	"tasks": {
+		"build": {
+			"cache": true
+		},
 		"build:pkg": {
 			"cache": true,
 			"inputs": ["$TURBO_DEFAULT$", "src/**"],
