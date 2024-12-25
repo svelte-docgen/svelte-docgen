@@ -5,17 +5,15 @@
 import path from "pathe";
 import { isTypeRef } from "../doc/utils.js";
 
-/** @typedef { Omit<Doc.Prop, 'type'> & { type: Doc.Type } } Prop */
-
 class PropAnalyzer {
-	/** @type {Prop} */
+	/** @type {Doc.Prop} */
 	#prop;
 
 	/** @type {Doc.Types} */
 	#types;
 
 	/**
-	 * @param {Prop} prop
+	 * @param {Doc.Prop} prop
 	 * @param {Doc.Types} types
 	 * */
 	constructor(prop, types) {
