@@ -9,6 +9,20 @@
 
 > The provided Svelte source code `filepath` must end with an `.svelte` extension.
 
+## not_found_render_fn
+
+> Our extractor could not find an AST node of `FunctionDeclaration` with `render` name in the compiled TSX file.
+>
+> This is likely a bug on our side.
+> Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
+
+## not_found_render_fn_signature
+
+> Our extractor could not find a signature of `render` function in the compiled TSX file.
+>
+> This is likely a bug on our side.
+> Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
+
 ## not_found_source_file
 
 > Our extractor could not find a source file of the following file path:
@@ -21,6 +35,14 @@
 >   - `"DOM.Iterable"`
 >   - `"ESNext"`
 > - `compilerOptions.types` - if the types comes from [type definitions](https://www.typescriptlang.org/tsconfig#types), but they're not _directly_ imported inside the source code.
+
+## not_found_source_file_tsx
+
+> Our extractor could not find a source file of the following file path:
+> {filepath}
+>
+> This is likely a bug on our side.
+> Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
 
 ## not_found_type_bindings
 

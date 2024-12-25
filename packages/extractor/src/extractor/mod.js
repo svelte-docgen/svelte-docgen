@@ -94,9 +94,7 @@ class Extractor {
 			for (const type of bindings.types) {
 				if (!type.isStringLiteral()) {
 					// TODO: Use error: `bindngs_without_literal_string_types`
-					throw new Error(
-						"Expected bindings to be a union of literal string types",
-					);
+					throw new Error("Expected bindings to be a union of literal string types");
 				}
 				results.add(type.value);
 			}
@@ -219,7 +217,10 @@ class Extractor {
 				} else {
 					source = this.#options.host.getSourceFile(filepath, language_version_or_options, on_error);
 				}
-				if (!source) throw new Error(`Source file was not found by program: ${filepath}`);
+				if (!source) {
+					// TODO: Use error: `not_found_source_file`
+					throw new Error(`Source file was not found by program: ${filepath}`);
+				}
 				this.#cache.set(filepath, { source });
 				return source;
 			},
@@ -260,11 +261,11 @@ class Extractor {
 		const from_cache = this.#cache.get(this.#options.tsx_filepath)?.source;
 		if (from_cache) return from_cache;
 		const from_program = this.#program.getSourceFile(this.#options.tsx_filepath);
-		//O TODO: Document it
-		if (!from_program)
-			throw new Error(
-				`Source file could not be found by TypeScript program: ${this.#options.tsx_filepath}`,
-			);
+		if (!from_program) {
+			// TODO: Use error: `not_found_source_file_tsx`
+			throw new Error(`Source file could not be found by TypeScript program: ${this.#options.tsx_filepath}`);
+		}
+
 		this.#cached_source_file = this.#cache.set(this.#options.tsx_filepath, {
 			source: from_program,
 		}).source;
@@ -286,13 +287,13 @@ class Extractor {
 				return statement;
 			}
 		}
-		// TODO: Document error
+		// TODO: Use error: `not_found_render_fn`
 		throw new Error("render fn not found");
 	}
 
 	/**
 	 * The whole line statement, like:
-	 * ```ts`
+	 * ```ts
 	 * let { ...props } = $props();
 	 * ```
 	 *
@@ -337,14 +338,13 @@ class Extractor {
 	get #extracted_from_render_fn() {
 		if (this.#cached_extracted_from_render_fn) return this.#cached_extracted_from_render_fn;
 		const signature = this.checker.getSignatureFromDeclaration(this.#fn_render);
-		// TODO: Document error
+		// TODO: Use error: `not_found_render_fn_signature`
 		if (!signature) throw new Error("signature not found");
 		const return_type = this.checker.getReturnTypeOfSignature(signature);
 		const properties = return_type.getProperties();
 		this.#cached_extracted_from_render_fn = {};
 		for (const prop of properties) {
 			const name = prop.getName();
-			// TODO: Add support for Svelte v4 - exports, slots, and events
 			switch (name) {
 				case "props":
 				case "bindings":
