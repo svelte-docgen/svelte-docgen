@@ -47,8 +47,8 @@ class Extractor {
 
 	/** @returns {ComponentDocExtractor | undefined} */
 	get documentation() {
-		if (this.parser.componentComment) return new ComponentDocExtractor(this.parser.componentComment);
-		return undefined;
+		if (!this.parser.componentComment) return undefined;
+		return new ComponentDocExtractor(this.parser.componentComment);
 	}
 
 	/** @returns {Map<string, ts.Symbol>} */
