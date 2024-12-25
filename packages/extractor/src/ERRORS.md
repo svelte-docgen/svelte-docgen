@@ -16,6 +16,20 @@
 > This is likely a bug on our side.
 > Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
 
+## not_found_type_events
+
+> Our extractor couldn't find a type for `events` in the compiled TSX file.
+>
+> This is likely a bug on our side.
+> Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
+
+## not_found_type_exports
+
+> Our extractor couldn't find a type for `exports` in the compiled TSX file.
+>
+> This is likely a bug on our side.
+> Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
+
 ## not_found_type_props
 
 > Our extractor couldn't find a type for `props` in the compiled TSX file.

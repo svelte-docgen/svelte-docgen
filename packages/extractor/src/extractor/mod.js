@@ -137,7 +137,7 @@ class Extractor {
 	 */
 	get exports() {
 		const { exports } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_exports`
 		if (!exports) throw new Error("exports not found");
 		return new Map(Iterator.from(exports.getProperties()).map((e) => [e.name, e]));
 	}
@@ -148,7 +148,7 @@ class Extractor {
 	 */
 	get events() {
 		const { events } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_events`
 		if (!events) throw new Error("events not found");
 		return new Map(Iterator.from(events.getProperties()).map((e) => [e.name, e]));
 	}
