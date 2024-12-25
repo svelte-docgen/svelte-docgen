@@ -1,3 +1,10 @@
+## bindings_without_literal_string_types
+
+> Our extractor expected bindings to have literal string types.
+>
+> This is likely a bug on our side.
+> Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
+
 ## invalid_svelte_filepath_extension
 
 > The provided Svelte source code `filepath` must end with an `.svelte` extension.

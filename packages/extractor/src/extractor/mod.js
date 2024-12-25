@@ -89,27 +89,26 @@ class Extractor {
 		const { bindings } = this.#extracted_from_render_fn;
 		// TODO: Use error: `not_found_type_bindings`
 		if (!bindings) throw new Error("bindings not found");
-		// If in legacy mode, 'bindings' is a string type
-		if (bindings.flags & ts.TypeFlags.String) {
-			return results;
+		// Case 1: multiple bindings
+		if (bindings.isUnion()) {
+			for (const type of bindings.types) {
+				if (!type.isStringLiteral()) {
+					// TODO: Use error: `bindngs_without_literal_string_types`
+					throw new Error(
+						"Expected bindings to be a union of literal string types",
+					);
+				}
+				results.add(type.value);
+			}
 		}
-		// If there is a single binding
+		// Case 2: single binding
 		if (bindings.isStringLiteral()) {
 			// NOTE: No bindings, is empty
-			if (bindings.value === "") {
-				return results;
-			}
-			results.add(bindings.value);
-			return results;
+			if (bindings.value !== "") results.add(bindings.value);
 		}
-		// If there are multiple bindings
-		// TODO: Document error
-		if (!bindings?.isUnion()) throw new Error("bindings is not an union");
-		for (const type of bindings.types) {
-			// TODO: Document error
-			if (!type.isStringLiteral()) throw new Error("Expected bindings to be a union of string literal types");
-			results.add(type.value);
-		}
+		// WARN: `svelte2tsx` produces an empty string `""` type (non-literal) for legacy components (v4),
+		// but it doesn't recognize any bindable props.
+		// Tracking issue: https://github.com/svelte-docgen/svelte-docgen/issues/63
 		return results;
 	}
 
