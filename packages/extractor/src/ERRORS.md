@@ -9,6 +9,19 @@
 
 > The provided Svelte source code `filepath` must end with an `.svelte` extension.
 
+## not_found_source_file
+
+> Our extractor could not find a source file of the following file path:
+> {filepath}
+>
+> If the path is correct, before creating an issue, please ensure that in your `(j|t)sconfig.json` file you're including them in:
+>
+> - `compilerOptions.libs` - if the types comes from [high level libraries](https://www.typescriptlang.org/tsconfig/#high-level-libraries), such as:
+>   - `"DOM"`
+>   - `"DOM.Iterable"`
+>   - `"ESNext"`
+> - `compilerOptions.types` - if the types comes from [type definitions](https://www.typescriptlang.org/tsconfig#types), but they're not _directly_ imported inside the source code.
+
 ## not_found_type_bindings
 
 > Our extractor couldn't find a type for `bindings` in the compiled TSX file.

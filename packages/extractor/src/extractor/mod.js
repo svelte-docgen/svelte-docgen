@@ -262,7 +262,9 @@ class Extractor {
 		const from_program = this.#program.getSourceFile(this.#options.tsx_filepath);
 		//O TODO: Document it
 		if (!from_program)
-			throw new Error(`Source file could not be found by TypeScript program: ${this.#options.tsx_filepath}`);
+			throw new Error(
+				`Source file could not be found by TypeScript program: ${this.#options.tsx_filepath}`,
+			);
 		this.#cached_source_file = this.#cache.set(this.#options.tsx_filepath, {
 			source: from_program,
 		}).source;
