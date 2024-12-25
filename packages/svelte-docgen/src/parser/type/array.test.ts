@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isAlias } from "../../doc/type.js";
+import { isTypeRef } from "../../doc/type.js";
 
 describe("Array", () => {
 	const { props, types } = parse(
@@ -31,7 +31,7 @@ describe("Array", () => {
 			  "kind": "array",
 			}
 		`);
-		if (!letters || isAlias(letters?.type)) throw new Error("expected a type");
+		if (!letters || isTypeRef(letters?.type)) throw new Error("expected a type");
 		expect(letters.type.kind).toBe("array");
 		expect((letters.type as Doc.ArrayType).isReadonly).toBe(false);
 	});
@@ -46,7 +46,7 @@ describe("Array", () => {
 			  "kind": "array",
 			}
 		`);
-		if (!numbers || isAlias(numbers?.type)) throw new Error("expected a type");
+		if (!numbers || isTypeRef(numbers?.type)) throw new Error("expected a type");
 		expect(numbers.type.kind).toBe("array");
 		expect((numbers.type as Doc.ArrayType).isReadonly).toBe(true);
 	});

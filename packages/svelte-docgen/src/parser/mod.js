@@ -456,7 +456,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.TypeOrAlias}
+	 * @returns {Doc.TypeOrRef}
 	 */
 	#get_type_doc(type) {
 		if (!type.aliasSymbol) {

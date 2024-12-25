@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isAlias } from "../../doc/type.js";
+import { isTypeRef } from "../../doc/type.js";
 
 describe("Fn", () => {
 	const { props, types } = parse(
@@ -26,7 +26,7 @@ describe("Fn", () => {
 
 	it("documents 'function' - retuning void", ({ expect }) => {
 		const void_ = props.get("void");
-		if (!void_ || isAlias(void_?.type)) throw new Error("expected a type");
+		if (!void_ || isTypeRef(void_?.type)) throw new Error("expected a type");
 		expect(void_.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
@@ -45,7 +45,7 @@ describe("Fn", () => {
 
 	it("recognizes return type other than 'void'", ({ expect }) => {
 		const returning = props.get("returning");
-		if (!returning || isAlias(returning?.type)) throw new Error("expected a type");
+		if (!returning || isTypeRef(returning?.type)) throw new Error("expected a type");
 		expect(returning.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
@@ -105,11 +105,11 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		if (!parametized || isAlias(parametized?.type)) throw new Error("expected a type");
+		if (!parametized || isTypeRef(parametized?.type)) throw new Error("expected a type");
 		expect(parametized?.type.kind).toBe("function");
 
 		const spread = props.get("spread");
-		if (!spread || isAlias(spread?.type)) throw new Error("expected a type");
+		if (!spread || isTypeRef(spread?.type)) throw new Error("expected a type");
 		expect(spread.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
@@ -137,7 +137,7 @@ describe("Fn", () => {
 	it("recognizes aliased type", ({ expect }) => {
 		expect(props.get("aliased")?.type).toBe("Aliased");
 		const aliased = types["Aliased"];
-		if (!aliased || isAlias(aliased)) throw new Error("expected a type");
+		if (!aliased || isTypeRef(aliased)) throw new Error("expected a type");
 		expect((aliased as Doc.Fn).alias).toBe("Aliased");
 		expect((aliased as Doc.Fn).sources).toBeDefined();
 	});

@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isAlias } from "../../doc/type.js";
+import { isTypeRef } from "../../doc/type.js";
 
 describe("Tuple", () => {
 	const { props, types } = parse(
@@ -27,7 +27,7 @@ describe("Tuple", () => {
 
 	it("documents anonymous 'tuple'", ({ expect }) => {
 		const anonymous = props.get("anonymous");
-		if (!anonymous || isAlias(anonymous.type)) throw new Error("Expected a type");
+		if (!anonymous || isTypeRef(anonymous.type)) throw new Error("Expected a type");
 		expect(anonymous.type).toMatchInlineSnapshot(`
 			{
 			  "elements": [
@@ -45,7 +45,7 @@ describe("Tuple", () => {
 
 	it("recognizes 'readonly'", ({ expect }) => {
 		const strict = props.get("strict");
-		if (!strict || isAlias(strict.type)) throw new Error("Expected a type");
+		if (!strict || isTypeRef(strict.type)) throw new Error("Expected a type");
 		expect(strict.type).toMatchInlineSnapshot(`
 			{
 			  "elements": [
@@ -63,7 +63,7 @@ describe("Tuple", () => {
 
 	it("recognizes empty tuple", ({ expect }) => {
 		const empty = props.get("empty");
-		if (!empty || isAlias(empty.type)) throw new Error("Expected a type");
+		if (!empty || isTypeRef(empty.type)) throw new Error("Expected a type");
 		expect(empty.type).toMatchInlineSnapshot(`
 			{
 			  "elements": [],
@@ -78,7 +78,7 @@ describe("Tuple", () => {
 
 	it("recognizes 'readonly' empty tuple", ({ expect }) => {
 		const empty = props.get("really-empty");
-		if (!empty || isAlias(empty.type)) throw new Error("Expected a type");
+		if (!empty || isTypeRef(empty.type)) throw new Error("Expected a type");
 		expect(empty.type).toMatchInlineSnapshot(`
 			{
 			  "elements": [],

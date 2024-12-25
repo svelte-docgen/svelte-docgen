@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isAlias } from "../../doc/type.js";
+import { isTypeRef } from "../../doc/type.js";
 
 describe("TypeParam", () => {
 	const { props } = parse(
@@ -23,7 +23,7 @@ describe("TypeParam", () => {
 
 	it("documents unknown 'type-parameter'", ({ expect }) => {
 		const unknown = props.get("unknown");
-		if (!unknown || isAlias(unknown.type)) throw new Error("Expected a type");
+		if (!unknown || isTypeRef(unknown.type)) throw new Error("Expected a type");
 		expect(unknown.type).toMatchInlineSnapshot(`
 			{
 			  "constraint": {
@@ -37,14 +37,14 @@ describe("TypeParam", () => {
 		expect(unknown.type.kind).toBe("type-parameter");
 		expect((unknown.type as Doc.TypeParam).isConst).toBe(false);
 		const constraint = (unknown?.type as Doc.TypeParam).constraint;
-		if (isAlias(constraint)) throw new Error("Expected a type");
+		if (isTypeRef(constraint)) throw new Error("Expected a type");
 		expect(constraint.kind).toBe("unknown");
 		expect((unknown.type as Doc.TypeParam).default).not.toBeDefined();
 	});
 
 	it("recognizes `const`", ({ expect }) => {
 		const constant = props.get("constant");
-		if (!constant || isAlias(constant.type)) throw new Error("Expected a type");
+		if (!constant || isTypeRef(constant.type)) throw new Error("Expected a type");
 		expect(constant.type).toMatchInlineSnapshot(`
 			{
 			  "constraint": {
@@ -58,14 +58,14 @@ describe("TypeParam", () => {
 		expect(constant.type.kind).toBe("type-parameter");
 		expect((constant.type as Doc.TypeParam).isConst).toBe(true);
 		const constraint = (constant?.type as Doc.TypeParam).constraint;
-		if (isAlias(constraint)) throw new Error("Expected a type");
+		if (isTypeRef(constraint)) throw new Error("Expected a type");
 		expect(constraint.kind).toBe("unknown");
 		expect((constant?.type as Doc.TypeParam).default).not.toBeDefined();
 	});
 
 	it("recognizes constraint", ({ expect }) => {
 		const constraint = props.get("constraint");
-		if (!constraint || isAlias(constraint.type)) throw new Error("Expected a type");
+		if (!constraint || isTypeRef(constraint.type)) throw new Error("Expected a type");
 		expect(constraint.type).toMatchInlineSnapshot(`
 			{
 			  "constraint": {
@@ -79,14 +79,14 @@ describe("TypeParam", () => {
 		expect(constraint.type.kind).toBe("type-parameter");
 		expect((constraint.type as Doc.TypeParam).isConst).toBe(false);
 		const constraint2 = (constraint?.type as Doc.TypeParam).constraint;
-		if (isAlias(constraint2)) throw new Error("Expected a type");
+		if (isTypeRef(constraint2)) throw new Error("Expected a type");
 		expect(constraint2.kind).toBe("number");
 		expect((constraint.type as Doc.TypeParam).default).not.toBeDefined();
 	});
 
 	it("recognizes default", ({ expect }) => {
 		const default_ = props.get("default");
-		if (!default_ || isAlias(default_.type)) throw new Error("Expected a type");
+		if (!default_ || isTypeRef(default_.type)) throw new Error("Expected a type");
 		expect(default_.type).toMatchInlineSnapshot(`
 			{
 			  "constraint": {
@@ -103,11 +103,11 @@ describe("TypeParam", () => {
 		expect(default_.type.kind).toBe("type-parameter");
 		expect((default_.type as Doc.TypeParam).isConst).toBe(false);
 		const constraint = (default_?.type as Doc.TypeParam).constraint;
-		if (isAlias(constraint)) throw new Error("Expected a type");
+		if (isTypeRef(constraint)) throw new Error("Expected a type");
 		expect(constraint.kind).toBe("unknown");
 		const default2 = (default_.type as Doc.TypeParam).default as Doc.TypeParam;
 		console.log(default2);
-		if (!default2 || isAlias(default2)) throw new Error("Expected a type");
+		if (!default2 || isTypeRef(default2)) throw new Error("Expected a type");
 		expect(default2.kind).toBe("string");
 	});
 });

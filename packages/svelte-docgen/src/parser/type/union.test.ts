@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isAlias } from "../../doc/type.js";
+import { isTypeRef } from "../../doc/type.js";
 
 describe("Union", () => {
 	const { props, types } = parse(
@@ -22,7 +22,7 @@ describe("Union", () => {
 
 	it("documents anonymous `union`", ({ expect }) => {
 		const anonymous = props.get("color");
-		if (!anonymous || isAlias(anonymous.type)) throw new Error("Expected a type");
+		if (!anonymous || isTypeRef(anonymous.type)) throw new Error("Expected a type");
 		expect(anonymous.type).toMatchInlineSnapshot(`
 			{
 			  "kind": "union",

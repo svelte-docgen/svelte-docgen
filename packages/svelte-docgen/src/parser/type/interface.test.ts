@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isAlias } from "../../doc/type.js";
+import { isTypeRef } from "../../doc/type.js";
 
 describe("Interface", () => {
 	const { props, types } = parse(
@@ -41,7 +41,7 @@ describe("Interface", () => {
 
 	it("documents anonymous `interface`", ({ expect }) => {
 		const anonymous = props.get("anonymous");
-		if (!anonymous || isAlias(anonymous.type)) throw new Error("Expected a type");
+		if (!anonymous || isTypeRef(anonymous.type)) throw new Error("Expected a type");
 		expect(anonymous.type).toMatchInlineSnapshot(`
 			{
 			  "kind": "interface",
@@ -73,7 +73,7 @@ describe("Interface", () => {
 
 	it("recognizes aliased interface", ({ expect }) => {
 		const a = props.get("a");
-		if (!a || isAlias(a.type)) throw new Error("Expected a type");
+		if (!a || isTypeRef(a.type)) throw new Error("Expected a type");
 		expect(a.type).toMatchInlineSnapshot(`
 			{
 			  "alias": "A",
@@ -131,7 +131,7 @@ describe("Interface", () => {
 
 	it("recognizes 'readonly' members", ({ expect }) => {
 		const b = props.get("b");
-		if (!b || isAlias(b.type)) throw new Error("Expected a type");
+		if (!b || isTypeRef(b.type)) throw new Error("Expected a type");
 		expect(b.type).toMatchInlineSnapshot(`
 			{
 			  "alias": "B",
@@ -194,7 +194,7 @@ describe("Interface", () => {
 
 	it("understands type which is an alias to interface only", ({ expect }) => {
 		const aliased = props.get("aliased");
-		if (!aliased || isAlias(aliased.type) || aliased.type.kind !== "interface")
+		if (!aliased || isTypeRef(aliased.type) || aliased.type.kind !== "interface")
 			throw new Error("Expected an interface");
 		expect(aliased.type.alias).toBe("A");
 	});

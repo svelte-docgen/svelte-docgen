@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isAlias } from "../../doc/type.js";
+import { isTypeRef } from "../../doc/type.js";
 
 describe("Constructible", () => {
 	const { props } = parse(
@@ -33,7 +33,7 @@ describe("Constructible", () => {
 
 	it("documents 'constructible' - custom", ({ expect }) => {
 		const custom = props.get("custom");
-		if (!custom || isAlias(custom.type)) throw new Error("expected a type");
+		if (!custom || isTypeRef(custom.type)) throw new Error("expected a type");
 		expect(custom.type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
@@ -90,7 +90,7 @@ describe("Constructible", () => {
 
 	it("recognizes builtin `Date`", ({ expect }) => {
 		const date = props.get("date");
-		if (!date || isAlias(date.type)) throw new Error("expected a type");
+		if (!date || isTypeRef(date.type)) throw new Error("expected a type");
 		expect(date.type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
@@ -261,7 +261,7 @@ describe("Constructible", () => {
 
 	it("recognizes builtin `Map`", ({ expect }) => {
 		const map = props.get("map");
-		if (!map || isAlias(map.type)) throw new Error("expected a type");
+		if (!map || isTypeRef(map.type)) throw new Error("expected a type");
 		expect(map.type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
@@ -435,7 +435,7 @@ describe("Constructible", () => {
 
 	it("recognizes builtin `Set`", ({ expect }) => {
 		const set = props.get("set");
-		if (!set || isAlias(set.type)) throw new Error("expected a type");
+		if (!set || isTypeRef(set.type)) throw new Error("expected a type");
 		expect(set.type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
