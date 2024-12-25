@@ -54,7 +54,7 @@ class Extractor {
 	/** @returns {Map<string, ts.Symbol>} */
 	get props() {
 		const { props } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_props`
 		if (!props) throw new Error("props not found");
 		return new Map(Iterator.from(props.getProperties()).map((p) => [p.name, p]));
 	}
@@ -87,7 +87,7 @@ class Extractor {
 	get bindings() {
 		let results = new Set();
 		const { bindings } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_bindings`
 		if (!bindings) throw new Error("bindings not found");
 		// If in legacy mode, 'bindings' is a string type
 		if (bindings.flags & ts.TypeFlags.String) {
