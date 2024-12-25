@@ -118,7 +118,7 @@ class Extractor {
 	 */
 	get slots() {
 		const { slots } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_slots`
 		if (!slots) throw new Error("slots not found");
 		return new Map(
 			Iterator.from(

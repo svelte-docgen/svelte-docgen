@@ -1,6 +1,6 @@
 ## bindings_without_literal_string_types
 
-> Our extractor expected bindings to have literal string types.
+> Our extractor expected `bindings` to have literal string types in the compiled TSX file.
 >
 > This is likely a bug on our side.
 > Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
@@ -11,14 +11,21 @@
 
 ## not_found_type_bindings
 
-> Our extractor couldn't find a type for `bindings` in the compiled file.
+> Our extractor couldn't find a type for `bindings` in the compiled TSX file.
 >
 > This is likely a bug on our side.
 > Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
 
 ## not_found_type_props
 
-> Our extractor couldn't find a type for `props` in the compiled file.
+> Our extractor couldn't find a type for `props` in the compiled TSX file.
+>
+> This is likely a bug on our side.
+> Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
+
+## not_found_type_slots
+
+> Our extractor couldn't find a type for `slots` in the compiled TSX file.
 >
 > This is likely a bug on our side.
 > Please [create an issue](https://github.com/svelte-docgen/svelte-docgen/issues/new) with a source code example that caused this error.
