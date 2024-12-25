@@ -5,7 +5,7 @@ import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
 
 describe("Constructible", () => {
-	const { props } = parse(
+	const { props, types } = parse(
 		`
 		<script lang="ts">
 			class Custom {
@@ -32,8 +32,12 @@ describe("Constructible", () => {
 
 	it("documents 'constructible' - custom", ({ expect }) => {
 		const custom = props.get("custom");
-		expect(custom).toBeDefined();
-		expect(custom?.type).toMatchInlineSnapshot(`
+		expect(custom?.type).toBe("Custom");
+		// if (!custom || isTypeRef(custom.type)) throw new Error("expected a type");
+		const type = types.get("Custom");
+		expect(type?.kind).toBe("constructible");
+		expect((type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
 			    [
@@ -83,14 +87,15 @@ describe("Constructible", () => {
 			  },
 			}
 		`);
-		expect(custom?.type.kind).toBe("constructible");
-		expect((custom?.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes builtin `Date`", ({ expect }) => {
 		const date = props.get("date");
-		expect(date).toBeDefined();
-		expect(date?.type).toMatchInlineSnapshot(`
+		expect(date?.type).toBe("Date");
+		const type = types.get("Date");
+		expect(type?.kind).toBe("constructible");
+		expect((type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
 			    [],
@@ -230,16 +235,7 @@ describe("Constructible", () => {
 			            {
 			              "kind": "number",
 			            },
-			            {
-			              "constructors": "self",
-			              "kind": "constructible",
-			              "name": "Date",
-			              "sources": Set {
-			                /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts,
-			                /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts,
-			                /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2020.date.d.ts,
-			              },
-			            },
+			            "Date",
 			          ],
 			        },
 			      },
@@ -254,14 +250,15 @@ describe("Constructible", () => {
 			  },
 			}
 		`);
-		expect(date?.type.kind).toBe("constructible");
-		expect((date?.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes builtin `Map`", ({ expect }) => {
 		const map = props.get("map");
-		expect(map).toBeDefined();
-		expect(map?.type).toMatchInlineSnapshot(`
+		expect(map?.type).toBe("Map<string, number>");
+		const type = types.get("Map<string, number>");
+		expect(type?.kind).toBe("constructible");
+		expect((type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
 			    [],
@@ -271,32 +268,7 @@ describe("Constructible", () => {
 			        "name": "entries",
 			        "type": {
 			          "kind": "union",
-			          "nonNullable": {
-			            "element": {
-			              "elements": [
-			                {
-			                  "constraint": {
-			                    "kind": "unknown",
-			                  },
-			                  "isConst": false,
-			                  "kind": "type-parameter",
-			                  "name": "K",
-			                },
-			                {
-			                  "constraint": {
-			                    "kind": "unknown",
-			                  },
-			                  "isConst": false,
-			                  "kind": "type-parameter",
-			                  "name": "V",
-			                },
-			              ],
-			              "isReadonly": true,
-			              "kind": "tuple",
-			            },
-			            "isReadonly": true,
-			            "kind": "array",
-			          },
+			          "nonNullable": "ReadonlyArray<readonly [K, V]>",
 			          "types": [
 			            {
 			              "kind": "undefined",
@@ -304,32 +276,7 @@ describe("Constructible", () => {
 			            {
 			              "kind": "null",
 			            },
-			            {
-			              "element": {
-			                "elements": [
-			                  {
-			                    "constraint": {
-			                      "kind": "unknown",
-			                    },
-			                    "isConst": false,
-			                    "kind": "type-parameter",
-			                    "name": "K",
-			                  },
-			                  {
-			                    "constraint": {
-			                      "kind": "unknown",
-			                    },
-			                    "isConst": false,
-			                    "kind": "type-parameter",
-			                    "name": "V",
-			                  },
-			                ],
-			                "isReadonly": true,
-			                "kind": "tuple",
-			              },
-			              "isReadonly": true,
-			              "kind": "array",
-			            },
+			            "ReadonlyArray<readonly [K, V]>",
 			          ],
 			        },
 			      },
@@ -341,39 +288,7 @@ describe("Constructible", () => {
 			        "name": "iterable",
 			        "type": {
 			          "kind": "union",
-			          "nonNullable": {
-			            "alias": "Iterable",
-			            "kind": "interface",
-			            "members": Map {
-			              "__@iterator@22" => {
-			                "isOptional": false,
-			                "isReadonly": false,
-			                "type": {
-			                  "alias": "__@iterator@22",
-			                  "calls": [
-			                    {
-			                      "parameters": [],
-			                      "returns": {
-			                        "constructors": [
-			                          [],
-			                        ],
-			                        "kind": "constructible",
-			                        "name": "Iterator",
-			                        "sources": Set {
-			                          /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
-			                          /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.esnext.iterator.d.ts,
-			                        },
-			                      },
-			                    },
-			                  ],
-			                  "kind": "function",
-			                },
-			              },
-			            },
-			            "sources": Set {
-			              /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
-			            },
-			          },
+			          "nonNullable": "Iterable<readonly [K, V], any, any>",
 			          "types": [
 			            {
 			              "kind": "undefined",
@@ -381,39 +296,7 @@ describe("Constructible", () => {
 			            {
 			              "kind": "null",
 			            },
-			            {
-			              "alias": "Iterable",
-			              "kind": "interface",
-			              "members": Map {
-			                "__@iterator@22" => {
-			                  "isOptional": false,
-			                  "isReadonly": false,
-			                  "type": {
-			                    "alias": "__@iterator@22",
-			                    "calls": [
-			                      {
-			                        "parameters": [],
-			                        "returns": {
-			                          "constructors": [
-			                            [],
-			                          ],
-			                          "kind": "constructible",
-			                          "name": "Iterator",
-			                          "sources": Set {
-			                            /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
-			                            /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.esnext.iterator.d.ts,
-			                          },
-			                        },
-			                      },
-			                    ],
-			                    "kind": "function",
-			                  },
-			                },
-			              },
-			              "sources": Set {
-			                /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
-			              },
-			            },
+			            "Iterable<readonly [K, V], any, any>",
 			          ],
 			        },
 			      },
@@ -428,14 +311,15 @@ describe("Constructible", () => {
 			  },
 			}
 		`);
-		expect(map?.type.kind).toBe("constructible");
-		expect((map?.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes builtin `Set`", ({ expect }) => {
 		const set = props.get("set");
-		expect(set).toBeDefined();
-		expect(set?.type).toMatchInlineSnapshot(`
+		expect(set?.type).toBe("Set<string>");
+		const type = types.get("Set<string>");
+		expect(type?.kind).toBe("constructible");
+		expect((type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "constructors": [
 			    [
@@ -444,21 +328,7 @@ describe("Constructible", () => {
 			        "name": "values",
 			        "type": {
 			          "kind": "union",
-			          "nonNullable": {
-			            "element": {
-			              "constraint": {
-			                "kind": "unknown",
-			              },
-			              "default": {
-			                "kind": "any",
-			              },
-			              "isConst": false,
-			              "kind": "type-parameter",
-			              "name": "T",
-			            },
-			            "isReadonly": true,
-			            "kind": "array",
-			          },
+			          "nonNullable": "ReadonlyArray<T>",
 			          "types": [
 			            {
 			              "kind": "undefined",
@@ -466,21 +336,7 @@ describe("Constructible", () => {
 			            {
 			              "kind": "null",
 			            },
-			            {
-			              "element": {
-			                "constraint": {
-			                  "kind": "unknown",
-			                },
-			                "default": {
-			                  "kind": "any",
-			                },
-			                "isConst": false,
-			                "kind": "type-parameter",
-			                "name": "T",
-			              },
-			              "isReadonly": true,
-			              "kind": "array",
-			            },
+			            "ReadonlyArray<T>",
 			          ],
 			        },
 			      },
@@ -491,39 +347,7 @@ describe("Constructible", () => {
 			        "name": "iterable",
 			        "type": {
 			          "kind": "union",
-			          "nonNullable": {
-			            "alias": "Iterable",
-			            "kind": "interface",
-			            "members": Map {
-			              "__@iterator@22" => {
-			                "isOptional": false,
-			                "isReadonly": false,
-			                "type": {
-			                  "alias": "__@iterator@22",
-			                  "calls": [
-			                    {
-			                      "parameters": [],
-			                      "returns": {
-			                        "constructors": [
-			                          [],
-			                        ],
-			                        "kind": "constructible",
-			                        "name": "Iterator",
-			                        "sources": Set {
-			                          /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
-			                          /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.esnext.iterator.d.ts,
-			                        },
-			                      },
-			                    },
-			                  ],
-			                  "kind": "function",
-			                },
-			              },
-			            },
-			            "sources": Set {
-			              /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
-			            },
-			          },
+			          "nonNullable": "Iterable<T, any, any>",
 			          "types": [
 			            {
 			              "kind": "undefined",
@@ -531,39 +355,7 @@ describe("Constructible", () => {
 			            {
 			              "kind": "null",
 			            },
-			            {
-			              "alias": "Iterable",
-			              "kind": "interface",
-			              "members": Map {
-			                "__@iterator@22" => {
-			                  "isOptional": false,
-			                  "isReadonly": false,
-			                  "type": {
-			                    "alias": "__@iterator@22",
-			                    "calls": [
-			                      {
-			                        "parameters": [],
-			                        "returns": {
-			                          "constructors": [
-			                            [],
-			                          ],
-			                          "kind": "constructible",
-			                          "name": "Iterator",
-			                          "sources": Set {
-			                            /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
-			                            /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.esnext.iterator.d.ts,
-			                          },
-			                        },
-			                      },
-			                    ],
-			                    "kind": "function",
-			                  },
-			                },
-			              },
-			              "sources": Set {
-			                /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
-			              },
-			            },
+			            "Iterable<T, any, any>",
 			          ],
 			        },
 			      },
@@ -579,7 +371,5 @@ describe("Constructible", () => {
 			  },
 			}
 		`);
-		expect(set?.type.kind).toBe("constructible");
-		expect((set?.type as Doc.Constructible).constructors.length).toBeGreaterThan(0);
 	});
 });

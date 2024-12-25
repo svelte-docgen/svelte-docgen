@@ -3,9 +3,10 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
+import { isTypeRef } from "../../doc/utils.js";
 
 describe("Tuple", () => {
-	const { props } = parse(
+	const { props, types } = parse(
 		`
 			<script lang="ts">
 				type Letter = "a" | "b" | "c";
@@ -26,122 +27,30 @@ describe("Tuple", () => {
 
 	it("documents anonymous 'tuple'", ({ expect }) => {
 		const anonymous = props.get("anonymous");
-		expect(anonymous).toBeDefined();
-		expect(anonymous?.type).toMatchInlineSnapshot(`
+		if (!anonymous || isTypeRef(anonymous.type)) throw new Error("Expected a type");
+		expect(anonymous.type).toMatchInlineSnapshot(`
 			{
 			  "elements": [
-			    {
-			      "alias": "Letter",
-			      "kind": "union",
-			      "sources": Set {
-			        "tuple.svelte",
-			      },
-			      "types": [
-			        {
-			          "kind": "literal",
-			          "subkind": "string",
-			          "value": "a",
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "string",
-			          "value": "b",
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "string",
-			          "value": "c",
-			        },
-			      ],
-			    },
-			    {
-			      "alias": "Num",
-			      "kind": "union",
-			      "sources": Set {
-			        "tuple.svelte",
-			      },
-			      "types": [
-			        {
-			          "kind": "literal",
-			          "subkind": "number",
-			          "value": 0,
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "number",
-			          "value": 1,
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "number",
-			          "value": 2,
-			        },
-			      ],
-			    },
+			    "Letter",
+			    "Num",
 			  ],
 			  "isReadonly": false,
 			  "kind": "tuple",
 			}
 		`);
-		expect(anonymous?.type.kind).toBe("tuple");
-		expect((anonymous?.type as Doc.Tuple).isReadonly).toBe(false);
-		expect((anonymous?.type as Doc.Tuple).elements.length).toBeGreaterThan(0);
+		expect(anonymous.type.kind).toBe("tuple");
+		expect((anonymous.type as Doc.Tuple).isReadonly).toBe(false);
+		expect((anonymous.type as Doc.Tuple).elements.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes 'readonly'", ({ expect }) => {
 		const strict = props.get("strict");
-		expect(strict).toBeDefined();
-		expect(strict?.type).toMatchInlineSnapshot(`
+		if (!strict || isTypeRef(strict.type)) throw new Error("Expected a type");
+		expect(strict.type).toMatchInlineSnapshot(`
 			{
 			  "elements": [
-			    {
-			      "alias": "Letter",
-			      "kind": "union",
-			      "sources": Set {
-			        "tuple.svelte",
-			      },
-			      "types": [
-			        {
-			          "kind": "literal",
-			          "subkind": "string",
-			          "value": "a",
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "string",
-			          "value": "b",
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "string",
-			          "value": "c",
-			        },
-			      ],
-			    },
-			    {
-			      "alias": "Num",
-			      "kind": "union",
-			      "sources": Set {
-			        "tuple.svelte",
-			      },
-			      "types": [
-			        {
-			          "kind": "literal",
-			          "subkind": "number",
-			          "value": 0,
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "number",
-			          "value": 1,
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "number",
-			          "value": 2,
-			        },
-			      ],
-			    },
+			    "Letter",
+			    "Num",
 			  ],
 			  "isReadonly": true,
 			  "kind": "tuple",
@@ -154,60 +63,106 @@ describe("Tuple", () => {
 
 	it("recognizes empty tuple", ({ expect }) => {
 		const empty = props.get("empty");
-		expect(empty).toBeDefined();
-		expect(empty?.type).toMatchInlineSnapshot(`
+		if (!empty || isTypeRef(empty.type)) throw new Error("Expected a type");
+		expect(empty.type).toMatchInlineSnapshot(`
 			{
 			  "elements": [],
 			  "isReadonly": false,
 			  "kind": "tuple",
 			}
 		`);
-		expect(empty?.type.kind).toBe("tuple");
-		expect((empty?.type as Doc.Tuple).isReadonly).toBe(false);
-		expect((empty?.type as Doc.Tuple).elements).toHaveLength(0);
+		expect(empty.type.kind).toBe("tuple");
+		expect((empty.type as Doc.Tuple).isReadonly).toBe(false);
+		expect((empty.type as Doc.Tuple).elements).toHaveLength(0);
 	});
 
 	it("recognizes 'readonly' empty tuple", ({ expect }) => {
 		const empty = props.get("really-empty");
-		expect(empty).toBeDefined();
-		expect(empty?.type).toMatchInlineSnapshot(`
+		if (!empty || isTypeRef(empty.type)) throw new Error("Expected a type");
+		expect(empty.type).toMatchInlineSnapshot(`
 			{
 			  "elements": [],
 			  "isReadonly": true,
 			  "kind": "tuple",
 			}
 		`);
-		expect(empty?.type.kind).toBe("tuple");
-		expect((empty?.type as Doc.Tuple).isReadonly).toBe(true);
-		expect((empty?.type as Doc.Tuple).elements).toHaveLength(0);
+		expect(empty.type.kind).toBe("tuple");
+		expect((empty.type as Doc.Tuple).isReadonly).toBe(true);
+		expect((empty.type as Doc.Tuple).elements).toHaveLength(0);
 	});
 
 	it("recognizes aliased tuple type", ({ expect }) => {
-		const aliased = props.get("aliased");
-		expect(aliased).toBeDefined();
-		expect(aliased?.type).toMatchInlineSnapshot(`
-			{
-			  "alias": "Aliased",
-			  "elements": [
-			    {
-			      "kind": "string",
+		expect(props.get("aliased")!.type).toBe("Aliased<string, boolean>");
+	});
+
+	it("collects aliased types", ({ expect }) => {
+		expect(types).toMatchInlineSnapshot(`
+			Map {
+			  "Letter" => {
+			    "alias": "Letter",
+			    "kind": "union",
+			    "sources": Set {
+			      "tuple.svelte",
 			    },
-			    {
-			      "kind": "boolean",
+			    "types": [
+			      {
+			        "kind": "literal",
+			        "subkind": "string",
+			        "value": "a",
+			      },
+			      {
+			        "kind": "literal",
+			        "subkind": "string",
+			        "value": "b",
+			      },
+			      {
+			        "kind": "literal",
+			        "subkind": "string",
+			        "value": "c",
+			      },
+			    ],
+			  },
+			  "Num" => {
+			    "alias": "Num",
+			    "kind": "union",
+			    "sources": Set {
+			      "tuple.svelte",
 			    },
-			  ],
-			  "isReadonly": false,
-			  "kind": "tuple",
-			  "sources": Set {
-			    "tuple.svelte",
+			    "types": [
+			      {
+			        "kind": "literal",
+			        "subkind": "number",
+			        "value": 0,
+			      },
+			      {
+			        "kind": "literal",
+			        "subkind": "number",
+			        "value": 1,
+			      },
+			      {
+			        "kind": "literal",
+			        "subkind": "number",
+			        "value": 2,
+			      },
+			    ],
+			  },
+			  "Aliased<string, boolean>" => {
+			    "alias": "Aliased",
+			    "elements": [
+			      {
+			        "kind": "string",
+			      },
+			      {
+			        "kind": "boolean",
+			      },
+			    ],
+			    "isReadonly": false,
+			    "kind": "tuple",
+			    "sources": Set {
+			      "tuple.svelte",
+			    },
 			  },
 			}
 		`);
-		expect(aliased?.type.kind).toBe("tuple");
-		expect((aliased?.type as Doc.Tuple).isReadonly).toBe(false);
-		expect((aliased?.type as Doc.Tuple).alias).toBeDefined();
-		expect((aliased?.type as Doc.Tuple).alias).toBe("Aliased");
-		expect((aliased?.type as Doc.Tuple).sources).toBeDefined();
-		expect((aliased?.type as Doc.Tuple).elements.length).toBeGreaterThan(0);
 	});
 });

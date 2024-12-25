@@ -20,14 +20,11 @@ import {
 	is_type_reference,
 } from "../shared.js";
 
+const AnonTypeLiteralSymbolName = ts.InternalSymbolName.Type;
+
 class Parser {
 	/** @type {ReturnType<typeof extract>} */
 	#extractor;
-	/**
-	 * This is a fail-safe from looping over the same type inside constructor/fn params (e.g. `Date`)
-	 * @type {string | undefined}
-	 */
-	#latest_symbol_name;
 	/** @type {Options} */
 	#options;
 	/**
@@ -35,6 +32,14 @@ class Parser {
 	 * @type {URL}
 	 */
 	#root_path_url;
+
+	/**
+	 * Some of types which extends `WithAlias` or `WithName` can cause recursion.
+	 * We isolate them in this map, so we can prevent this from happening.
+	 * @type {Doc.Types}
+	 */
+	/** @type {Doc.Types} */
+	types = new Map();
 
 	/**
 	 * @param {string} source
@@ -48,7 +53,7 @@ class Parser {
 
 	/** @returns {ParsedComponent} */
 	toJSON() {
-		const { description, isLegacy, exports, props, tags } = this;
+		const { description, isLegacy, exports, props, tags, types } = this;
 		if (isLegacy) {
 			return /** @type {LegacyComponent} */ ({
 				description,
@@ -58,6 +63,7 @@ class Parser {
 				props,
 				slots: this.slots,
 				tags,
+				types,
 			});
 		}
 		return /** @type {ModernComponent} */ ({
@@ -66,6 +72,7 @@ class Parser {
 			isLegacy,
 			props,
 			tags,
+			types,
 		});
 	}
 
@@ -148,6 +155,8 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Constructible}
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Constructible}
 	 */
@@ -157,14 +166,10 @@ class Parser {
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
-		if (this.#latest_symbol_name === name) return { kind: "constructible", name, constructors: "self", sources };
 		/** @type {Doc.Constructible['constructors']} */
-		const constructors = get_construct_signatures(type, this.#extractor).map((s) => {
-			return s.getParameters().map((p) => {
-				this.#latest_symbol_name = name;
-				return this.#get_fn_param_doc(p);
-			});
-		});
+		const constructors = get_construct_signatures(type, this.#extractor).map((s) =>
+			s.getParameters().map((p) => this.#get_fn_param_doc(p)),
+		);
 		return {
 			kind: "constructible",
 			name,
@@ -198,10 +203,12 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Fn}
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Fn}
 	 */
-	#get_function_doc(type) {
+	#get_fn_doc(type) {
 		const calls = type.getCallSignatures().map((s) => {
 			return {
 				parameters: s.getParameters().map((p) => this.#get_fn_param_doc(p)),
@@ -213,18 +220,17 @@ class Parser {
 			kind: "function",
 			calls,
 		};
-		const symbol = type.getSymbol();
-		if (symbol || type.aliasSymbol) {
-			if (symbol && symbol.name !== "__type") results.alias = symbol.name;
-			if (type.aliasSymbol && type.aliasSymbol.name !== "__type") results.alias = type.aliasSymbol.name;
+		if (type.aliasSymbol || type.symbol.name !== AnonTypeLiteralSymbolName) {
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
 		}
-		const sources = this.#get_type_sources(type);
-		// NOTE: Alias is needed, because the symbol is defined and named as "__type"
-		if (sources && results.alias) results.sources = sources;
 		return results;
 	}
 
 	/**
+	 * Generates {@link Doc.Interface}
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Interface}
 	 */
@@ -236,9 +242,8 @@ class Parser {
 			kind: "interface",
 			members,
 		};
-		const alias = type.aliasSymbol?.name ?? this.#checker.getFullyQualifiedName(type.symbol);
-		if (alias && alias !== "__type") {
-			results.alias = alias;
+		if (type.aliasSymbol || type.symbol.name !== AnonTypeLiteralSymbolName) {
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -246,6 +251,8 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Intersection}
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Intersection}
 	 */
@@ -256,9 +263,11 @@ class Parser {
 		const types = type.types.map((t) => this.#get_type_doc(t));
 		/** @type {Doc.Intersection} */
 		let results = { kind: "intersection", types };
-		if (type.aliasSymbol) results.alias = type.aliasSymbol.name;
-		const source = this.#get_type_sources(type);
-		if (source) results.sources = source;
+		if (type.aliasSymbol) {
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
+		}
 		return results;
 	}
 
@@ -284,7 +293,10 @@ class Parser {
 			return { kind, subkind: "boolean", value: type.intrinsicName === "true" };
 		}
 		if (type.flags & ts.TypeFlags.UniqueESSymbol) {
-			return { kind, subkind: "symbol" };
+			return {
+				kind,
+				subkind: "symbol",
+			};
 		}
 		// TODO: Document error
 		throw new Error(`Unknown literal type: ${this.#checker.typeToString(type)}`);
@@ -374,7 +386,7 @@ class Parser {
 			elements,
 		};
 		if (type.aliasSymbol) {
-			results.alias = type.aliasSymbol.name;
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -409,7 +421,7 @@ class Parser {
 	#get_type_sources(type) {
 		/** @type {ts.Symbol | undefined} */
 		let symbol = type.getSymbol();
-		if (!symbol || symbol.name === "__type") symbol = type.aliasSymbol;
+		if (!symbol || symbol.name === AnonTypeLiteralSymbolName) symbol = type.aliasSymbol;
 		if (symbol) {
 			const declared_type = this.#checker.getDeclaredTypeOfSymbol(symbol);
 			const declared_type_symbol = declared_type.getSymbol() || declared_type.aliasSymbol;
@@ -419,6 +431,7 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Union}
 	 * @param {ts.Type} type
 	 * @returns {Doc.Union}
 	 */
@@ -431,18 +444,79 @@ class Parser {
 			kind: "union",
 			types,
 		};
-		if (type.aliasSymbol) results.alias = type.aliasSymbol.name;
-		const sources = this.#get_type_sources(type);
-		if (sources) results.sources = sources;
+		if (type.aliasSymbol) {
+			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
+		}
 		const nonNullable = type.getNonNullableType();
 		if (nonNullable !== type) results.nonNullable = this.#get_type_doc(nonNullable);
 		return results;
 	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.TypeOrRef}
+	 */
+	#get_type_doc(type) {
+		if (
+			!type.aliasSymbol &&
+			(!type.symbol || type.symbol.name === AnonTypeLiteralSymbolName || type.isTypeParameter())
+		) {
+			// anonymous type
+			return this.#get_type_doc_internal(type);
+		}
+
+		// type reference
+		const name = this.#get_qualified_typeref_name(type);
+		if (this.types.get(name) === undefined) {
+			this.types.set(name, { kind: "unknown" }); // reservation to prevent infinite loop
+			const doc = this.#get_type_doc_internal(type);
+			this.types.set(name, doc);
+		}
+		return name;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {string}
+	 */
+	#get_qualified_typeref_name(type) {
+		if (is_type_reference(type)) {
+			// type reference
+			return (
+				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
+				(type.typeArguments && type.typeArguments.length
+					? "<" +
+						type.typeArguments
+							.map((type) => {
+								return this.#checker.typeToString(type);
+							})
+							.join(", ") +
+						">"
+					: "")
+			);
+		}
+		// alias
+		return (
+			this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
+			(type.aliasTypeArguments && type.aliasTypeArguments.length
+				? "<" +
+					type.aliasTypeArguments
+						.map((type) => {
+							return this.#checker.typeToString(type);
+						})
+						.join(", ") +
+					">"
+				: "")
+		);
+	}
+
 	/**
 	 * @param {ts.Type} type
 	 * @returns {Doc.Type}
 	 */
-	#get_type_doc(type) {
+	#get_type_doc_internal(type) {
 		const kind = get_type_kind({ type, extractor: this.#extractor });
 		switch (kind) {
 			case "array":
@@ -450,7 +524,7 @@ class Parser {
 			case "constructible":
 				return this.#get_constructible_doc(type);
 			case "function":
-				return this.#get_function_doc(type);
+				return this.#get_fn_doc(type);
 			case "interface":
 				return this.#get_interface_doc(type);
 			case "intersection":
@@ -478,6 +552,7 @@ class Parser {
  * @prop {Doc.Exports} exports
  * @prop {Doc.Events} events
  * @prop {Doc.Slots} slots
+ * @prop {Doc.Types} types
  */
 
 /**
@@ -489,6 +564,7 @@ class Parser {
  * @prop {Doc.Exports} exports
  * @prop {never} events
  * @prop {never} slots
+ * @prop {Doc.Types} types
  */
 
 /** @typedef {LegacyComponent | ModernComponent} ParsedComponent */

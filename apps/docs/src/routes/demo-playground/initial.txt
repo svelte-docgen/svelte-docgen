@@ -1,10 +1,7 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-  let { }: {
-    /** Your age */
-    age?: number,
-    /** Members */
-    members?: Set<string>,
-    children: Snippet
-  } = $props();
+  interface A<T> { b: B<T>, v: T };
+  interface B<T> { a: A };
+  import { Snippet } from "svelte";
+  type C = 1;
+  let {}: { a: A<number>, c: C, u: 1 | "foo", s: Snippet<[A<number>]> } = $props();
 </script>

@@ -3,23 +3,31 @@
  */
 
 import path from "pathe";
+import { isTypeRef } from "../doc/utils.js";
 
 class PropAnalyzer {
 	/** @type {Doc.Prop} */
 	#prop;
 
-	/** @param {Doc.Prop} prop */
-	constructor(prop) {
+	/** @type {Doc.Types} */
+	#types;
+
+	/**
+	 * @param {Doc.Prop} prop
+	 * @param {Doc.Types} types
+	 * */
+	constructor(prop, types) {
 		this.#prop = prop;
+		this.#types = types;
 	}
 
 	/** @returns {boolean} */
 	get isEventHandler() {
-		if (this.#prop.type.kind !== "function") return false;
-		if (!this.#prop.type.sources) return false;
-		const is_type_from_svelte = Iterator.from(this.#prop.type.sources).some((f) => this.#is_source_from_svelte(f));
+		if (this.#type.kind !== "function") return false;
+		if (!this.#type.sources) return false;
+		const is_type_from_svelte = Iterator.from(this.#type.sources).some((f) => this.#is_source_from_svelte(f));
 		if (!is_type_from_svelte) return false;
-		return Boolean(this.#prop.type.alias?.endsWith("EventHandler"));
+		return Boolean(this.#type.alias?.endsWith("EventHandler"));
 	}
 
 	/** @returns {boolean} */
@@ -30,10 +38,14 @@ class PropAnalyzer {
 
 	/** @returns {boolean} */
 	get isSnippet() {
-		if (this.#prop.type.kind === "union" && this.#prop.type.nonNullable) {
-			return this.#is_snippet(this.#prop.type.nonNullable);
+		if (this.#type.kind === "union" && this.#type.nonNullable) {
+			let non_nullable = isTypeRef(this.#type.nonNullable)
+				? this.#types.get(this.#type.nonNullable)
+				: this.#type.nonNullable;
+			if (!non_nullable) throw new Error("Unreachable");
+			return this.#is_snippet(non_nullable);
 		}
-		return this.#is_snippet(this.#prop.type);
+		return this.#is_snippet(this.#type);
 	}
 
 	/** @returns {ReturnType<typeof this.isSnippet> extends true ? Doc.Tuple : never} */
@@ -46,16 +58,23 @@ class PropAnalyzer {
 		const params = call.parameters[0];
 		if (params === "self") throw new Error("Self-referencing snippet is not supported");
 		// NOTE: Parameters is always a single item and tuple
-		if (params.type.kind !== "tuple") throw new Error("Not a tuple");
-		return params.type;
+		const params_type = isTypeRef(params.type) ? this.#types.get(params.type) : params.type;
+		if (params_type?.kind !== "tuple") throw new Error("Not a tuple");
+		return params_type;
 	}
 
 	/** @returns {Doc.Fn} */
 	get #snippet_fn() {
 		// TODO: Document error
 		if (!this.isSnippet) throw new Error("Not a snippet");
-		if (this.#prop.type.kind === "union") return /** @type {Doc.Fn} */ (this.#prop.type.nonNullable);
-		if (this.#prop.type.kind === "function") return this.#prop.type;
+		if (this.#type.kind === "union") {
+			let non_nullable = this.#type.nonNullable;
+			if (typeof non_nullable === "string") {
+				non_nullable = this.#types.get(non_nullable);
+			}
+			return /** @type {Doc.Fn} */ (non_nullable);
+		}
+		if (this.#type.kind === "function") return this.#type;
 		// TODO:: Document error
 		throw new Error("Unreachable");
 	}
@@ -77,9 +96,16 @@ class PropAnalyzer {
 	 * @returns {boolean}
 	 */
 	#is_snippet(type) {
-		if (type.kind !== "function" || type.alias !== "Snippet") return false;
+		if (type.kind !== "function" || type.alias !== '"svelte".Snippet') return false;
 		if (!type.sources) return false;
 		return Iterator.from(type.sources).some((f) => this.#is_source_from_svelte(f));
+	}
+
+	/** @returns {Doc.Type} */
+	get #type() {
+		const type = isTypeRef(this.#prop.type) ? this.#types.get(this.#prop.type) : this.#prop.type;
+		if (!type) throw new Error("Unreachable");
+		return type;
 	}
 }
 
@@ -111,9 +137,10 @@ class PropAnalyzer {
 
 /**
  * @param {Doc.Prop} prop
+ * @param {Doc.Types} types
  * @returns {PropAnalysis}
  */
-export function analyzeProperty(prop) {
+export function analyzeProperty(prop, types) {
 	// @ts-expect-error: WARN: Hard to type (cast), but should be fine from usage perspective
-	return new PropAnalyzer(prop);
+	return new PropAnalyzer(prop, types);
 }

@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 describe(analyzeProperty.name, () => {
 	describe("getter .isEventHandler", () => {
-		const { props } = parse(
+		const { props, types } = parse(
 			`
 			<script lang="ts">
 				import type { EventHandler, MouseEventHandler } from "svelte/elements";
@@ -31,7 +31,7 @@ describe(analyzeProperty.name, () => {
 			const onclick = props.get("onclick");
 			expect(onclick).toBeDefined();
 			if (onclick) {
-				const analyzer = analyzeProperty(onclick);
+				const analyzer = analyzeProperty(onclick, types);
 				expect(analyzer.isEventHandler).toBe(true);
 			}
 		});
@@ -39,14 +39,14 @@ describe(analyzeProperty.name, () => {
 		it("recognizes event handler when using `EventHandler` type helper", ({ expect }) => {
 			const onkeydown = props.get("onkeydown");
 			if (onkeydown) {
-				const analyzer = analyzeProperty(onkeydown);
+				const analyzer = analyzeProperty(onkeydown, types);
 				expect(analyzer.isEventHandler).toBe(true);
 			}
 		});
 	});
 
 	describe("getter .isExtendedBySvelte", () => {
-		const { props } = parse(
+		const { props, types } = parse(
 			`
 			<script lang="ts">
 				import type { HTMLButtonAttributes } from "svelte/elements";
@@ -63,7 +63,7 @@ describe(analyzeProperty.name, () => {
 			const aria_hidden = props.get("aria-hidden");
 			expect(aria_hidden).toBeDefined();
 			if (aria_hidden) {
-				const analyzer = analyzeProperty(aria_hidden);
+				const analyzer = analyzeProperty(aria_hidden, types);
 				expect(analyzer.isExtendedBySvelte).toBe(true);
 			}
 		});
@@ -73,7 +73,7 @@ describe(analyzeProperty.name, () => {
 			expect(custom).toBeDefined();
 			expect(custom?.isExtended).toBe(true);
 			if (custom) {
-				const analyzer = analyzeProperty(custom);
+				const analyzer = analyzeProperty(custom, types);
 				expect(analyzer.isExtendedBySvelte).toBe(false);
 				expect(custom).toMatchInlineSnapshot(`
 					{
@@ -94,7 +94,7 @@ describe(analyzeProperty.name, () => {
 	});
 
 	describe("getter .isSnippet & getSnippetParameters()", () => {
-		const { props } = parse(
+		const { props, types } = parse(
 			`
 			<script lang="ts">
 				import type { Snippet } from "svelte";
@@ -123,7 +123,7 @@ describe(analyzeProperty.name, () => {
 			const children = props.get("children");
 			expect(children).toBeDefined();
 			if (children) {
-				const analyzer = analyzeProperty(children);
+				const analyzer = analyzeProperty(children, types);
 				expect(analyzer.isSnippet).toBe(true);
 				if (analyzer.isSnippet) {
 					expect(analyzer.getSnippetParameters().elements).toHaveLength(0);
@@ -135,7 +135,7 @@ describe(analyzeProperty.name, () => {
 			const header = props.get("header");
 			expect(header).toBeDefined();
 			if (header) {
-				const analyzer = analyzeProperty(header);
+				const analyzer = analyzeProperty(header, types);
 				expect(analyzer.isSnippet).toBe(true);
 				if (analyzer.isSnippet) {
 					expect(analyzer.getSnippetParameters().elements).toHaveLength(1);
@@ -147,7 +147,7 @@ describe(analyzeProperty.name, () => {
 			const footer = props.get("footer");
 			expect(footer).toBeDefined();
 			if (footer) {
-				const analyzer = analyzeProperty(footer);
+				const analyzer = analyzeProperty(footer, types);
 				expect(analyzer.isSnippet).toBe(true);
 				if (analyzer.isSnippet) {
 					expect(analyzer.getSnippetParameters().elements).toHaveLength(2);
@@ -159,7 +159,7 @@ describe(analyzeProperty.name, () => {
 			const whatever = props.get("whatever");
 			expect(whatever).toBeDefined();
 			if (whatever) {
-				const analyzer = analyzeProperty(whatever);
+				const analyzer = analyzeProperty(whatever, types);
 				expect(analyzer.isSnippet).toBe(false);
 			}
 		});
