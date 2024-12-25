@@ -2,6 +2,7 @@ import { describe, it } from "vitest";
 
 import { create_options } from "../../tests/shared.js";
 import { parse } from "../mod.js";
+import { isTypeRef } from "../doc/type.js";
 
 describe("events", () => {
 	it("returns empty map is component doesn't create custom events (legacy)", ({ expect }) => {
@@ -281,7 +282,239 @@ describe("events", () => {
 			    },
 			  },
 			  "on:increment" => {
-			    "constructors": "self",
+			    "constructors": [
+			      [
+			        {
+			          "isOptional": false,
+			          "name": "type",
+			          "type": {
+			            "kind": "string",
+			          },
+			        },
+			        {
+			          "isOptional": true,
+			          "name": "eventInitDict",
+			          "type": {
+			            "kind": "union",
+			            "nonNullable": {
+			              "alias": "CustomEventInit",
+			              "kind": "interface",
+			              "members": Map {
+			                "detail" => {
+			                  "isOptional": true,
+			                  "isReadonly": false,
+			                  "type": {
+			                    "kind": "union",
+			                    "nonNullable": "NonNullable<T>",
+			                    "types": [
+			                      {
+			                        "kind": "undefined",
+			                      },
+			                      {
+			                        "constraint": {
+			                          "kind": "unknown",
+			                        },
+			                        "isConst": false,
+			                        "kind": "type-parameter",
+			                        "name": "T",
+			                      },
+			                    ],
+			                  },
+			                },
+			                "bubbles" => {
+			                  "isOptional": true,
+			                  "isReadonly": false,
+			                  "type": {
+			                    "kind": "union",
+			                    "nonNullable": {
+			                      "kind": "boolean",
+			                    },
+			                    "types": [
+			                      {
+			                        "kind": "undefined",
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": false,
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": true,
+			                      },
+			                    ],
+			                  },
+			                },
+			                "cancelable" => {
+			                  "isOptional": true,
+			                  "isReadonly": false,
+			                  "type": {
+			                    "kind": "union",
+			                    "nonNullable": {
+			                      "kind": "boolean",
+			                    },
+			                    "types": [
+			                      {
+			                        "kind": "undefined",
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": false,
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": true,
+			                      },
+			                    ],
+			                  },
+			                },
+			                "composed" => {
+			                  "isOptional": true,
+			                  "isReadonly": false,
+			                  "type": {
+			                    "kind": "union",
+			                    "nonNullable": {
+			                      "kind": "boolean",
+			                    },
+			                    "types": [
+			                      {
+			                        "kind": "undefined",
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": false,
+			                      },
+			                      {
+			                        "kind": "literal",
+			                        "subkind": "boolean",
+			                        "value": true,
+			                      },
+			                    ],
+			                  },
+			                },
+			              },
+			              "sources": Set {
+			                /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.dom.d.ts,
+			              },
+			            },
+			            "types": [
+			              {
+			                "kind": "undefined",
+			              },
+			              {
+			                "alias": "CustomEventInit",
+			                "kind": "interface",
+			                "members": Map {
+			                  "detail" => {
+			                    "isOptional": true,
+			                    "isReadonly": false,
+			                    "type": {
+			                      "kind": "union",
+			                      "nonNullable": "NonNullable<T>",
+			                      "types": [
+			                        {
+			                          "kind": "undefined",
+			                        },
+			                        {
+			                          "constraint": {
+			                            "kind": "unknown",
+			                          },
+			                          "isConst": false,
+			                          "kind": "type-parameter",
+			                          "name": "T",
+			                        },
+			                      ],
+			                    },
+			                  },
+			                  "bubbles" => {
+			                    "isOptional": true,
+			                    "isReadonly": false,
+			                    "type": {
+			                      "kind": "union",
+			                      "nonNullable": {
+			                        "kind": "boolean",
+			                      },
+			                      "types": [
+			                        {
+			                          "kind": "undefined",
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": false,
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": true,
+			                        },
+			                      ],
+			                    },
+			                  },
+			                  "cancelable" => {
+			                    "isOptional": true,
+			                    "isReadonly": false,
+			                    "type": {
+			                      "kind": "union",
+			                      "nonNullable": {
+			                        "kind": "boolean",
+			                      },
+			                      "types": [
+			                        {
+			                          "kind": "undefined",
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": false,
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": true,
+			                        },
+			                      ],
+			                    },
+			                  },
+			                  "composed" => {
+			                    "isOptional": true,
+			                    "isReadonly": false,
+			                    "type": {
+			                      "kind": "union",
+			                      "nonNullable": {
+			                        "kind": "boolean",
+			                      },
+			                      "types": [
+			                        {
+			                          "kind": "undefined",
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": false,
+			                        },
+			                        {
+			                          "kind": "literal",
+			                          "subkind": "boolean",
+			                          "value": true,
+			                        },
+			                      ],
+			                    },
+			                  },
+			                },
+			                "sources": Set {
+			                  /node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.dom.d.ts,
+			                },
+			              },
+			            ],
+			          },
+			        },
+			      ],
+			    ],
 			    "kind": "constructible",
 			    "name": "CustomEvent",
 			    "sources": Set {
@@ -292,6 +525,12 @@ describe("events", () => {
 		`);
 		for (const key of events.keys()) {
 			expect(key.startsWith("on:")).toBe(true);
+			const event = events.get(key);
+			if (!event || isTypeRef(event)) throw new Error("expected an type");
+			expect(event.kind).toBe("constructible");
+			if (event.kind === "constructible") {
+				expect(event.constructors).not.toBe("self");
+			}
 		}
 	});
 });

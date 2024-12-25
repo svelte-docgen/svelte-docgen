@@ -25,11 +25,6 @@ const AnonTypeLiteralSymbolName = ts.InternalSymbolName.Type;
 class Parser {
 	/** @type {ReturnType<typeof extract>} */
 	#extractor;
-	/**
-	 * This is a fail-safe from looping over the same type inside constructor/fn params (e.g. `Date`)
-	 * @type {string | undefined}
-	 */
-	#latest_symbol_name;
 	/** @type {Options} */
 	#options;
 	/**
@@ -134,7 +129,11 @@ class Parser {
 		return this.#extractor.tags;
 	}
 
-	/** @returns {Record<string, Doc.Type>} */
+	/**
+	 * Some of types which extends `WithAlias` or `WithName` can cause recursion.
+	 * We isolate them in this map, so we can prevent this from happening.
+	 * @type {Doc.Types}
+	 */
 	get types() {
 		return this.#types;
 	}
@@ -160,6 +159,8 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Constructible}
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Constructible}
 	 */
@@ -169,14 +170,10 @@ class Parser {
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
-		if (this.#latest_symbol_name === name) return { kind: "constructible", name, constructors: "self", sources };
 		/** @type {Doc.Constructible['constructors']} */
-		const constructors = get_construct_signatures(type, this.#extractor).map((s) => {
-			return s.getParameters().map((p) => {
-				this.#latest_symbol_name = name;
-				return this.#get_fn_param_doc(p);
-			});
-		});
+		const constructors = get_construct_signatures(type, this.#extractor).map((s) =>
+			s.getParameters().map((p) => this.#get_fn_param_doc(p)),
+		);
 		return {
 			kind: "constructible",
 			name,
@@ -210,10 +207,12 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Fn}
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Fn}
 	 */
-	#get_function_doc(type) {
+	#get_fn_doc(type) {
 		const calls = type.getCallSignatures().map((s) => {
 			return {
 				parameters: s.getParameters().map((p) => this.#get_fn_param_doc(p)),
@@ -234,6 +233,8 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Interface}
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Interface}
 	 */
@@ -254,6 +255,8 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Intersection}
+	 *
 	 * @param {ts.Type} type
 	 * @returns {Doc.Intersection}
 	 */
@@ -432,6 +435,7 @@ class Parser {
 	}
 
 	/**
+	 * Generates {@link Doc.Union}
 	 * @param {ts.Type} type
 	 * @returns {Doc.Union}
 	 */
@@ -496,7 +500,7 @@ class Parser {
 			case "constructible":
 				return this.#get_constructible_doc(type);
 			case "function":
-				return this.#get_function_doc(type);
+				return this.#get_fn_doc(type);
 			case "interface":
 				return this.#get_interface_doc(type);
 			case "intersection":

@@ -1,9 +1,9 @@
 import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
-import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
 import { isTypeRef } from "../../doc/type.js";
+import type * as Doc from "../../doc/type.js";
 
 describe("Union", () => {
 	const { props, types } = parse(

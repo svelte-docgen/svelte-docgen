@@ -1,9 +1,9 @@
 import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
-import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
 import { isTypeRef } from "../../doc/type.js";
+import type * as Doc from "../../doc/type.js";
 
 describe("Interface", () => {
 	const { props, types } = parse(
@@ -24,6 +24,9 @@ describe("Interface", () => {
 				interface Empty {}
 				type EmptyType = {};
 				type Aliased = A;
+				interface Recursive {
+					recursive: Recursive;
+				}
 				interface Props {
 					anonymous: { name: "Guy"; surname: "Fawkes" };
 					a: A;
@@ -32,6 +35,7 @@ describe("Interface", () => {
 					"empty-aliased": Empty;
 					"empty-type": EmptyType;
 					aliased: Aliased;
+					recursive: Recursive;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -73,8 +77,11 @@ describe("Interface", () => {
 
 	it("recognizes aliased interface", ({ expect }) => {
 		const a = props.get("a");
-		if (!a || isTypeRef(a.type)) throw new Error("Expected a type");
-		expect(a.type).toMatchInlineSnapshot(`
+		expect(a?.type).toBe("A");
+		const type = types["A"] as Doc.Interface;
+		expect(type.kind).toBe("interface");
+		expect((type as Doc.Interface)?.alias).toBe("A");
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "A",
 			  "kind": "interface",
@@ -125,14 +132,15 @@ describe("Interface", () => {
 			  },
 			}
 		`);
-		expect(a.type.kind).toBe("interface");
-		expect((a.type as Doc.Interface)?.alias).toBe("A");
 	});
 
 	it("recognizes 'readonly' members", ({ expect }) => {
 		const b = props.get("b");
-		if (!b || isTypeRef(b.type)) throw new Error("Expected a type");
-		expect(b.type).toMatchInlineSnapshot(`
+		expect(b?.type).toBe("B");
+		const type = types["B"] as Doc.Interface;
+		expect(type.kind).toBe("interface");
+		expect(type.alias).toBe("B");
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "B",
 			  "kind": "interface",
@@ -157,8 +165,6 @@ describe("Interface", () => {
 			  },
 			}
 		`);
-		expect(b.type.kind).toBe("interface");
-		expect((b.type as Doc.Interface)?.alias).toBe("B");
 	});
 
 	it("recognizes types which contains anonymous interface only", ({ expect }) => {
@@ -170,19 +176,11 @@ describe("Interface", () => {
 	it("recognizes empty aliased interface", ({ expect }) => {
 		const empty_aliased = props.get("empty-aliased");
 		expect(empty_aliased).toBeDefined();
-		expect(empty_aliased?.type).toMatchInlineSnapshot(`
-			{
-			  "alias": "Empty",
-			  "kind": "interface",
-			  "members": Map {},
-			  "sources": Set {
-			    "interface.svelte",
-			  },
-			}
-		`);
-		expect((empty_aliased?.type as Doc.Interface)?.kind).toBe("interface");
-		expect((empty_aliased?.type as Doc.Interface)?.alias).toBe("Empty");
-		expect((empty_aliased?.type as Doc.Interface)?.members.size).toBe(0);
+		expect(empty_aliased?.type).toMatchInlineSnapshot(`"Empty"`);
+		const empty = types["Empty"] as Doc.Interface;
+		expect(empty.kind).toBe("interface");
+		expect(empty.alias).toBe("Empty");
+		expect(empty.members.size).toBe(0);
 	});
 
 	it("recognizes empty aliased interface as type", ({ expect }) => {
@@ -194,14 +192,61 @@ describe("Interface", () => {
 
 	it("understands type which is an alias to interface only", ({ expect }) => {
 		const aliased = props.get("aliased");
-		if (!aliased || isTypeRef(aliased.type) || aliased.type.kind !== "interface")
-			throw new Error("Expected an interface");
-		expect(aliased.type.alias).toBe("A");
+		expect(aliased?.type).toBe("A");
 	});
 
 	it("collects aliased types", ({ expect }) => {
 		expect(types).toMatchInlineSnapshot(`
 			{
+			  "A": {
+			    "alias": "A",
+			    "kind": "interface",
+			    "members": Map {
+			      "name" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "string",
+			        },
+			      },
+			      "age" => {
+			        "isOptional": true,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "union",
+			          "nonNullable": {
+			            "kind": "number",
+			          },
+			          "types": [
+			            {
+			              "kind": "undefined",
+			            },
+			            {
+			              "kind": "number",
+			            },
+			          ],
+			        },
+			      },
+			      "moo" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "calls": [
+			            {
+			              "parameters": [],
+			              "returns": {
+			                "kind": "void",
+			              },
+			            },
+			          ],
+			          "kind": "function",
+			        },
+			      },
+			    },
+			    "sources": Set {
+			      "interface.svelte",
+			    },
+			  },
 			  "AsType": {
 			    "alias": "AsType",
 			    "kind": "interface",
@@ -220,10 +265,55 @@ describe("Interface", () => {
 			      "interface.svelte",
 			    },
 			  },
+			  "B": {
+			    "alias": "B",
+			    "kind": "interface",
+			    "members": Map {
+			      "x" => {
+			        "isOptional": false,
+			        "isReadonly": true,
+			        "type": {
+			          "kind": "number",
+			        },
+			      },
+			      "y" => {
+			        "isOptional": false,
+			        "isReadonly": true,
+			        "type": {
+			          "kind": "number",
+			        },
+			      },
+			    },
+			    "sources": Set {
+			      "interface.svelte",
+			    },
+			  },
+			  "Empty": {
+			    "alias": "Empty",
+			    "kind": "interface",
+			    "members": Map {},
+			    "sources": Set {
+			      "interface.svelte",
+			    },
+			  },
 			  "EmptyType": {
 			    "alias": "EmptyType",
 			    "kind": "interface",
 			    "members": Map {},
+			    "sources": Set {
+			      "interface.svelte",
+			    },
+			  },
+			  "Recursive": {
+			    "alias": "Recursive",
+			    "kind": "interface",
+			    "members": Map {
+			      "recursive" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": "Recursive",
+			      },
+			    },
 			    "sources": Set {
 			      "interface.svelte",
 			    },

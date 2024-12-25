@@ -2,6 +2,55 @@ import type { extract } from "@svelte-docgen/extractor";
 
 import type { TypeKind } from "./kind.js";
 
+/**
+ * Type reference as key in the map {@link Types}.
+ * The purpose of this reference is to solve circularity issue with types with optional alias {@link WithAlias}
+ * or types with required name {@link WithName}.
+ */
+export type TypeRef = string;
+
+/**
+ * Union of all possible types recognized by `svelte-docgen`.
+ */
+export type Type =
+	| BaseType
+	| ArrayType
+	| Constructible
+	| Fn
+	| Interface
+	| Intersection
+	| Literal
+	| Tuple
+	| TypeParam
+	| Union;
+
+export type TypeOrRef = Type | TypeRef;
+
+/**
+ * Type where `alias` is _optional_.
+ */
+export interface WithAlias {
+	alias?: string;
+	/**
+	 * Where is this type declared?
+	 */
+	sources?: Set<string>;
+}
+
+/**
+ * Type where `name` is **required**.
+ */
+export interface WithName {
+	name: string;
+	/**
+	 * Where is this type declared?
+	 */
+	sources: Set<string>;
+}
+
+/**
+ * Represents a documentation tag in JSDoc
+ */
 export type Tag = NonNullable<ReturnType<typeof extract>["tags"]>[number];
 
 export interface Docable {
@@ -36,21 +85,7 @@ export type Events = Map<string, TypeOrRef>;
 export type Exports = Map<string, TypeOrRef>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
-export type Types = Record<string, Type>;
-
-export type Type =
-	| BaseType
-	| ArrayType
-	| Constructible
-	| Fn
-	| Interface
-	| Intersection
-	| Literal
-	| Tuple
-	| TypeParam
-	| Union;
-
-export type TypeOrRef = Type | TypeRef;
+export type Types = Record<TypeRef, (Type & WithAlias) | (Type & WithName)>;
 
 export function isTypeRef(type?: TypeOrRef): type is TypeRef {
 	return typeof type === "string";
@@ -88,8 +123,6 @@ export interface BaseType {
 	>;
 }
 
-export type TypeRef = string;
-
 export interface ArrayType {
 	kind: "array";
 	isReadonly: boolean;
@@ -99,7 +132,7 @@ export interface ArrayType {
 export interface Constructible extends WithName {
 	kind: "constructible";
 	name: string;
-	constructors: Array<FnParam[]> | "self";
+	constructors: globalThis.Array<FnParam[]>;
 }
 
 export interface OptionalFnParam {

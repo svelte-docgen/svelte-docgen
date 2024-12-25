@@ -1,8 +1,8 @@
 import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
-import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
+import type * as Doc from "../../doc/type.js";
 import { isTypeRef } from "../../doc/type.js";
 
 describe("Fn", () => {
@@ -10,13 +10,15 @@ describe("Fn", () => {
 		`
 			<script lang="ts">
 				type Baz = string | number;
-				type Aliased = () => void;
+				type Aliased = () => number;
+				type AliasedReturn = symbol;
 				interface Props {
 					void: () => void;
 					returning: () => string;
 					parametized: (foo: string, bar?: Baz) => boolean;
 					spread: (...spread: any) => null;
 					aliased: Aliased;
+					"aliased-return": () => AliasedReturn;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -24,7 +26,7 @@ describe("Fn", () => {
 		create_options("function.svelte"),
 	);
 
-	it("documents 'function' - retuning void", ({ expect }) => {
+	it("documents anonymous 'function' - retuning void", ({ expect }) => {
 		const void_ = props.get("void");
 		if (!void_ || isTypeRef(void_?.type)) throw new Error("expected a type");
 		expect(void_.type).toMatchInlineSnapshot(`
@@ -131,7 +133,19 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		expect(spread?.type.kind).toBe("function");
+		if (typeof spread?.type !== "string") {
+			expect(spread?.type.kind).toBe("function");
+			if (spread?.type.kind === "function") {
+				expect(spread?.type.calls.length).toBeGreaterThan(0);
+				expect(spread?.type.calls[0].returns).not.toBeTypeOf("string");
+				expect(spread?.type.alias).not.toBeDefined();
+				expect(spread?.type.sources).not.toBeDefined();
+				expect(spread?.type.calls[0].parameters.length).toBeGreaterThan(0);
+				if (typeof spread?.type.calls[0].returns !== "string") {
+					expect(spread?.type.calls[0].returns.kind).toBe("null");
+				}
+			}
+		}
 	});
 
 	it("recognizes aliased type", ({ expect }) => {
@@ -151,7 +165,7 @@ describe("Fn", () => {
 			      {
 			        "parameters": [],
 			        "returns": {
-			          "kind": "void",
+			          "kind": "number",
 			        },
 			      },
 			    ],
