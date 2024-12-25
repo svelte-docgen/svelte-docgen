@@ -1,8 +1,9 @@
 <script lang="ts">
 	import DOMPurify from 'isomorphic-dompurify';
 	let { data } = $props();
-  const { pkg, readme } = data;
+  const { pkg: _, readme } = data;
 	console.log({ DOMPurify, code: readme.code });
 </script>
 
+<!-- eslint-disable-next-line svelte/no-at-html-tags - Is ok, is sanitized. -->
 {@html DOMPurify.sanitize(readme.code)}
