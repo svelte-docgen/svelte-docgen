@@ -24,6 +24,7 @@
 		"@typescript/vfs": "^1.6.0",
 		"autoprefixer": "^10.4.20",
 		"isomorphic-dompurify": "^2.19.0",
+		"marked": "^15.0.4",
 		"normalize-package-data": "^7.0.0",
 		"runed": "^0.22.0",
 		"svelte": "catalog:",
