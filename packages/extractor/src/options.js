@@ -64,7 +64,7 @@ export class Options {
 	 */
 	#validate_filepath(filepath) {
 		if (!filepath.endsWith(".svelte")) {
-			// TODO: Document it
+			// TODO: Use `invalid_svelte_filepath_extension` error
 			throw new Error("Filepath must be a svelte file");
 		}
 	}

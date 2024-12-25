@@ -6,10 +6,10 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			// Because `svelte2tsx` relies on "node:path", we need to polyfill `node:path` with `pathe`.
-			// 
+			//
 			// TODO: Remove this alias when we transition away from `svelte2tsx`.
 			// Discussion: https://github.com/svelte-docgen/svelte-docgen/pull/45/files#r1894924147
-			"path": "pathe",
+			path: "pathe",
 			"node:path": "pathe",
 		},
 	},
@@ -34,8 +34,8 @@ export default defineConfig({
 						to: "/demo-playground/",
 					},
 					{
-						title: "Examples",
-						to: "/examples/",
+						title: "Packages",
+						to: "/package/",
 					},
 					{
 						title: "Playground",

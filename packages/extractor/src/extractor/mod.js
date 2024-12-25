@@ -47,14 +47,14 @@ class Extractor {
 
 	/** @returns {ComponentDocExtractor | undefined} */
 	get documentation() {
-		if (this.parser.componentComment) return new ComponentDocExtractor(this.parser.componentComment);
-		return undefined;
+		if (!this.parser.componentComment) return undefined;
+		return new ComponentDocExtractor(this.parser.componentComment);
 	}
 
 	/** @returns {Map<string, ts.Symbol>} */
 	get props() {
 		const { props } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_props`
 		if (!props) throw new Error("props not found");
 		return new Map(Iterator.from(props.getProperties()).map((p) => [p.name, p]));
 	}
@@ -87,29 +87,26 @@ class Extractor {
 	get bindings() {
 		let results = new Set();
 		const { bindings } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_bindings`
 		if (!bindings) throw new Error("bindings not found");
-		// If in legacy mode, 'bindings' is a string type
-		if (bindings.flags & ts.TypeFlags.String) {
-			return results;
+		// Case 1: multiple bindings
+		if (bindings.isUnion()) {
+			for (const type of bindings.types) {
+				if (!type.isStringLiteral()) {
+					// TODO: Use error: `bindngs_without_literal_string_types`
+					throw new Error("Expected bindings to be a union of literal string types");
+				}
+				results.add(type.value);
+			}
 		}
-		// If there is a single binding
+		// Case 2: single binding
 		if (bindings.isStringLiteral()) {
 			// NOTE: No bindings, is empty
-			if (bindings.value === "") {
-				return results;
-			}
-			results.add(bindings.value);
-			return results;
+			if (bindings.value !== "") results.add(bindings.value);
 		}
-		// If there are multiple bindings
-		// TODO: Document error
-		if (!bindings?.isUnion()) throw new Error("bindings is not an union");
-		for (const type of bindings.types) {
-			// TODO: Document error
-			if (!type.isStringLiteral()) throw new Error("Expected bindings to be a union of string literal types");
-			results.add(type.value);
-		}
+		// WARN: `svelte2tsx` produces an empty string `""` type (non-literal) for legacy components (v4),
+		// but it doesn't recognize any bindable props.
+		// Tracking issue: https://github.com/svelte-docgen/svelte-docgen/issues/63
 		return results;
 	}
 
@@ -119,7 +116,7 @@ class Extractor {
 	 */
 	get slots() {
 		const { slots } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_slots`
 		if (!slots) throw new Error("slots not found");
 		return new Map(
 			Iterator.from(
@@ -138,7 +135,7 @@ class Extractor {
 	 */
 	get exports() {
 		const { exports } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_exports`
 		if (!exports) throw new Error("exports not found");
 		return new Map(Iterator.from(exports.getProperties()).map((e) => [e.name, e]));
 	}
@@ -149,7 +146,7 @@ class Extractor {
 	 */
 	get events() {
 		const { events } = this.#extracted_from_render_fn;
-		// TODO: Document error
+		// TODO: Use error: `not_found_type_events`
 		if (!events) throw new Error("events not found");
 		return new Map(Iterator.from(events.getProperties()).map((e) => [e.name, e]));
 	}
@@ -220,7 +217,10 @@ class Extractor {
 				} else {
 					source = this.#options.host.getSourceFile(filepath, language_version_or_options, on_error);
 				}
-				if (!source) throw new Error(`Source file was not found by program: ${filepath}`);
+				if (!source) {
+					// TODO: Use error: `not_found_source_file`
+					throw new Error(`Source file was not found by program: ${filepath}`);
+				}
 				this.#cache.set(filepath, { source });
 				return source;
 			},
@@ -261,9 +261,11 @@ class Extractor {
 		const from_cache = this.#cache.get(this.#options.tsx_filepath)?.source;
 		if (from_cache) return from_cache;
 		const from_program = this.#program.getSourceFile(this.#options.tsx_filepath);
-		//O TODO: Document it
-		if (!from_program)
+		if (!from_program) {
+			// TODO: Use error: `not_found_source_file_tsx`
 			throw new Error(`Source file could not be found by TypeScript program: ${this.#options.tsx_filepath}`);
+		}
+
 		this.#cached_source_file = this.#cache.set(this.#options.tsx_filepath, {
 			source: from_program,
 		}).source;
@@ -285,13 +287,13 @@ class Extractor {
 				return statement;
 			}
 		}
-		// TODO: Document error
+		// TODO: Use error: `not_found_render_fn`
 		throw new Error("render fn not found");
 	}
 
 	/**
 	 * The whole line statement, like:
-	 * ```ts`
+	 * ```ts
 	 * let { ...props } = $props();
 	 * ```
 	 *
@@ -336,14 +338,13 @@ class Extractor {
 	get #extracted_from_render_fn() {
 		if (this.#cached_extracted_from_render_fn) return this.#cached_extracted_from_render_fn;
 		const signature = this.checker.getSignatureFromDeclaration(this.#fn_render);
-		// TODO: Document error
+		// TODO: Use error: `not_found_render_fn_signature`
 		if (!signature) throw new Error("signature not found");
 		const return_type = this.checker.getReturnTypeOfSignature(signature);
 		const properties = return_type.getProperties();
 		this.#cached_extracted_from_render_fn = {};
 		for (const prop of properties) {
 			const name = prop.getName();
-			// TODO: Add support for Svelte v4 - exports, slots, and events
 			switch (name) {
 				case "props":
 				case "bindings":

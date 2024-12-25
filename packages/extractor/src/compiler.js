@@ -1,7 +1,7 @@
 /**
  * @import { Options } from "./options.js";
  * @import { Parser } from "./parser.js";
- * @import { Source, TSXFilepath } from "./util.js";
+ * @import { Source } from "./util.js";
  */
 
 import { VERSION } from "svelte/compiler";
