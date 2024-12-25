@@ -55,7 +55,7 @@ describe("Union", () => {
 	});
 
 	it("collect aliased types", ({ expect }) => {
-		expect(types["Aliased"]).toMatchInlineSnapshot(`
+		expect(types.get("Aliased")).toMatchInlineSnapshot(`
 			{
 			  "alias": "Aliased",
 			  "kind": "union",
@@ -81,7 +81,7 @@ describe("Union", () => {
 			  ],
 			}
 		`);
-		expect(types["Aliased"].kind).toBe("union");
-		expect((types["Aliased"] as Doc.Union)?.sources).toBeDefined();
+		expect(types.get("Aliased")?.kind).toBe("union");
+		expect((types.get("Aliased") as Doc.Union)?.sources).toBeDefined();
 	});
 });

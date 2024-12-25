@@ -3,7 +3,6 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isTypeRef } from "../../doc/type.js";
 
 describe("Array", () => {
 	const { props, types } = parse(
@@ -24,35 +23,23 @@ describe("Array", () => {
 	it("documents `array`", ({ expect }) => {
 		const letters = props.get("letters");
 		expect(letters).toBeDefined();
-		expect(letters?.type).toMatchInlineSnapshot(`
-			{
-			  "element": "Letter",
-			  "isReadonly": false,
-			  "kind": "array",
-			}
-		`);
-		if (!letters || isTypeRef(letters?.type)) throw new Error("expected a type");
-		expect(letters.type.kind).toBe("array");
-		expect((letters.type as Doc.ArrayType).isReadonly).toBe(false);
+		expect(letters?.type).toBe("Array<Letter>");
+		const type = types.get("Array<Letter>");
+		expect(type?.kind).toBe("array");
+		expect((type as Doc.ArrayType).isReadonly).toBe(false);
 	});
 
 	it("recognizes 'readonly'", ({ expect }) => {
 		const numbers = props.get("numbers");
 		expect(numbers).toBeDefined();
-		expect(numbers?.type).toMatchInlineSnapshot(`
-			{
-			  "element": "Num",
-			  "isReadonly": true,
-			  "kind": "array",
-			}
-		`);
-		if (!numbers || isTypeRef(numbers?.type)) throw new Error("expected a type");
-		expect(numbers.type.kind).toBe("array");
-		expect((numbers.type as Doc.ArrayType).isReadonly).toBe(true);
+		expect(numbers?.type).toBe("ReadonlyArray<Num>");
+		const type = types.get("ReadonlyArray<Num>");
+		expect(type?.kind).toBe("array");
+		expect((type as Doc.ArrayType).isReadonly).toBe(true);
 	});
 
 	it("types", ({ expect }) => {
-		expect(types["Letter"]).toMatchInlineSnapshot(`
+		expect(types.get("Letter")).toMatchInlineSnapshot(`
 			{
 			  "alias": "Letter",
 			  "kind": "union",
@@ -78,7 +65,7 @@ describe("Array", () => {
 			  ],
 			}
 		`);
-		expect(types["Num"]).toMatchInlineSnapshot(`
+		expect(types.get("Num")).toMatchInlineSnapshot(`
 			{
 			  "alias": "Num",
 			  "kind": "union",

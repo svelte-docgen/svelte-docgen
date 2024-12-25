@@ -92,29 +92,13 @@ describe("Tuple", () => {
 	});
 
 	it("recognizes aliased tuple type", ({ expect }) => {
-		expect(props.get("aliased")!.type).toBe("Aliased");
+		expect(props.get("aliased")!.type).toBe("Aliased<string, boolean>");
 	});
 
 	it("collects aliased types", ({ expect }) => {
 		expect(types).toMatchInlineSnapshot(`
-			{
-			  "Aliased": {
-			    "alias": "Aliased",
-			    "elements": [
-			      {
-			        "kind": "string",
-			      },
-			      {
-			        "kind": "boolean",
-			      },
-			    ],
-			    "isReadonly": false,
-			    "kind": "tuple",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
-			  },
-			  "Letter": {
+			Map {
+			  "Letter" => {
 			    "alias": "Letter",
 			    "kind": "union",
 			    "sources": Set {
@@ -138,7 +122,7 @@ describe("Tuple", () => {
 			      },
 			    ],
 			  },
-			  "Num": {
+			  "Num" => {
 			    "alias": "Num",
 			    "kind": "union",
 			    "sources": Set {
@@ -161,6 +145,22 @@ describe("Tuple", () => {
 			        "value": 2,
 			      },
 			    ],
+			  },
+			  "Aliased<string, boolean>" => {
+			    "alias": "Aliased",
+			    "elements": [
+			      {
+			        "kind": "string",
+			      },
+			      {
+			        "kind": "boolean",
+			      },
+			    ],
+			    "isReadonly": false,
+			    "kind": "tuple",
+			    "sources": Set {
+			      "tuple.svelte",
+			    },
 			  },
 			}
 		`);

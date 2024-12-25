@@ -51,8 +51,8 @@ describe("Intersection", () => {
 
 	it("collects aliases", ({ expect }) => {
 		expect(types).toMatchInlineSnapshot(`
-			{
-			  "Aliased": {
+			Map {
+			  "Aliased" => {
 			    "alias": "Aliased",
 			    "kind": "intersection",
 			    "sources": Set {
@@ -69,7 +69,7 @@ describe("Intersection", () => {
 			  },
 			}
 		`);
-		const aliased = types["Aliased"] as Doc.Intersection;
+		const aliased = types.get("Aliased") as Doc.Intersection;
 		expect(aliased.sources).toBeDefined();
 		expect(aliased.types.length).greaterThan(0);
 	});

@@ -150,7 +150,7 @@ describe("Fn", () => {
 
 	it("recognizes aliased type", ({ expect }) => {
 		expect(props.get("aliased")?.type).toBe("Aliased");
-		const aliased = types["Aliased"];
+		const aliased = types.get("Aliased");
 		if (!aliased || isTypeRef(aliased)) throw new Error("expected a type");
 		expect((aliased as Doc.Fn).alias).toBe("Aliased");
 		expect((aliased as Doc.Fn).sources).toBeDefined();
@@ -158,23 +158,8 @@ describe("Fn", () => {
 
 	it("collects aliased types", ({ expect }) => {
 		expect(types).toMatchInlineSnapshot(`
-			{
-			  "Aliased": {
-			    "alias": "Aliased",
-			    "calls": [
-			      {
-			        "parameters": [],
-			        "returns": {
-			          "kind": "number",
-			        },
-			      },
-			    ],
-			    "kind": "function",
-			    "sources": Set {
-			      "function.svelte",
-			    },
-			  },
-			  "Baz": {
+			Map {
+			  "Baz" => {
 			    "alias": "Baz",
 			    "kind": "union",
 			    "sources": Set {
@@ -188,6 +173,21 @@ describe("Fn", () => {
 			        "kind": "number",
 			      },
 			    ],
+			  },
+			  "Aliased" => {
+			    "alias": "Aliased",
+			    "calls": [
+			      {
+			        "parameters": [],
+			        "returns": {
+			          "kind": "number",
+			        },
+			      },
+			    ],
+			    "kind": "function",
+			    "sources": Set {
+			      "function.svelte",
+			    },
 			  },
 			}
 		`);

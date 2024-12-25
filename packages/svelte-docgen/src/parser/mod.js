@@ -32,8 +32,14 @@ class Parser {
 	 * @type {URL}
 	 */
 	#root_path_url;
+
+	/**
+	 * Some of types which extends `WithAlias` or `WithName` can cause recursion.
+	 * We isolate them in this map, so we can prevent this from happening.
+	 * @type {Doc.Types}
+	 */
 	/** @type {Doc.Types} */
-	#types;
+	types = new Map();
 
 	/**
 	 * @param {string} source
@@ -43,7 +49,6 @@ class Parser {
 		this.#options = options;
 		this.#extractor = extract(source, this.#options);
 		this.#root_path_url = get_root_path_url(this.#options.sys);
-		this.#types = {};
 	}
 
 	/** @returns {ParsedComponent} */
@@ -127,15 +132,6 @@ class Parser {
 	/** @returns {Doc.Docable['tags']} */
 	get tags() {
 		return this.#extractor.tags;
-	}
-
-	/**
-	 * Some of types which extends `WithAlias` or `WithName` can cause recursion.
-	 * We isolate them in this map, so we can prevent this from happening.
-	 * @type {Doc.Types}
-	 */
-	get types() {
-		return this.#types;
 	}
 
 	/** @type {ts.TypeChecker} */
@@ -463,15 +459,48 @@ class Parser {
 	 * @returns {Doc.TypeOrRef}
 	 */
 	#get_type_doc(type) {
-		if (!type.aliasSymbol) {
-			// immediate type
+		if (
+			!type.aliasSymbol &&
+			(!type.symbol || type.symbol.name === AnonTypeLiteralSymbolName || type.isTypeParameter())
+		) {
+			// anonymous type
 			return this.#get_type_doc_internal(type);
 		}
 
-		// aliased type
-		const name =
+		// type reference
+		const name = this.#get_qualified_typeref_name(type);
+		if (this.types.get(name) === undefined) {
+			this.types.set(name, { kind: "unknown" }); // reservation to prevent infinite loop
+			const doc = this.#get_type_doc_internal(type);
+			this.types.set(name, doc);
+		}
+		return name;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {string}
+	 */
+	#get_qualified_typeref_name(type) {
+		if (is_type_reference(type)) {
+			// type reference
+			return (
+				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
+				(type.typeArguments && type.typeArguments.length
+					? "<" +
+						type.typeArguments
+							.map((type) => {
+								return this.#checker.typeToString(type);
+							})
+							.join(", ") +
+						">"
+					: "")
+			);
+		}
+		// alias
+		return (
 			this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
-			(type.aliasTypeArguments
+			(type.aliasTypeArguments && type.aliasTypeArguments.length
 				? "<" +
 					type.aliasTypeArguments
 						.map((type) => {
@@ -479,13 +508,8 @@ class Parser {
 						})
 						.join(", ") +
 					">"
-				: "");
-		if (this.#types[name] === undefined) {
-			this.#types[name] = { kind: "unknown" }; // reservation to prevent infinite loop
-			const doc = this.#get_type_doc_internal(type);
-			this.#types[name] = doc;
-		}
-		return name;
+				: "")
+		);
 	}
 
 	/**

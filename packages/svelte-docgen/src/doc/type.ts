@@ -85,8 +85,25 @@ export type Events = Map<string, TypeOrRef>;
 export type Exports = Map<string, TypeOrRef>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
-export type Types = Record<TypeRef, (Type & WithAlias) | (Type & WithName)>;
+export type Types = Map<TypeRef, (Type & WithAlias) | (Type & WithName)>;
 
+/**
+ * A type-guard to check if the type is a _reference_ to an aliased {@link WithAlias} or named {@link WithName} type stored in {@link Types}. The reason we have it isolated in separate storage _(`types`)_ is to avoid circularity.
+ *
+ * @example Basic usage in real-word scenario
+ *
+ * ```js
+ * import { isTypeRef } from "svelte-docgen/doc";
+ *
+ * const { props, types } = parse("... <Svelte code> ...");
+ * //             👆 stored aliased/named types
+ * const exampleProp = prop.get("example");
+ *
+ * if (isTypeRef(exampleProp.type)) {
+ *   const examplePropType = types.get(exampleProp.type); // 👈 This is how you can access the type when it's a `TypeRef`.
+ * }
+ * ```
+ */
 export function isTypeRef(type?: TypeOrRef): type is TypeRef {
 	return typeof type === "string";
 }

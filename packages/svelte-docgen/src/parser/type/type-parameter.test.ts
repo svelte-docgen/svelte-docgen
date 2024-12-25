@@ -44,6 +44,7 @@ describe("TypeParam", () => {
 
 	it("recognizes `const`", ({ expect }) => {
 		const constant = props.get("constant");
+		console.log(constant);
 		if (!constant || isTypeRef(constant.type)) throw new Error("Expected a type");
 		expect(constant.type).toMatchInlineSnapshot(`
 			{
