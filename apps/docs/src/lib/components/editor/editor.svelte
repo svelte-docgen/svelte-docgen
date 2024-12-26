@@ -19,7 +19,7 @@
 		view = new EditorView({
 			parent: container,
 			doc: initial,
-			extensions: [basicSetup,svelte()],
+			extensions: [basicSetup, svelte()],
 		});
 		return () => {
 			view.destroy();
@@ -27,10 +27,6 @@
 	});
 </script>
 
-<div
-	bind:this={container}
-	id="editor"
-	class="container"
->
-<!-- TODO: -->
+<div bind:this={container} id="editor" class="container">
+	<!-- TODO: -->
 </div>

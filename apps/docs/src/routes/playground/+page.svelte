@@ -1,18 +1,18 @@
 <script module>
 	export const frontmatter = {
-		title : "Playground",
-		description : "Play and test svelte-docgen in the browser.",
-	}
+		title: "Playground",
+		description: "Play and test svelte-docgen in the browser.",
+	};
 </script>
 
 <script lang="ts">
 	import { Debounced } from "runed";
 	import ts from "typescript";
-	import { Tabs, TabPanel } from "@sveltepress/theme-default/components"
+	import { Tabs, TabPanel } from "@sveltepress/theme-default/components";
 	import * as tsvfs from "@typescript/vfs";
 
 	import { browser } from "$app/environment";
-	import Editor from "$lib/components/editor/editor.svelte"
+	import Editor from "$lib/components/editor/editor.svelte";
 
 	import { prepareDocgen, COMPILER_OPTIONS } from "./demo.ts";
 	import initial from "./initial.svelte?raw";
