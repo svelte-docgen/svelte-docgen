@@ -26,5 +26,11 @@
 		"svelte": "catalog:",
 		"svelte-docgen": "workspace:*",
 		"svelte2tsx": "^0.7.31"
+	},
+	"dependencies": {
+		"@codemirror/state": "^6.5.0",
+		"@codemirror/view": "^6.36.1",
+		"@replit/codemirror-lang-svelte": "^6.0.0",
+		"codemirror": "^6.0.1"
 	}
 }
