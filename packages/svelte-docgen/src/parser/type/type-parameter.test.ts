@@ -44,7 +44,6 @@ describe("TypeParam", () => {
 
 	it("recognizes `const`", ({ expect }) => {
 		const constant = props.get("constant");
-		console.log(constant);
 		if (!constant || isTypeRef(constant.type)) throw new Error("Expected a type");
 		expect(constant.type).toMatchInlineSnapshot(`
 			{
@@ -107,7 +106,6 @@ describe("TypeParam", () => {
 		if (isTypeRef(constraint)) throw new Error("Expected a type");
 		expect(constraint.kind).toBe("unknown");
 		const default2 = (default_.type as Doc.TypeParam).default as Doc.TypeParam;
-		console.log(default2);
 		if (!default2 || isTypeRef(default2)) throw new Error("Expected a type");
 		expect(default2.kind).toBe("string");
 	});

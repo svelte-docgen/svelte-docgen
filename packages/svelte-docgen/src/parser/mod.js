@@ -461,6 +461,7 @@ class Parser {
 	#get_type_doc(type) {
 		if (
 			!type.aliasSymbol &&
+			!is_type_reference(type) &&
 			(!type.symbol || type.symbol.name === AnonTypeLiteralSymbolName || type.isTypeParameter())
 		) {
 			// anonymous type
@@ -470,7 +471,7 @@ class Parser {
 		// type reference
 		const name = this.#get_qualified_typeref_name(type);
 		if (this.types.get(name) === undefined) {
-			this.types.set(name, { kind: "unknown" }); // reservation to prevent infinite loop
+			this.types.set(name, { kind: "unknown" }); // reserve to prevent infinite recursion
 			const doc = this.#get_type_doc_internal(type);
 			this.types.set(name, doc);
 		}
@@ -479,37 +480,59 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
+	 * @param {ts.Type} [start]
 	 * @returns {string}
 	 */
-	#get_qualified_typeref_name(type) {
+	#get_qualified_typeref_name(type, start = undefined) {
+		if (type === start) {
+			return "<self>"; // prevent infinite recursion
+		}
+		start ??= type;
+
 		if (is_type_reference(type)) {
-			// type reference
+			// type reference (tuple, array, type reference)
+			if (this.#checker.isTupleType(type)) {
+				const readonly_prefix = /** @type {ts.TupleType} */ (type.target).readonly ? "readonly " : "";
+				return (
+					readonly_prefix +
+					"[" +
+					(type.typeArguments ?? []).map((type) => this.#get_qualified_typeref_name(type, start)).join(", ") +
+					"]"
+				);
+			}
 			return (
 				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
 				(type.typeArguments && type.typeArguments.length
 					? "<" +
-						type.typeArguments
-							.map((type) => {
-								return this.#checker.typeToString(type);
-							})
+						type.typeArguments.map((type) => this.#get_qualified_typeref_name(type, start)).join(", ") +
+						">"
+					: "")
+			);
+		}
+		const symbol = type.aliasSymbol || type.symbol;
+		// alias or named type
+		if (symbol) {
+			return (
+				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
+				(type.aliasTypeArguments && type.aliasTypeArguments.length
+					? "<" +
+						type.aliasTypeArguments
+							.map((type) => this.#get_qualified_typeref_name(type, start))
 							.join(", ") +
 						">"
 					: "")
 			);
 		}
-		// alias
-		return (
-			this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
-			(type.aliasTypeArguments && type.aliasTypeArguments.length
-				? "<" +
-					type.aliasTypeArguments
-						.map((type) => {
-							return this.#checker.typeToString(type);
-						})
-						.join(", ") +
-					">"
-				: "")
-		);
+		// anonymous type
+		if (type.isUnion()) {
+			if (type.flags & ts.TypeFlags.Boolean) return "boolean";
+			return type.types.map((type) => this.#get_qualified_typeref_name(type, start)).join(" | ");
+		} else if (type.isIntersection()) {
+			if (type.flags & ts.TypeFlags.Boolean) return "boolean";
+			return type.types.map((type) => this.#get_qualified_typeref_name(type, start)).join(" & ");
+		} else {
+			return this.#checker.typeToString(type);
+		}
 	}
 
 	/**

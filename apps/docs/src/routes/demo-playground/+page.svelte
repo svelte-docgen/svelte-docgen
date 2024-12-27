@@ -42,7 +42,7 @@
 			error = "";
 		} catch (e) {
 			error = String(e);
-			throw e;
+			console.error(e);
 		}
 	});
 </script>

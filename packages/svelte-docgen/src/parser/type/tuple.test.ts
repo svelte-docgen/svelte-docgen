@@ -3,7 +3,6 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isTypeRef } from "../../doc/utils.js";
 
 describe("Tuple", () => {
 	const { props, types } = parse(
@@ -12,12 +11,14 @@ describe("Tuple", () => {
 				type Letter = "a" | "b" | "c";
 				type Num = 0 | 1 | 2;
 				type Aliased = [string, boolean];
+				type Recursive = number | [string | Recursive];
 				interface Props {
 					anonymous: [Letter, Num];
 					strict: readonly [Letter, Num];
 					empty: [];
 					"really-empty": readonly [];
 					aliased: Aliased;
+					recursive: Recursive;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -27,8 +28,9 @@ describe("Tuple", () => {
 
 	it("documents anonymous 'tuple'", ({ expect }) => {
 		const anonymous = props.get("anonymous");
-		if (!anonymous || isTypeRef(anonymous.type)) throw new Error("Expected a type");
-		expect(anonymous.type).toMatchInlineSnapshot(`
+		expect(anonymous?.type).toBe("[Letter, Num]");
+		const type = types.get("[Letter, Num]");
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "elements": [
 			    "Letter",
@@ -38,15 +40,16 @@ describe("Tuple", () => {
 			  "kind": "tuple",
 			}
 		`);
-		expect(anonymous.type.kind).toBe("tuple");
-		expect((anonymous.type as Doc.Tuple).isReadonly).toBe(false);
-		expect((anonymous.type as Doc.Tuple).elements.length).toBeGreaterThan(0);
+		expect(type?.kind).toBe("tuple");
+		expect((type as Doc.Tuple).isReadonly).toBe(false);
+		expect((type as Doc.Tuple).elements.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes 'readonly'", ({ expect }) => {
 		const strict = props.get("strict");
-		if (!strict || isTypeRef(strict.type)) throw new Error("Expected a type");
-		expect(strict.type).toMatchInlineSnapshot(`
+		expect(strict?.type).toBe("readonly [Letter, Num]");
+		const type = types.get("readonly [Letter, Num]");
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "elements": [
 			    "Letter",
@@ -56,48 +59,68 @@ describe("Tuple", () => {
 			  "kind": "tuple",
 			}
 		`);
-		expect(strict?.type.kind).toBe("tuple");
-		expect((strict?.type as Doc.Tuple).isReadonly).toBe(true);
-		expect((strict?.type as Doc.Tuple).elements.length).toBeGreaterThan(0);
+		expect(type?.kind).toBe("tuple");
+		expect((type as Doc.Tuple).isReadonly).toBe(true);
+		expect((type as Doc.Tuple).elements.length).toBeGreaterThan(0);
 	});
 
 	it("recognizes empty tuple", ({ expect }) => {
 		const empty = props.get("empty");
-		if (!empty || isTypeRef(empty.type)) throw new Error("Expected a type");
-		expect(empty.type).toMatchInlineSnapshot(`
+		expect(empty?.type).toBe("[]");
+		const type = types.get("[]");
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "elements": [],
 			  "isReadonly": false,
 			  "kind": "tuple",
 			}
 		`);
-		expect(empty.type.kind).toBe("tuple");
-		expect((empty.type as Doc.Tuple).isReadonly).toBe(false);
-		expect((empty.type as Doc.Tuple).elements).toHaveLength(0);
+		expect(type?.kind).toBe("tuple");
+		expect((type as Doc.Tuple).isReadonly).toBe(false);
+		expect((type as Doc.Tuple).elements).toHaveLength(0);
 	});
 
 	it("recognizes 'readonly' empty tuple", ({ expect }) => {
 		const empty = props.get("really-empty");
-		if (!empty || isTypeRef(empty.type)) throw new Error("Expected a type");
-		expect(empty.type).toMatchInlineSnapshot(`
+		expect(empty?.type).toBe("readonly []");
+		const type = types.get("readonly []");
+		expect(type).toMatchInlineSnapshot(`
 			{
 			  "elements": [],
 			  "isReadonly": true,
 			  "kind": "tuple",
 			}
 		`);
-		expect(empty.type.kind).toBe("tuple");
-		expect((empty.type as Doc.Tuple).isReadonly).toBe(true);
-		expect((empty.type as Doc.Tuple).elements).toHaveLength(0);
+		expect(type?.kind).toBe("tuple");
+		expect((type as Doc.Tuple).isReadonly).toBe(true);
+		expect((type as Doc.Tuple).elements).toHaveLength(0);
 	});
 
 	it("recognizes aliased tuple type", ({ expect }) => {
-		expect(props.get("aliased")!.type).toBe("Aliased<string, boolean>");
+		expect(props.get("aliased")!.type).toBe("[string, boolean]");
+	});
+
+	it("recognizes recursive tuple", ({ expect }) => {
+		const recursive = props.get("recursive");
+		expect(recursive?.type).toBe("Recursive");
+		const type = types.get("Recursive");
+		expect((type as Doc.Union)?.types.length).toBe(2);
+		const type2 = types.get("[string | number | <self>]");
+		expect((type2 as Doc.Tuple)?.elements.length).toBe(1);
+		expect(((type2 as Doc.Tuple)?.elements[0] as Doc.Union).types.length).toBe(3);
 	});
 
 	it("collects aliased types", ({ expect }) => {
 		expect(types).toMatchInlineSnapshot(`
 			Map {
+			  "[Letter, Num]" => {
+			    "elements": [
+			      "Letter",
+			      "Num",
+			    ],
+			    "isReadonly": false,
+			    "kind": "tuple",
+			  },
 			  "Letter" => {
 			    "alias": "Letter",
 			    "kind": "union",
@@ -146,7 +169,25 @@ describe("Tuple", () => {
 			      },
 			    ],
 			  },
-			  "Aliased<string, boolean>" => {
+			  "readonly [Letter, Num]" => {
+			    "elements": [
+			      "Letter",
+			      "Num",
+			    ],
+			    "isReadonly": true,
+			    "kind": "tuple",
+			  },
+			  "[]" => {
+			    "elements": [],
+			    "isReadonly": false,
+			    "kind": "tuple",
+			  },
+			  "readonly []" => {
+			    "elements": [],
+			    "isReadonly": true,
+			    "kind": "tuple",
+			  },
+			  "[string, boolean]" => {
 			    "alias": "Aliased",
 			    "elements": [
 			      {
@@ -161,6 +202,37 @@ describe("Tuple", () => {
 			    "sources": Set {
 			      "tuple.svelte",
 			    },
+			  },
+			  "Recursive" => {
+			    "alias": "Recursive",
+			    "kind": "union",
+			    "sources": Set {
+			      "tuple.svelte",
+			    },
+			    "types": [
+			      {
+			        "kind": "number",
+			      },
+			      "[string | number | <self>]",
+			    ],
+			  },
+			  "[string | number | <self>]" => {
+			    "elements": [
+			      {
+			        "kind": "union",
+			        "types": [
+			          {
+			            "kind": "string",
+			          },
+			          {
+			            "kind": "number",
+			          },
+			          "[string | number | <self>]",
+			        ],
+			      },
+			    ],
+			    "isReadonly": false,
+			    "kind": "tuple",
 			  },
 			}
 		`);

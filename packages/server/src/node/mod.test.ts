@@ -80,11 +80,7 @@ describe("NodeServer", () => {
 				              {
 				                "isOptional": false,
 				                "name": "args",
-				                "type": {
-				                  "elements": [],
-				                  "isReadonly": false,
-				                  "kind": "tuple",
-				                },
+				                "type": "[]",
 				              },
 				            ],
 				            "returns": {
@@ -113,6 +109,14 @@ describe("NodeServer", () => {
 				        "sources": Set {
 				          /node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
 				        },
+				      },
+				    ],
+				    [
+				      "[]",
+				      {
+				        "elements": [],
+				        "isReadonly": false,
+				        "kind": "tuple",
 				      },
 				    ],
 				    [

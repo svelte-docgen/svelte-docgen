@@ -3,5 +3,11 @@
   interface B<T> { a: A };
   import { Snippet } from "svelte";
   type C = 1;
-  let {}: { a: A<number>, c: C, u: 1 | "foo", s: Snippet<[A<number>]> } = $props();
+  type R = number | [string | R];
+  let {}: {
+    a: A<number>,
+    c: C, u: 1 | "foo",
+    s: Snippet<[A<number>]>,
+    r: R,
+  } = $props();
 </script>
