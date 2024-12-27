@@ -19,6 +19,7 @@ import {
 	is_tuple_type,
 	is_type_reference,
 } from "../shared.js";
+import { isTypeRef } from "../doc/utils.js";
 
 const AnonTypeLiteralSymbolName = ts.InternalSymbolName.Type;
 
@@ -40,6 +41,9 @@ class Parser {
 	 */
 	/** @type {Doc.Types} */
 	types = new Map();
+
+	/** @type {Map<ts.Type, string>} */
+	#anonymous_type_map = new Map();
 
 	/**
 	 * @param {string} source
@@ -438,7 +442,30 @@ class Parser {
 	#get_union_doc(type) {
 		// TODO: Document error
 		if (!type.isUnion()) throw new Error(`Expected union type, got ${this.#checker.typeToString(type)}`);
-		const types = type.types.map((t) => this.#get_type_doc(t));
+
+		/** @type {Doc.TypeOrRef[]} */
+		let types = [];
+		const non_nullable = type.getNonNullableType();
+
+		if (type.aliasSymbol || type === non_nullable) {
+			types = type.types.map((t) => this.#get_type_doc(t));
+		} else {
+			// nullable types
+			types.push(
+				...type.types
+					.filter((t) => t.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined | ts.TypeFlags.Void))
+					.map((t) => this.#get_type_doc(t)),
+			);
+			// non-nullable types
+			const non_nullable_doc = this.#get_type_doc(non_nullable);
+			if (isTypeRef(non_nullable_doc)) types.push(non_nullable_doc);
+			else if (non_nullable_doc.kind === "union") {
+				types.push(...non_nullable_doc.types);
+			} else {
+				types.push(non_nullable_doc);
+			}
+		}
+
 		/** @type {Doc.Union} */
 		let results = {
 			kind: "union",
@@ -449,8 +476,8 @@ class Parser {
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
-		const nonNullable = type.getNonNullableType();
-		if (nonNullable !== type) results.nonNullable = this.#get_type_doc(nonNullable);
+		if (non_nullable !== type) results.nonNullable = this.#get_type_doc(non_nullable);
+
 		return results;
 	}
 
@@ -459,10 +486,13 @@ class Parser {
 	 * @returns {Doc.TypeOrRef}
 	 */
 	#get_type_doc(type) {
+		const anon_id = this.#anonymous_type_map.get(type);
+		if (anon_id) return anon_id;
+
 		if (
 			!type.aliasSymbol &&
 			!is_type_reference(type) &&
-			(!type.symbol || type.symbol.name === AnonTypeLiteralSymbolName || type.isTypeParameter())
+			(!type.symbol || type.symbol.name === AnonTypeLiteralSymbolName)
 		) {
 			// anonymous type
 			return this.#get_type_doc_internal(type);
@@ -480,59 +510,67 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @param {ts.Type} [start]
 	 * @returns {string}
 	 */
-	#get_qualified_typeref_name(type, start = undefined) {
-		if (type === start) {
-			return "<self>"; // prevent infinite recursion
-		}
-		start ??= type;
-
-		if (is_type_reference(type)) {
+	#get_qualified_typeref_name(type) {
+		if (!type.aliasSymbol && is_type_reference(type)) {
 			// type reference (tuple, array, type reference)
 			if (this.#checker.isTupleType(type)) {
 				const readonly_prefix = /** @type {ts.TupleType} */ (type.target).readonly ? "readonly " : "";
 				return (
 					readonly_prefix +
 					"[" +
-					(type.typeArguments ?? []).map((type) => this.#get_qualified_typeref_name(type, start)).join(", ") +
+					(type.typeArguments ?? []).map((type) => this.#get_qualified_typeref_name(type)).join(", ") +
 					"]"
 				);
 			}
 			return (
 				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
 				(type.typeArguments && type.typeArguments.length
-					? "<" +
-						type.typeArguments.map((type) => this.#get_qualified_typeref_name(type, start)).join(", ") +
-						">"
+					? "<" + type.typeArguments.map((type) => this.#get_qualified_typeref_name(type)).join(", ") + ">"
 					: "")
 			);
 		}
 		const symbol = type.aliasSymbol || type.symbol;
 		// alias or named type
-		if (symbol) {
+		if (symbol && symbol.name !== AnonTypeLiteralSymbolName) {
 			return (
 				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
 				(type.aliasTypeArguments && type.aliasTypeArguments.length
 					? "<" +
-						type.aliasTypeArguments
-							.map((type) => this.#get_qualified_typeref_name(type, start))
-							.join(", ") +
+						type.aliasTypeArguments.map((type) => this.#get_qualified_typeref_name(type)).join(", ") +
 						">"
 					: "")
 			);
 		}
-		// anonymous type
-		if (type.isUnion()) {
-			if (type.flags & ts.TypeFlags.Boolean) return "boolean";
-			return type.types.map((type) => this.#get_qualified_typeref_name(type, start)).join(" | ");
-		} else if (type.isIntersection()) {
-			if (type.flags & ts.TypeFlags.Boolean) return "boolean";
-			return type.types.map((type) => this.#get_qualified_typeref_name(type, start)).join(" & ");
-		} else {
+
+		if (
+			type.flags &
+			(ts.TypeFlags.Any |
+				ts.TypeFlags.Unknown |
+				ts.TypeFlags.StringLike |
+				ts.TypeFlags.NumberLike |
+				ts.TypeFlags.BigIntLike |
+				ts.TypeFlags.BooleanLike |
+				ts.TypeFlags.EnumLike |
+				ts.TypeFlags.VoidLike |
+				ts.TypeFlags.Null |
+				ts.TypeFlags.ESSymbolLike |
+				ts.TypeFlags.TypeParameter |
+				ts.TypeFlags.Never)
+		) {
 			return this.#checker.typeToString(type);
 		}
+
+		// anonymous type
+		let typeref = this.#anonymous_type_map.get(type);
+		if (typeref) {
+			return typeref;
+		}
+		typeref = `<anon:${this.#anonymous_type_map.size}>`;
+		this.#anonymous_type_map.set(type, typeref);
+		this.types.set(typeref, this.#get_type_doc_internal(type));
+		return typeref;
 	}
 
 	/**

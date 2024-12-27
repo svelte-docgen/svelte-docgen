@@ -89,12 +89,7 @@ describe("Fn", () => {
 			              {
 			                "kind": "undefined",
 			              },
-			              {
-			                "kind": "string",
-			              },
-			              {
-			                "kind": "number",
-			              },
+			              "Baz",
 			            ],
 			          },
 			        },

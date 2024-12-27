@@ -67,14 +67,7 @@ describe("encode()", () => {
 			              "kind": "undefined"
 			            },
 			            {
-			              "kind": "literal",
-			              "subkind": "boolean",
-			              "value": false
-			            },
-			            {
-			              "kind": "literal",
-			              "subkind": "boolean",
-			              "value": true
+			              "kind": "boolean"
 			            }
 			          ],
 			          "nonNullable": {

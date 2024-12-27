@@ -3,6 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
+import { isTypeRef } from "../../doc/utils.js";
 
 describe("Tuple", () => {
 	const { props, types } = parse(
@@ -97,7 +98,7 @@ describe("Tuple", () => {
 	});
 
 	it("recognizes aliased tuple type", ({ expect }) => {
-		expect(props.get("aliased")!.type).toBe("[string, boolean]");
+		expect(props.get("aliased")!.type).toBe("Aliased");
 	});
 
 	it("recognizes recursive tuple", ({ expect }) => {
@@ -105,9 +106,14 @@ describe("Tuple", () => {
 		expect(recursive?.type).toBe("Recursive");
 		const type = types.get("Recursive");
 		expect((type as Doc.Union)?.types.length).toBe(2);
-		const type2 = types.get("[string | number | <self>]");
-		expect((type2 as Doc.Tuple)?.elements.length).toBe(1);
-		expect(((type2 as Doc.Tuple)?.elements[0] as Doc.Union).types.length).toBe(3);
+		const anon_id = (type as Doc.Union)?.types[1];
+		if (!isTypeRef(anon_id)) throw new Error("Expected type reference");
+		const anon_type = types.get(anon_id);
+		const anon_id2 = (anon_type as Doc.Tuple)?.elements[0];
+		if (!isTypeRef(anon_id2)) throw new Error("Expected type reference");
+		const anon_type2 = types.get(anon_id2);
+		expect(anon_type2?.kind).toBe("union");
+		expect((anon_type2 as Doc.Union)?.types.length).toBe(3);
 	});
 
 	it("collects aliased types", ({ expect }) => {
@@ -187,7 +193,7 @@ describe("Tuple", () => {
 			    "isReadonly": true,
 			    "kind": "tuple",
 			  },
-			  "[string, boolean]" => {
+			  "Aliased" => {
 			    "alias": "Aliased",
 			    "elements": [
 			      {
@@ -213,26 +219,27 @@ describe("Tuple", () => {
 			      {
 			        "kind": "number",
 			      },
-			      "[string | number | <self>]",
+			      "[<anon:0>]",
 			    ],
 			  },
-			  "[string | number | <self>]" => {
+			  "[<anon:0>]" => {
 			    "elements": [
-			      {
-			        "kind": "union",
-			        "types": [
-			          {
-			            "kind": "string",
-			          },
-			          {
-			            "kind": "number",
-			          },
-			          "[string | number | <self>]",
-			        ],
-			      },
+			      "<anon:0>",
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
+			  },
+			  "<anon:0>" => {
+			    "kind": "union",
+			    "types": [
+			      {
+			        "kind": "string",
+			      },
+			      {
+			        "kind": "number",
+			      },
+			      "[<anon:0>]",
+			    ],
 			  },
 			}
 		`);
