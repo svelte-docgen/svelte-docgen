@@ -1,6 +1,6 @@
 import type { extract } from "@svelte-docgen/extractor";
 
-import type { TypeKind } from "./kind.js";
+import type { BaseTypeKind } from "./kind.js";
 
 /**
  * Type reference as key in the map {@link Types}.
@@ -111,19 +111,7 @@ export interface WithName {
 
 export interface BaseType {
 	/** @see {@link TypeKind} */
-	kind: Exclude<
-		TypeKind,
-		| "array"
-		| "constructible"
-		| "function"
-		| "interface"
-		| "intersection"
-		| "literal"
-		| "tuple"
-		| "union"
-		| "type-parameter"
-		| "index"
-	>;
+	kind: BaseTypeKind;
 }
 
 export interface ArrayType {

@@ -48,6 +48,7 @@ export const TYPE_KIND = v.picklist([
 ]);
 
 /** @typedef {v.InferInput<typeof TYPE_KIND>} TypeKind */
+/** @typedef {v.InferInput<typeof BASE_TYPE_KIND>} BaseTypeKind */
 
 /**
  * @param {GetTypeParams} params
