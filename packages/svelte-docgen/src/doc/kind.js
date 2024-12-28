@@ -64,7 +64,7 @@ export function get_type_kind(params) {
 	if (flags & ts.TypeFlags.Unknown) return "unknown";
 	if (flags & ts.TypeFlags.Void) return "void";
 	if (flags & ts.TypeFlags.Literal) return "literal";
-	if (flags & ts.TypeFlags.UniqueESSymbol) return "literal"; // TODO: Is this correct?
+	if (flags & ts.TypeFlags.UniqueESSymbol) return "literal";
 	if (flags & ts.TypeFlags.BigInt) return "bigint";
 	if (flags & ts.TypeFlags.Boolean) return "boolean";
 	if (flags & ts.TypeFlags.Number) return "number";

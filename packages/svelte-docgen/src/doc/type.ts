@@ -195,7 +195,7 @@ export interface LiteralString {
 export interface LiteralSymbol {
 	kind: "literal";
 	subkind: "symbol";
-	alias?: string;
+	alias: string;
 }
 export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralString | LiteralSymbol;
 

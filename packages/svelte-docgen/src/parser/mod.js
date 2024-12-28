@@ -300,6 +300,7 @@ class Parser {
 			return {
 				kind,
 				subkind: "symbol",
+				alias: this.#get_fully_qualified_name(/** @type {ts.UniqueESSymbolType} */ (type).symbol),
 			};
 		}
 		// TODO: Document error

@@ -122,6 +122,7 @@ describe("NodeServer", () => {
 				    [
 				      "SnippetReturn",
 				      {
+				        "alias": "SnippetReturn",
 				        "kind": "literal",
 				        "subkind": "symbol",
 				      },
