@@ -1,40 +1,35 @@
 import { EditorState } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
-import { svelte } from "@replit/codemirror-lang-svelte";
-import { basicSetup } from "codemirror";
-
-// new EditorView({
-// 	state: EditorState.create({
-// 		doc: `<script>let a = "hello world";</script> <div>{a}</div>`,
-// 		extensions: [basicSetup, svelte()],
-// 	}),
-// 	parent: document.querySelector("#editor"),
-// });
 
 export class Manager {
-	#view: EditorView;
-	state: EditorState = $state(this.#create_state());
+	view = $state<EditorView>();
+	state: EditorState | undefined = $derived(this.view?.state);
 
-	constructor(view: EditorView) {
-		this.#view = view;
+	constructor() {
+		// this.#view = view;
+		// this.state = EditorState.create({
+		// 	doc: initial,
+		// 	extensions: [svelte()],
+		// });
 	}
 
-	#create_state(): EditorState {
-		return EditorState.create({
-			// TODO:
-			doc: "",
-			extensions: [svelte()],
-		});
-	}
+	// set view(view: EditorView) {
+	// 	this.#view = view;
+	// }
+	//
+	// get view(): EditorView {
+	// 	if (this.#view) return this.#view;
+	// 	throw new Error("EditorView was not set before accessing.");
+	// }
 
-	#update_state(content: string): void {
-		const current = this.state.doc.toString();
-		this.state.update({
-			changes: {
-				from: 0,
-				to: current.length,
-				insert: content,
-			},
-		});
-	}
+	// #update_state(content: string): void {
+	// 	const current = this.state.doc.toString();
+	// 	this.state.update({
+	// 		changes: {
+	// 			from: 0,
+	// 			to: current.length,
+	// 			insert: content,
+	// 		},
+	// 	});
+	// }
 }

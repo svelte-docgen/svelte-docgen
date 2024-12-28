@@ -17,12 +17,16 @@
 	"devDependencies": {
 		"@sveltejs/adapter-cloudflare": "^4.9.0",
 		"@sveltejs/kit": "^2.14.0",
+		"@sveltejs/svelte-json-tree": "^2.2.1",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@sveltepress/theme-default": "^5.0.5",
+		"@sveltepress/twoslash": "^1.1.5",
 		"@sveltepress/vite": "^1.1.2",
 		"@typescript/vfs": "^1.6.0",
 		"autoprefixer": "^10.4.20",
+		"isomorphic-dompurify": "^2.19.0",
 		"runed": "^0.22.0",
+		"shiki": "^1.24.4",
 		"svelte": "catalog:",
 		"svelte-docgen": "workspace:*",
 		"svelte2tsx": "^0.7.31"

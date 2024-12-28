@@ -23,6 +23,9 @@ export default defineConfig({
 			theme: defaultTheme({
 				logo: "/sveltepress.svg",
 				github: "https://github.com/svelte-docgen/svelte-docgen",
+				highlighter: {
+					twoslash: true,
+				},
 				navbar: [
 					// Add your navbar configs here
 					{
