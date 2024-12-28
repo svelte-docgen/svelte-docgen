@@ -2,4 +2,4 @@
 "svelte-docgen": patch
 ---
 
-Fix to handle tuple as a TypeReference
+Fix handling of tuples as TypeReference and add support for instantiable types.
