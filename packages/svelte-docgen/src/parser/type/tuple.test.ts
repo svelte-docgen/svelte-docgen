@@ -106,14 +106,13 @@ describe("Tuple", () => {
 		expect(recursive?.type).toBe("Recursive");
 		const type = types.get("Recursive");
 		expect((type as Doc.Union)?.types.length).toBe(2);
-		const anon_id = (type as Doc.Union)?.types[1];
-		if (!isTypeRef(anon_id)) throw new Error("Expected type reference");
-		const anon_type = types.get(anon_id);
-		const anon_id2 = (anon_type as Doc.Tuple)?.elements[0];
-		if (!isTypeRef(anon_id2)) throw new Error("Expected type reference");
-		const anon_type2 = types.get(anon_id2);
-		expect(anon_type2?.kind).toBe("union");
-		expect((anon_type2 as Doc.Union)?.types.length).toBe(3);
+		const anon = (type as Doc.Union)?.types[1];
+		if (!isTypeRef(anon)) throw new Error("Expected type reference");
+		const anon_type = types.get(anon);
+		const anon2 = (anon_type as Doc.Tuple)?.elements[0];
+		if (isTypeRef(anon2)) throw new Error("Expected union");
+		expect(anon2?.kind).toBe("union");
+		expect((anon2 as Doc.Union)?.types.length).toBe(3);
 	});
 
 	it("collects aliased types", ({ expect }) => {
@@ -219,17 +218,28 @@ describe("Tuple", () => {
 			      {
 			        "kind": "number",
 			      },
-			      "[<anon:0>]",
+			      "[<anon:8>]",
 			    ],
 			  },
-			  "[<anon:0>]" => {
+			  "[<anon:8>]" => {
 			    "elements": [
-			      "<anon:0>",
+			      {
+			        "kind": "union",
+			        "types": [
+			          {
+			            "kind": "string",
+			          },
+			          {
+			            "kind": "number",
+			          },
+			          "[<anon:8>]",
+			        ],
+			      },
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
 			  },
-			  "<anon:0>" => {
+			  "<anon:8>" => {
 			    "kind": "union",
 			    "types": [
 			      {
@@ -238,7 +248,7 @@ describe("Tuple", () => {
 			      {
 			        "kind": "number",
 			      },
-			      "[<anon:0>]",
+			      "[<anon:8>]",
 			    ],
 			  },
 			}

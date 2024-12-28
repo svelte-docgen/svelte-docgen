@@ -9,10 +9,10 @@
     c: C, u: 1 | "foo",
     s: Snippet<[A<number>]>,
     r: R,
-	index: keyof K;
-	indexedAccess: number[keyof K];
-	conditional: K extends string ? true : false;
-	stringMapping: Uppercase<K>; 
-	templateLiteral: `Hello, ${K}!`;
+    index: keyof K;
+    indexedAccess: number[keyof K];
+    conditional: K extends string ? true : false;
+    stringMapping: Uppercase<K>; 
+    templateLiteral: `Hello, ${K}!`;
   } = $props();
 </script>

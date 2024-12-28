@@ -43,7 +43,7 @@ class Parser {
 	types = new Map();
 
 	/** @type {Map<ts.Type, string>} */
-	#anonymous_types = new Map();
+	#reference_name_cache = new Map();
 
 	/**
 	 * @param {string} source
@@ -166,7 +166,7 @@ class Parser {
 	 */
 	#get_constructible_doc(type) {
 		const symbol = get_type_symbol(type);
-		const name = this.#checker.getFullyQualifiedName(symbol);
+		const name = this.#get_fully_qualified_name(symbol);
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
@@ -225,7 +225,7 @@ class Parser {
 			calls,
 		};
 		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -247,7 +247,7 @@ class Parser {
 			members,
 		};
 		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -268,7 +268,7 @@ class Parser {
 		/** @type {Doc.Intersection} */
 		let results = { kind: "intersection", types };
 		if (type.aliasSymbol) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -390,7 +390,7 @@ class Parser {
 			elements,
 		};
 		if (type.aliasSymbol) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -583,7 +583,7 @@ class Parser {
 			types,
 		};
 		if (type.aliasSymbol) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -597,9 +597,6 @@ class Parser {
 	 * @returns {Doc.TypeOrRef}
 	 */
 	#get_type_doc(type) {
-		const anon_id = this.#anonymous_types.get(type);
-		if (anon_id) return anon_id;
-
 		if (
 			!type.aliasSymbol &&
 			!is_type_reference(type) &&
@@ -610,8 +607,8 @@ class Parser {
 		}
 
 		// type reference
-		const name = this.#get_qualified_reference_name(type);
-		if (this.types.get(name) === undefined) {
+		const name = this.#get_reference_name(type);
+		if (!this.types.has(name)) {
 			this.types.set(name, { kind: "unknown" }); // reserve to prevent infinite recursion
 			const doc = this.#get_type_doc_internal(type);
 			this.types.set(name, doc);
@@ -620,39 +617,52 @@ class Parser {
 	}
 
 	/**
+	 * @param {ts.Symbol} symbol
+	 * @returns {string}
+	 */
+	#get_fully_qualified_name(symbol) {
+		const name = this.#checker.getFullyQualifiedName(symbol);
+		return name.replace(this.#root_path_url.pathname, "");
+	}
+
+	/**
 	 * @param {ts.Type} type
 	 * @returns {string}
 	 */
-	#get_qualified_reference_name(type) {
+	#get_reference_name(type) {
+		const cached = this.#reference_name_cache.get(type);
+		if (cached) return cached;
+
 		if (!type.aliasSymbol && is_type_reference(type)) {
 			// type reference (tuple, array, type reference)
 			if (this.#checker.isTupleType(type)) {
 				const readonly_prefix = /** @type {ts.TupleType} */ (type.target).readonly ? "readonly " : "";
-				return (
+				const name =
 					readonly_prefix +
 					"[" +
-					(type.typeArguments ?? []).map((type) => this.#get_qualified_reference_name(type)).join(", ") +
-					"]"
-				);
+					(type.typeArguments ?? []).map((type) => this.#get_reference_name(type)).join(", ") +
+					"]";
+				this.#reference_name_cache.set(type, name);
+				return name;
 			}
-			return (
-				this.#checker.getFullyQualifiedName(type.symbol) +
+			const name =
+				this.#get_fully_qualified_name(type.symbol) +
 				(type.typeArguments && type.typeArguments.length
-					? "<" + type.typeArguments.map((type) => this.#get_qualified_reference_name(type)).join(", ") + ">"
-					: "")
-			);
+					? "<" + type.typeArguments.map((type) => this.#get_reference_name(type)).join(", ") + ">"
+					: "");
+			this.#reference_name_cache.set(type, name);
+			return name;
 		}
 
 		// alias or named type
 		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
-			return (
-				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
+			const name =
+				this.#get_fully_qualified_name(type.aliasSymbol || type.symbol) +
 				(type.aliasTypeArguments && type.aliasTypeArguments.length
-					? "<" +
-						type.aliasTypeArguments.map((type) => this.#get_qualified_reference_name(type)).join(", ") +
-						">"
-					: "")
-			);
+					? "<" + type.aliasTypeArguments.map((type) => this.#get_reference_name(type)).join(", ") + ">"
+					: "");
+			this.#reference_name_cache.set(type, name);
+			return name;
 		}
 
 		if (
@@ -674,14 +684,11 @@ class Parser {
 		}
 
 		// anonymous type
-		let typeref = this.#anonymous_types.get(type);
-		if (typeref) {
-			return typeref;
-		}
-		typeref = `<anon:${this.#anonymous_types.size}>`;
-		this.#anonymous_types.set(type, typeref);
-		this.types.set(typeref, this.#get_type_doc_internal(type));
-		return typeref;
+		const name = `<anon:${this.#reference_name_cache.size}>`;
+		this.#reference_name_cache.set(type, name);
+		this.types.set(name, this.#get_type_doc_internal(type));
+		this.#reference_name_cache.set(type, name);
+		return name;
 	}
 
 	/**
