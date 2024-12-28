@@ -29,13 +29,21 @@ export const ADVANCED_TYPE_KIND = v.picklist([
 	"intersection",
 	"literal",
 	"tuple",
-	"type-parameter",
 	"union",
+]);
+export const INSTANTIABLE_TYPE_KIND = v.picklist([
+	"type-parameter",
+	"index",
+	"indexed-access",
+	"conditional",
+	"template-literal",
+	"string-mapping",
 ]);
 export const TYPE_KIND = v.picklist([
 	//
 	...BASE_TYPE_KIND.options,
 	...ADVANCED_TYPE_KIND.options,
+	...INSTANTIABLE_TYPE_KIND.options,
 ]);
 
 /** @typedef {v.InferInput<typeof TYPE_KIND>} TypeKind */
@@ -54,11 +62,8 @@ export function get_type_kind(params) {
 	if (flags & ts.TypeFlags.Undefined) return "undefined";
 	if (flags & ts.TypeFlags.Unknown) return "unknown";
 	if (flags & ts.TypeFlags.Void) return "void";
-	if (flags & ts.TypeFlags.BigIntLiteral) return "literal";
-	if (flags & ts.TypeFlags.BooleanLiteral) return "literal";
-	if (flags & ts.TypeFlags.NumberLiteral) return "literal";
-	if (flags & ts.TypeFlags.StringLiteral) return "literal";
-	if (flags & ts.TypeFlags.UniqueESSymbol) return "literal";
+	if (flags & ts.TypeFlags.Literal) return "literal";
+	if (flags & ts.TypeFlags.UniqueESSymbol) return "literal"; // TODO: Is this correct?
 	if (flags & ts.TypeFlags.BigInt) return "bigint";
 	if (flags & ts.TypeFlags.Boolean) return "boolean";
 	if (flags & ts.TypeFlags.Number) return "number";
@@ -73,6 +78,11 @@ export function get_type_kind(params) {
 	if (type.isClassOrInterface()) return is_constructible(type, extractor) ? "constructible" : "interface";
 	if (type.getCallSignatures().length > 0) return "function";
 	if (type.isTypeParameter()) return "type-parameter";
+	if (flags & ts.TypeFlags.Index) return "index";
+	if (flags & ts.TypeFlags.IndexedAccess) return "indexed-access";
+	if (flags & ts.TypeFlags.Conditional) return "conditional";
+	if (flags & ts.TypeFlags.TemplateLiteral) return "template-literal";
+	if (flags & ts.TypeFlags.StringMapping) return "string-mapping";
 	// WARN: Must be last
 	if (is_object_type(type)) {
 		// FIXME: Sometimes the constructible type is not recognized with `ts.Type.isClassOrInterface()` - e.g. `Map` - don't know why.

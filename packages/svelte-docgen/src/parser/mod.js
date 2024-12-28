@@ -43,7 +43,7 @@ class Parser {
 	types = new Map();
 
 	/** @type {Map<ts.Type, string>} */
-	#anonymous_type_map = new Map();
+	#anonymous_types = new Map();
 
 	/**
 	 * @param {string} source
@@ -224,7 +224,7 @@ class Parser {
 			kind: "function",
 			calls,
 		};
-		if (type.aliasSymbol || type.symbol.name !== AnonTypeLiteralSymbolName) {
+		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
 			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
@@ -246,7 +246,7 @@ class Parser {
 			kind: "interface",
 			members,
 		};
-		if (type.aliasSymbol || type.symbol.name !== AnonTypeLiteralSymbolName) {
+		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
 			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
@@ -420,6 +420,101 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
+	 * @returns {Doc.Index}
+	 */
+	#get_index_doc(type) {
+		// TODO: Document error
+		if (!type.isIndexType()) throw new Error(`Expected Index type, got ${this.#checker.typeToString(type)}`);
+		/** @type {Doc.Index} */
+		let results = {
+			kind: "index",
+			type: this.#get_type_doc(type.type),
+		};
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.IndexedAccess}
+	 */
+	#get_indexed_access_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.IndexedAccess))
+			throw new Error(`Expected indexed access type, got ${this.#checker.typeToString(type)}`);
+		let ia_type = /** @type {ts.IndexedAccessType} */ (type);
+		/** @type {Doc.IndexedAccess} */
+		let results = {
+			kind: "indexed-access",
+			objectType: this.#get_type_doc(ia_type.objectType),
+			indexType: this.#get_type_doc(ia_type.indexType),
+		};
+		if (ia_type.constraint) results.constraint = this.#get_type_doc(ia_type.constraint);
+		if (ia_type.simplifiedForReading && ia_type.simplifiedForReading !== type)
+			results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForReading);
+		if (ia_type.simplifiedForWriting && ia_type.simplifiedForWriting !== type)
+			results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForWriting);
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.Conditional}
+	 */
+	#get_conditional_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.Conditional))
+			throw new Error(`Expected Conditional type, got ${this.#checker.typeToString(type)}`);
+		let conditional = /** @type {ts.ConditionalType} */ (type);
+		/** @type {Doc.Conditional} */
+		let results = {
+			kind: "conditional",
+			checkType: this.#get_type_doc(conditional.checkType),
+			extendsType: this.#get_type_doc(conditional.extendsType),
+		};
+		if (conditional.resolvedTrueType) results.resolvedTrueType = this.#get_type_doc(conditional.resolvedTrueType);
+		if (conditional.resolvedFalseType)
+			results.resolvedFalseType = this.#get_type_doc(conditional.resolvedFalseType);
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.StringMapping}
+	 */
+	#get_string_mapping_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.StringMapping))
+			throw new Error(`Expected string mapping type, got ${this.#checker.typeToString(type)}`);
+		let string_mapping = /** @type {ts.StringMappingType} */ (type);
+		/** @type {Doc.StringMapping} */
+		let results = {
+			kind: "string-mapping",
+			type: this.#get_type_doc(string_mapping.type),
+			name: string_mapping.symbol.name,
+		};
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.TemplateLiteral}
+	 */
+	#get_template_literal_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.TemplateLiteral))
+			throw new Error(`Expected template literal type, got ${this.#checker.typeToString(type)}`);
+		let template_literal = /** @type {ts.TemplateLiteralType} */ (type);
+		/** @type {Doc.TemplateLiteral} */
+		let results = {
+			kind: "template-literal",
+			texts: template_literal.texts,
+			types: template_literal.types.map((t) => this.#get_type_doc(t)),
+		};
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
 	 * @returns {Doc.WithAlias['sources'] | Doc.WithName["sources"]}
 	 */
 	#get_type_sources(type) {
@@ -486,7 +581,7 @@ class Parser {
 	 * @returns {Doc.TypeOrRef}
 	 */
 	#get_type_doc(type) {
-		const anon_id = this.#anonymous_type_map.get(type);
+		const anon_id = this.#anonymous_types.get(type);
 		if (anon_id) return anon_id;
 
 		if (
@@ -494,12 +589,12 @@ class Parser {
 			!is_type_reference(type) &&
 			(!type.symbol || type.symbol.name === AnonTypeLiteralSymbolName)
 		) {
-			// anonymous type
+			// immediate type
 			return this.#get_type_doc_internal(type);
 		}
 
 		// type reference
-		const name = this.#get_qualified_typeref_name(type);
+		const name = this.#get_qualified_reference_name(type);
 		if (this.types.get(name) === undefined) {
 			this.types.set(name, { kind: "unknown" }); // reserve to prevent infinite recursion
 			const doc = this.#get_type_doc_internal(type);
@@ -512,7 +607,7 @@ class Parser {
 	 * @param {ts.Type} type
 	 * @returns {string}
 	 */
-	#get_qualified_typeref_name(type) {
+	#get_qualified_reference_name(type) {
 		if (!type.aliasSymbol && is_type_reference(type)) {
 			// type reference (tuple, array, type reference)
 			if (this.#checker.isTupleType(type)) {
@@ -520,25 +615,25 @@ class Parser {
 				return (
 					readonly_prefix +
 					"[" +
-					(type.typeArguments ?? []).map((type) => this.#get_qualified_typeref_name(type)).join(", ") +
+					(type.typeArguments ?? []).map((type) => this.#get_qualified_reference_name(type)).join(", ") +
 					"]"
 				);
 			}
 			return (
-				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
+				this.#checker.getFullyQualifiedName(type.symbol) +
 				(type.typeArguments && type.typeArguments.length
-					? "<" + type.typeArguments.map((type) => this.#get_qualified_typeref_name(type)).join(", ") + ">"
+					? "<" + type.typeArguments.map((type) => this.#get_qualified_reference_name(type)).join(", ") + ">"
 					: "")
 			);
 		}
-		const symbol = type.aliasSymbol || type.symbol;
+
 		// alias or named type
-		if (symbol && symbol.name !== AnonTypeLiteralSymbolName) {
+		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
 			return (
 				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
 				(type.aliasTypeArguments && type.aliasTypeArguments.length
 					? "<" +
-						type.aliasTypeArguments.map((type) => this.#get_qualified_typeref_name(type)).join(", ") +
+						type.aliasTypeArguments.map((type) => this.#get_qualified_reference_name(type)).join(", ") +
 						">"
 					: "")
 			);
@@ -563,12 +658,12 @@ class Parser {
 		}
 
 		// anonymous type
-		let typeref = this.#anonymous_type_map.get(type);
+		let typeref = this.#anonymous_types.get(type);
 		if (typeref) {
 			return typeref;
 		}
-		typeref = `<anon:${this.#anonymous_type_map.size}>`;
-		this.#anonymous_type_map.set(type, typeref);
+		typeref = `<anon:${this.#anonymous_types.size}>`;
+		this.#anonymous_types.set(type, typeref);
 		this.types.set(typeref, this.#get_type_doc_internal(type));
 		return typeref;
 	}
@@ -594,10 +689,20 @@ class Parser {
 				return this.#get_literal_doc(type);
 			case "tuple":
 				return this.#get_tuple_doc(type);
-			case "type-parameter":
-				return this.#get_type_param_doc(type);
 			case "union":
 				return this.#get_union_doc(type);
+			case "type-parameter":
+				return this.#get_type_param_doc(type);
+			case "index":
+				return this.#get_index_doc(type);
+			case "indexed-access":
+				return this.#get_indexed_access_doc(type);
+			case "conditional":
+				return this.#get_conditional_doc(type);
+			case "template-literal":
+				return this.#get_template_literal_doc(type);
+			case "string-mapping":
+				return this.#get_string_mapping_doc(type);
 			default:
 				return { kind };
 		}

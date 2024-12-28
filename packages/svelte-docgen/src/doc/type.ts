@@ -22,7 +22,12 @@ export type Type =
 	| Literal
 	| Tuple
 	| TypeParam
-	| Union;
+	| Union
+	| Index
+	| IndexedAccess
+	| Conditional
+	| TemplateLiteral
+	| StringMapping;
 
 export type TypeOrRef = Type | TypeRef;
 
@@ -114,8 +119,9 @@ export interface BaseType {
 		| "intersection"
 		| "literal"
 		| "tuple"
-		| "type-parameter"
 		| "union"
+		| "type-parameter"
+		| "index"
 	>;
 }
 
@@ -204,6 +210,12 @@ export interface Tuple extends WithAlias {
 	elements: TypeOrRef[];
 }
 
+export interface Union extends WithAlias {
+	kind: "union";
+	types: TypeOrRef[];
+	nonNullable?: TypeOrRef;
+}
+
 export interface TypeParam {
 	kind: "type-parameter";
 	name: string;
@@ -212,8 +224,36 @@ export interface TypeParam {
 	default?: TypeOrRef;
 }
 
-export interface Union extends WithAlias {
-	kind: "union";
+export interface Index {
+	kind: "index";
+	type: TypeOrRef;
+}
+
+export interface IndexedAccess {
+	kind: "indexed-access";
+	objectType: TypeOrRef;
+	indexType: TypeOrRef;
+	constraint?: TypeOrRef;
+	simplifiedForReading?: TypeOrRef;
+	simplifiedForWriting?: TypeOrRef;
+}
+
+export interface Conditional {
+	kind: "conditional";
+	checkType: TypeOrRef;
+	extendsType: TypeOrRef;
+	resolvedTrueType?: TypeOrRef;
+	resolvedFalseType?: TypeOrRef;
+}
+
+export interface TemplateLiteral {
+	kind: "template-literal";
+	texts: readonly string[];
 	types: TypeOrRef[];
-	nonNullable?: TypeOrRef;
+}
+
+export interface StringMapping {
+	kind: "string-mapping";
+	type: TypeOrRef;
+	name: string;
 }
