@@ -36,6 +36,7 @@ export const INSTANTIABLE_TYPE_KIND = v.picklist([
 	"index",
 	"indexed-access",
 	"conditional",
+	"substitution",
 	"template-literal",
 	"string-mapping",
 ]);
@@ -81,6 +82,7 @@ export function get_type_kind(params) {
 	if (flags & ts.TypeFlags.Index) return "index";
 	if (flags & ts.TypeFlags.IndexedAccess) return "indexed-access";
 	if (flags & ts.TypeFlags.Conditional) return "conditional";
+	if (flags & ts.TypeFlags.Substitution) return "substitution";
 	if (flags & ts.TypeFlags.TemplateLiteral) return "template-literal";
 	if (flags & ts.TypeFlags.StringMapping) return "string-mapping";
 	// WARN: Must be last

@@ -26,6 +26,7 @@ export type Type =
 	| Index
 	| IndexedAccess
 	| Conditional
+	| Substitution
 	| TemplateLiteral
 	| StringMapping;
 
@@ -244,6 +245,12 @@ export interface Conditional {
 	extendsType: TypeOrRef;
 	resolvedTrueType?: TypeOrRef;
 	resolvedFalseType?: TypeOrRef;
+}
+
+export interface Substitution {
+	kind: "substitution";
+	baseType: TypeOrRef;
+	constraint: TypeOrRef;
 }
 
 export interface TemplateLiteral {

@@ -463,7 +463,7 @@ class Parser {
 	#get_conditional_doc(type) {
 		// TODO: Document error
 		if (!(type.flags & ts.TypeFlags.Conditional))
-			throw new Error(`Expected Conditional type, got ${this.#checker.typeToString(type)}`);
+			throw new Error(`Expected conditional type, got ${this.#checker.typeToString(type)}`);
 		let conditional = /** @type {ts.ConditionalType} */ (type);
 		/** @type {Doc.Conditional} */
 		let results = {
@@ -475,6 +475,22 @@ class Parser {
 		if (conditional.resolvedFalseType)
 			results.resolvedFalseType = this.#get_type_doc(conditional.resolvedFalseType);
 		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.Substitution}
+	 */
+	#get_substitution_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.Substitution))
+			throw new Error(`Expected substitution type, got ${this.#checker.typeToString(type)}`);
+		let substitution = /** @type {ts.SubstitutionType} */ (type);
+		return {
+			kind: "substitution",
+			baseType: this.#get_type_doc(substitution.baseType),
+			constraint: this.#get_type_doc(substitution.constraint),
+		};
 	}
 
 	/**
@@ -699,6 +715,8 @@ class Parser {
 				return this.#get_indexed_access_doc(type);
 			case "conditional":
 				return this.#get_conditional_doc(type);
+			case "substitution":
+				return this.#get_substitution_doc(type);
 			case "template-literal":
 				return this.#get_template_literal_doc(type);
 			case "string-mapping":
