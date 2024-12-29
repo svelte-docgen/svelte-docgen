@@ -23,6 +23,11 @@ overrides:
   vite: ^6.0.5
   '@sveltejs/vite-plugin-svelte': ^5.0.0
 
+patchedDependencies:
+  pathe:
+    hash: kbjqganfdnztbz7ujevxrce2we
+    path: patches/pathe.patch
+
 importers:
 
   .:
@@ -62,7 +67,7 @@ importers:
         version: 15.14.0
       pathe:
         specifier: ^1.1.2
-        version: 1.1.2
+        version: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
       prettier:
         specifier: ^3.4.2
         version: 3.4.2
@@ -7220,7 +7225,7 @@ snapshots:
       consola: 3.3.0
       fast-glob: 3.3.2
       magic-string: 0.30.17
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
       perfect-debounce: 1.0.0
     transitivePeerDependencies:
       - rollup
@@ -7405,13 +7410,13 @@ snapshots:
   '@vitest/runner@2.1.8':
     dependencies:
       '@vitest/utils': 2.1.8
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
 
   '@vitest/snapshot@2.1.8':
     dependencies:
       '@vitest/pretty-format': 2.1.8
       magic-string: 0.30.17
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
 
   '@vitest/spy@2.1.8':
     dependencies:
@@ -7422,7 +7427,7 @@ snapshots:
       '@vitest/utils': 2.1.8
       fflate: 0.8.2
       flatted: 3.3.2
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
       sirv: 3.0.0
       tinyglobby: 0.2.10
       tinyrainbow: 1.2.0
@@ -8667,7 +8672,7 @@ snapshots:
       esbuild: 0.23.1
       jiti: 2.0.0-beta.3
       jiti-v1: jiti@1.21.7
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
       tsx: 4.19.2
     transitivePeerDependencies:
       - supports-color
@@ -9499,7 +9504,7 @@ snapshots:
   mlly@1.7.3:
     dependencies:
       acorn: 8.14.0
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
       pkg-types: 1.2.1
       ufo: 1.5.4
 
@@ -9688,7 +9693,7 @@ snapshots:
 
   path-type@4.0.0: {}
 
-  pathe@1.1.2: {}
+  pathe@1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we): {}
 
   pathval@2.0.0: {}
 
@@ -9710,7 +9715,7 @@ snapshots:
     dependencies:
       confbox: 0.1.8
       mlly: 1.7.3
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
 
   possible-typed-array-names@1.0.0: {}
 
@@ -10595,7 +10600,7 @@ snapshots:
     dependencies:
       defu: 6.1.4
       ohash: 1.1.4
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
       ufo: 1.5.4
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
@@ -10726,7 +10731,7 @@ snapshots:
       cac: 6.7.14
       debug: 4.4.0
       es-module-lexer: 1.5.4
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
       vite: 6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)
     transitivePeerDependencies:
       - '@types/node'
@@ -10799,7 +10804,7 @@ snapshots:
       debug: 4.4.0
       expect-type: 1.1.0
       magic-string: 0.30.17
-      pathe: 1.1.2
+      pathe: 1.1.2(patch_hash=kbjqganfdnztbz7ujevxrce2we)
       std-env: 3.8.0
       tinybench: 2.9.0
       tinyexec: 0.3.1

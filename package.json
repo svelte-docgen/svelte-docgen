@@ -58,6 +58,9 @@
 		"overrides": {
 			"vite": "^6.0.5",
 			"@sveltejs/vite-plugin-svelte": "^5.0.0"
+		},
+		"patchedDependencies": {
+			"pathe": "patches/pathe.patch"
 		}
 	}
 }
