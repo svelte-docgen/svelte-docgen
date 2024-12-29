@@ -13,16 +13,10 @@ interface Package {
 
 export async function load() {
 	if (!building && !dev) throw new Error("Unreachable");
-	const [{ default: normalize }, path] = await Promise.all([
-		import("normalize-package-data"),
-		import("node:path"),
-	]);
-	const glob_packages = import.meta.glob(
-		"../../../../../packages/**/package.json",
-		{
-			import: "default",
-		},
-	);
+	const [{ default: normalize }, path] = await Promise.all([import("normalize-package-data"), import("node:path")]);
+	const glob_packages = import.meta.glob("../../../../../packages/**/package.json", {
+		import: "default",
+	});
 	const packages = new Map<string, Package>(
 		await Promise.all(
 			Object.entries(glob_packages).map(async ([pkg_path, mod]) => {
@@ -33,24 +27,21 @@ export async function load() {
 					{
 						data,
 						dirname: get_pkg_dirname({ input: pkg_path, path }),
-						// NOTE: We will update later
+						// NOTE: Placeholder - we will update below
 						readme: "",
 					},
 				] as const;
 			}),
 		),
 	);
-	const glob_readmes = import.meta.glob(
-		"../../../../../packages/**/README.md",
-		{
-			query: "?raw",
-			import: "default",
-		},
-	);
+	const glob_readmes = import.meta.glob("../../../../../packages/**/README.md", {
+		query: "?raw",
+		import: "default",
+	});
 	for (const [md_path, mod] of Object.entries(glob_readmes)) {
 		const name = get_pkg_name({ input: md_path, path });
 		const pkg = packages.get(name);
-		if (!pkg) throw new Error(`Could not find package for: ${md_path}`);
+		if (!pkg) throw new Error(`Could not find package entry for: ${md_path}`);
 		const readme = (await mod()) as string;
 		packages.set(name, { ...pkg, readme });
 	}
@@ -59,10 +50,7 @@ export async function load() {
 	};
 }
 
-function get_pkg_dirname(params: {
-	input: string;
-	path: typeof import("node:path");
-}): string {
+function get_pkg_dirname(params: { input: string; path: typeof import("node:path") }): string {
 	const { input, path } = params;
 	return path.dirname(path.relative("../../../../../packages", input));
 }
