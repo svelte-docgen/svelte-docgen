@@ -33,12 +33,12 @@ describe("Instantiable types", () => {
 		expect(indexedAccess.type?.kind).toBe("indexed-access");
 		expect(indexedAccess.type).toMatchInlineSnapshot(`
 			{
-			  "indexType": {
+			  "index": {
 			    "kind": "index",
 			    "type": "K",
 			  },
 			  "kind": "indexed-access",
-			  "objectType": {
+			  "object": {
 			    "kind": "number",
 			  },
 			}
@@ -49,23 +49,23 @@ describe("Instantiable types", () => {
 		const conditional = props.get("conditional");
 		if (!conditional?.type || isTypeRef(conditional?.type)) throw new Error("must be a type");
 		expect(conditional?.type.kind).toBe("conditional");
-		const resolvedTrueType = (conditional?.type as Doc.Conditional).resolvedTrueType!;
+		const resolvedTrueType = (conditional?.type as Doc.Conditional).truthy!;
 		if (isTypeRef(resolvedTrueType)) throw new Error("must be a type");
 		expect(resolvedTrueType.kind).toBe("substitution");
 		expect(conditional.type).toMatchInlineSnapshot(`
 			{
-			  "checkType": "K",
-			  "extendsType": {
+			  "check": "K",
+			  "extends": {
 			    "kind": "string",
 			  },
-			  "kind": "conditional",
-			  "resolvedFalseType": {
+			  "falsy": {
 			    "kind": "literal",
 			    "subkind": "boolean",
 			    "value": false,
 			  },
-			  "resolvedTrueType": {
-			    "baseType": "K",
+			  "kind": "conditional",
+			  "truthy": {
+			    "base": "K",
 			    "constraint": {
 			      "kind": "string",
 			    },

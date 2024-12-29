@@ -446,8 +446,8 @@ class Parser {
 		/** @type {Doc.IndexedAccess} */
 		let results = {
 			kind: "indexed-access",
-			objectType: this.#get_type_doc(ia_type.objectType),
-			indexType: this.#get_type_doc(ia_type.indexType),
+			object: this.#get_type_doc(ia_type.objectType),
+			index: this.#get_type_doc(ia_type.indexType),
 		};
 		if (ia_type.constraint) results.constraint = this.#get_type_doc(ia_type.constraint);
 		if (ia_type.simplifiedForReading && ia_type.simplifiedForReading !== type)
@@ -469,12 +469,11 @@ class Parser {
 		/** @type {Doc.Conditional} */
 		let results = {
 			kind: "conditional",
-			checkType: this.#get_type_doc(conditional.checkType),
-			extendsType: this.#get_type_doc(conditional.extendsType),
+			check: this.#get_type_doc(conditional.checkType),
+			extends: this.#get_type_doc(conditional.extendsType),
 		};
-		if (conditional.resolvedTrueType) results.resolvedTrueType = this.#get_type_doc(conditional.resolvedTrueType);
-		if (conditional.resolvedFalseType)
-			results.resolvedFalseType = this.#get_type_doc(conditional.resolvedFalseType);
+		if (conditional.resolvedTrueType) results.truthy = this.#get_type_doc(conditional.resolvedTrueType);
+		if (conditional.resolvedFalseType) results.falsy = this.#get_type_doc(conditional.resolvedFalseType);
 		return results;
 	}
 
@@ -489,7 +488,7 @@ class Parser {
 		let substitution = /** @type {ts.SubstitutionType} */ (type);
 		return {
 			kind: "substitution",
-			baseType: this.#get_type_doc(substitution.baseType),
+			base: this.#get_type_doc(substitution.baseType),
 			constraint: this.#get_type_doc(substitution.constraint),
 		};
 	}

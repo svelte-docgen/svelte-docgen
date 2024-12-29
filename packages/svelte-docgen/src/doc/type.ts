@@ -220,8 +220,8 @@ export interface Index {
 
 export interface IndexedAccess {
 	kind: "indexed-access";
-	objectType: TypeOrRef;
-	indexType: TypeOrRef;
+	object: TypeOrRef;
+	index: TypeOrRef;
 	constraint?: TypeOrRef;
 	simplifiedForReading?: TypeOrRef;
 	simplifiedForWriting?: TypeOrRef;
@@ -229,15 +229,15 @@ export interface IndexedAccess {
 
 export interface Conditional {
 	kind: "conditional";
-	checkType: TypeOrRef;
-	extendsType: TypeOrRef;
-	resolvedTrueType?: TypeOrRef;
-	resolvedFalseType?: TypeOrRef;
+	check: TypeOrRef;
+	extends: TypeOrRef;
+	truthy?: TypeOrRef;
+	falsy?: TypeOrRef;
 }
 
 export interface Substitution {
 	kind: "substitution";
-	baseType: TypeOrRef;
+	base: TypeOrRef;
 	constraint: TypeOrRef;
 }
 
