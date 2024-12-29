@@ -1,21 +1,18 @@
-import type { Package as NormalizedPkgData } from "normalize-package-data";
+import type { Package as PkgData } from "normalize-package-data";
 
-import { building } from "$app/environment";
+import { building, dev } from "$app/environment";
 
-const ORG_NAME = "@svelte-docgen";
-const PREFIX_EXCEPTIONS = new Set([
-	"svelte-docgen",
-	"vite-plugin-svelte-docgen",
-]);
+import { EXCEPTIONS } from "../../params/pkg_name.ts";
+import { ORG_NAME } from "../../params/org_name.ts";
 
 interface Package {
-	data: NormalizedPkgData;
+	data: PkgData;
 	dirname: string;
 	readme: string;
 }
 
 export async function load() {
-	if (!building) throw new Error("Unreachable");
+	if (!building && !dev) throw new Error("Unreachable");
 	const [{ default: normalize }, path] = await Promise.all([
 		import("normalize-package-data"),
 		import("node:path"),
@@ -29,7 +26,7 @@ export async function load() {
 	const packages = new Map<string, Package>(
 		await Promise.all(
 			Object.entries(glob_packages).map(async ([pkg_path, mod]) => {
-				const data = (await mod()) as NormalizedPkgData;
+				const data = (await mod()) as PkgData;
 				normalize(data, true);
 				return [
 					data.name,
@@ -72,6 +69,7 @@ function get_pkg_dirname(params: {
 
 function get_pkg_name(params: Parameters<typeof get_pkg_dirname>[0]): string {
 	const dirname = get_pkg_dirname(params);
-	if (PREFIX_EXCEPTIONS.has(dirname)) return dirname;
+	// @ts-expect-error: WARN: `Set.has()` doesn't accept loose `string`
+	if (EXCEPTIONS.has(dirname)) return dirname;
 	return `${ORG_NAME}/${dirname}`;
 }

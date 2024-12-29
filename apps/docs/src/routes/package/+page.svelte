@@ -6,7 +6,7 @@
 
 {#each data.packages as [name, pkg]}
 	<div>
-		<a href={`/package/${globalThis.encodeURIComponent(name)}`}><h2>{name}</h2></a>
+		<a href={`/package/${name}`}><h2>{name}</h2></a>
 		<p class="description">{pkg.data.description}</p>
 		<small>Version: {pkg.data.version}</small>
 	</div>
