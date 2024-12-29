@@ -223,8 +223,9 @@ export interface IndexedAccess {
 	object: TypeOrRef;
 	index: TypeOrRef;
 	constraint?: TypeOrRef;
-	simplifiedForReading?: TypeOrRef;
-	simplifiedForWriting?: TypeOrRef;
+	// TODO: Commenting these out for now as it's unclear if they are useful for users
+	// simplifiedForReading?: TypeOrRef;
+	// simplifiedForWriting?: TypeOrRef;
 }
 
 export interface Conditional {

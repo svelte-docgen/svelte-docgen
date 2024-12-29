@@ -450,10 +450,13 @@ class Parser {
 			index: this.#get_type_doc(ia_type.indexType),
 		};
 		if (ia_type.constraint) results.constraint = this.#get_type_doc(ia_type.constraint);
-		if (ia_type.simplifiedForReading && ia_type.simplifiedForReading !== type)
-			results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForReading);
-		if (ia_type.simplifiedForWriting && ia_type.simplifiedForWriting !== type)
-			results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForWriting);
+
+		// TODO: Commenting these out for now as it's unclear if they are useful for users
+		//
+		// if (ia_type.simplifiedForReading && ia_type.simplifiedForReading !== type)
+		// 	results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForReading);
+		// if (ia_type.simplifiedForWriting && ia_type.simplifiedForWriting !== type)
+		// 	results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForWriting);
 		return results;
 	}
 
