@@ -562,13 +562,15 @@ class Parser {
 		if (type.aliasSymbol || type === non_nullable) {
 			types = type.types.map((t) => this.#get_type_doc(t));
 		} else {
-			// nullable types
+			// The TypeScript compiler expands unions eagerly:
+			//     type U = a | b;
+			//     x?: U; // expands to `a | b | undefined` instead of `U | undefined`
+			// To minimize such expansions, we explicitly combine the nullable and non-nullable elements of a union.
 			types.push(
 				...type.types
 					.filter((t) => t.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined | ts.TypeFlags.Void))
 					.map((t) => this.#get_type_doc(t)),
 			);
-			// non-nullable types
 			const non_nullable_doc = this.#get_type_doc(non_nullable);
 			if (isTypeRef(non_nullable_doc)) types.push(non_nullable_doc);
 			else if (non_nullable_doc.kind === "union") {
@@ -618,6 +620,7 @@ class Parser {
 	}
 
 	/**
+	 * Get fully qualified name of a symbol with hiding private file path.
 	 * @param {ts.Symbol} symbol
 	 * @returns {string}
 	 */
@@ -627,6 +630,7 @@ class Parser {
 	}
 
 	/**
+	 * Get a unique name for an aliased/named type or ReferenceType.
 	 * @param {ts.Type} type
 	 * @returns {string}
 	 */
@@ -634,8 +638,9 @@ class Parser {
 		const cached = this.#reference_name_cache.get(type);
 		if (cached) return cached;
 
+		// type reference (tuple, array, type reference)
 		if (!type.aliasSymbol && is_type_reference(type)) {
-			// type reference (tuple, array, type reference)
+			// tuples
 			if (this.#checker.isTupleType(type)) {
 				const readonly_prefix = /** @type {ts.TupleType} */ (type.target).readonly ? "readonly " : "";
 				const name =
@@ -646,6 +651,7 @@ class Parser {
 				this.#reference_name_cache.set(type, name);
 				return name;
 			}
+			// others
 			const name =
 				this.#get_fully_qualified_name(type.symbol) +
 				(type.typeArguments && type.typeArguments.length
@@ -655,7 +661,7 @@ class Parser {
 			return name;
 		}
 
-		// alias or named type
+		// aliased or named type
 		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
 			const name =
 				this.#get_fully_qualified_name(type.aliasSymbol || type.symbol) +

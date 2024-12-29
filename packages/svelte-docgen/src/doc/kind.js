@@ -64,14 +64,13 @@ export function get_type_kind(params) {
 	if (flags & ts.TypeFlags.Undefined) return "undefined";
 	if (flags & ts.TypeFlags.Unknown) return "unknown";
 	if (flags & ts.TypeFlags.Void) return "void";
-	if (flags & ts.TypeFlags.Literal) return "literal";
+	if (flags & ts.TypeFlags.Literal) return "literal"; // StringLiteral | NumberLiteral | BigIntLiteral | BooleanLiteral
 	if (flags & ts.TypeFlags.UniqueESSymbol) return "literal";
 	if (flags & ts.TypeFlags.BigInt) return "bigint";
 	if (flags & ts.TypeFlags.Boolean) return "boolean";
 	if (flags & ts.TypeFlags.Number) return "number";
 	if (flags & ts.TypeFlags.String) return "string";
 	if (flags & ts.TypeFlags.ESSymbol) return "symbol";
-	if (flags & ts.TypeFlags.ESSymbolLike) return "symbol";
 	if (extractor.checker.isTupleType(type)) return "tuple";
 	if (type.isIntersection()) return "intersection";
 	if (type.isUnion()) return "union";
