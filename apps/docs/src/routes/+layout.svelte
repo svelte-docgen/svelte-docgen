@@ -89,7 +89,7 @@
 <Sidebar.Provider>
 	<AppSidebar {...sidebar} />
 
-	<main class="size-full">
+	<main class="w-screen min-h-screen">
 		<AppHeader {routes} />
 		{@render children?.()}
 	</main>

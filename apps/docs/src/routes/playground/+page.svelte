@@ -1,21 +1,20 @@
 <script lang="ts">
+	import { Transaction } from "@codemirror/state";
+	import { Debounced } from "runed";
 	import ts from "typescript";
 	import * as tsvfs from "@typescript/vfs";
 
+	import * as Repl from "$lib/components/repl/index.ts";
+
 	import { browser } from "$app/environment";
-	import { Debounced } from "runed";
 
 	import { prepareDocgen, COMPILER_OPTIONS } from "./demo";
-	import initial from "./initial.txt?raw";
+	import initial from "./initial.svelte?raw";
 
-	let docgen: ((source: string) => string) | undefined = $state();
-	let source = $state(initial);
-	let debouncedSource = new Debounced(() => source, 500);
-	let encoded = $state("");
-	let error: string = $state("");
-
-	if (browser) {
-		(async () => {
+	let transaction = $state<Transaction>();
+	let source = new Debounced(() => transaction?.newDoc.toString() ?? initial, 500);
+	let docgen = $derived.by(async () => {
+		if (browser && source.current) { // FIXME:: is this check necessary? derived AFAIK always runs in browser
 			const fsmap = await tsvfs.createDefaultMapFromCDN(
 				COMPILER_OPTIONS,
 				ts.version,
@@ -23,38 +22,34 @@
 				ts,
 				// lzstring
 			);
-
 			for (const [k, v] of Object.entries(
 				import.meta.glob("/node_modules/svelte/**/*.d.ts", { query: "?raw", exhaustive: true, eager: true }),
 			)) {
 				// @ts-expect-error: v is a string
 				fsmap.set(k, v.default);
 			}
-
-			docgen = prepareDocgen(fsmap);
-		})();
-	}
-
-	$effect(() => {
-		if (!docgen) return;
-		try {
-			encoded = docgen(debouncedSource.current);
-			error = "";
-		} catch (e) {
-			error = String(e);
-			console.error(e);
+			return prepareDocgen(fsmap)(source.current);
 		}
 	});
 </script>
 
-<textarea bind:value={source} rows="10" style="width: 100%;"></textarea>
+<Repl.Root>
+	{#snippet input()}
+		<Repl.Editor bind:transaction initial={source?.current ?? initial} />
+	{/snippet}
 
-{#if error}
-	<pre style="color: red;">{error}</pre>
-{/if}
+	{#snippet output()}
+		{#await docgen}
+			<p>Loading...</p>
+		{:then data}
+			{#if data}
+				{JSON.stringify(data, undefined, 2)}
+			{/if}
+		{/await}
+	{/snippet}
+</Repl.Root>
 
-{#if docgen}
-	<pre>{encoded}</pre>
-{:else}
-	loading docgen...
-{/if}
+
+<!-- {#if error} -->
+<!-- 	<pre style="color: red;">{error}</pre> -->
+<!-- {/if} -->

@@ -176,6 +176,9 @@ importers:
       normalize-package-data:
         specifier: ^7.0.0
         version: 7.0.0
+      paneforge:
+        specifier: 1.0.0-next.2
+        version: 1.0.0-next.2(svelte@5.16.0)
       runed:
         specifier: ^0.22.0
         version: 0.22.0(svelte@5.16.0)
@@ -2800,6 +2803,11 @@ packages:
 
   package-manager-detector@0.2.8:
     resolution: {integrity: sha512-ts9KSdroZisdvKMWVAVCXiKqnqNfXz4+IbrBG8/BWx/TR5le+jfenvoBuIZ6UWM9nz47W7AbD9qYfAwfWMIwzA==}
+
+  paneforge@1.0.0-next.2:
+    resolution: {integrity: sha512-Z3XJDcy6qO4RsP24hKPxfFgJaZeH9ORFaudIoRIcgT3eG9ryxVr4B06zPEOzkgsWVtqLDBUr/5jzHcyf1Csuiw==}
+    peerDependencies:
+      svelte: ^5.11.0
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -6367,6 +6375,11 @@ snapshots:
   package-json-from-dist@1.0.1: {}
 
   package-manager-detector@0.2.8: {}
+
+  paneforge@1.0.0-next.2(svelte@5.16.0):
+    dependencies:
+      svelte: 5.16.0
+      svelte-toolbelt: 0.4.6(svelte@5.16.0)
 
   parent-module@1.0.1:
     dependencies:
