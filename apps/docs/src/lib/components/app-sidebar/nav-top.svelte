@@ -25,7 +25,7 @@
 </script>
 
 <Sidebar.Group>
-	<Sidebar.GroupLabel>Platform</Sidebar.GroupLabel>
+	<Sidebar.GroupLabel>{'Getting started'}</Sidebar.GroupLabel>
 
 	<Sidebar.Menu>
 		{#each items as main_item (main_item.title)}

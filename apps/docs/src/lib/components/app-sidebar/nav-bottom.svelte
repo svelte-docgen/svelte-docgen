@@ -3,12 +3,13 @@
 
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 
+	interface Item {
+		icon: Component;
+		href: string;
+		title: string;
+	};
 	interface Props extends ComponentProps<typeof Sidebar.Group> {
-		items: {
-			icon: Component;
-			href: string;
-			title: string;
-		}[];
+		items:Item[];
 	}
 	let {
 		ref = $bindable(null),

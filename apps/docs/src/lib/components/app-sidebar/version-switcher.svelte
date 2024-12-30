@@ -41,6 +41,7 @@
 					</Sidebar.MenuButton>
 				{/snippet}
 			</DropdownMenu.Trigger>
+
 			<DropdownMenu.Content
 				align="start"
 				class="w-[--bits-dropdown-menu-anchor-width]"
