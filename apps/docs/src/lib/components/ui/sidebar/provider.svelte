@@ -10,7 +10,7 @@
 		WIDTH,
 		WIDTH_ICON,
 	} from "./constants.ts";
-	import { set_sidebar } from "./context.svelte.ts";
+	import { set } from "./context.svelte.ts";
 
 	interface Props extends WithElementRef<HTMLAttributes<HTMLDivElement>> {
 		open?: boolean;
@@ -30,7 +30,7 @@
 		...rest_props
 	}: Props = $props();
 
-	const sidebar = set_sidebar({
+	const sidebar = set({
 		open: () => open,
 		set_open: (value: boolean) => {
 			if (controlledopen) {

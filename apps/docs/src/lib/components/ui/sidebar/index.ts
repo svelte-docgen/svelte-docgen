@@ -1,4 +1,4 @@
-import { use_sidebar } from "./context.svelte.ts";
+import { use } from "./context.svelte.ts";
 import Content from "./content.svelte";
 import Footer from "./footer.svelte";
 import GroupAction from "./group-action.svelte";
@@ -47,5 +47,5 @@ export {
 	Root,
 	Separator,
 	Trigger,
-	use_sidebar,
+	use,
 };

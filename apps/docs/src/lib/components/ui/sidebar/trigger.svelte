@@ -5,7 +5,7 @@
 
 	import { Button } from "$lib/components/ui/button/index.ts";
 
-	import { use_sidebar } from "./context.svelte.ts";
+	import { use } from "./context.svelte.ts";
 
 	type Props = ComponentProps<typeof Button> & {
 		onclick?: MouseEventHandler<HTMLButtonElement>;
@@ -17,7 +17,7 @@
 		...rest_props
 	}: Props = $props();
 
-	const sidebar = use_sidebar();
+	const sidebar = use();
 
 	function handle_click(e: MouseEvent) {
 		// @ts-expect-error: WARN: It errors because Button can be `<a>` too

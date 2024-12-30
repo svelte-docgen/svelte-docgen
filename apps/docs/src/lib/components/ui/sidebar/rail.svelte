@@ -2,7 +2,7 @@
 	import type { WithElementRef } from "bits-ui";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	import { use_sidebar } from "./context.svelte.ts";
+	import { use } from "./context.svelte.ts";
 
 	type Props = WithElementRef<HTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 	let {
@@ -14,7 +14,7 @@
 		...rest_props
 	}: Props = $props();
 
-	const sidebar = use_sidebar();
+	const sidebar = use();
 </script>
 
 <button

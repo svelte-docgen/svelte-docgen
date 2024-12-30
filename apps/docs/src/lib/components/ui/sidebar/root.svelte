@@ -5,7 +5,7 @@
 	import * as Sheet from "$lib/components/ui/sheet/index.ts";
 
 	import { WIDTH_MOBILE } from "./constants.ts";
-	import { use_sidebar } from "./context.svelte.ts";
+	import { use } from "./context.svelte.ts";
 
 	interface Props extends WithElementRef<HTMLAttributes<HTMLDivElement>> {
 		collapsible?: "offcanvas" | "icon" | "none";
@@ -24,7 +24,7 @@
 		...rest_props
 	}: Props = $props();
 
-	const sidebar = use_sidebar();
+	const sidebar = use();
 </script>
 
 {#if collapsible === "none"}

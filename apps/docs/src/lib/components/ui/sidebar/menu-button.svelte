@@ -32,7 +32,7 @@
 
 	import * as Tooltip from "$lib/components/ui/tooltip/index.ts";
 
-	import { use_sidebar } from "./context.svelte.ts";
+	import { use } from "./context.svelte.ts";
 
 	interface Props extends WithElementRef<HTMLAttributes<HTMLButtonElement>, HTMLButtonElement> {
 		active?: boolean;
@@ -57,7 +57,7 @@
 		...restProps
 	}: Props = $props();
 
-	const sidebar = use_sidebar();
+	const sidebar = use();
 
 	const default_props = $derived({
 		class: [VARIANTS({ variant, size }), class_],
