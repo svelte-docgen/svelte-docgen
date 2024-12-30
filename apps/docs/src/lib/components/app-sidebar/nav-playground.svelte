@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Ellipsis from "lucide-svelte/icons/ellipsis";
 	import Plus from "lucide-svelte/icons/plus";
+	import SquareTerminal from "lucide-svelte/icons/square-terminal";
 	import type { Component } from "svelte";
 
 	import { goto } from "$app/navigation";
@@ -22,7 +23,7 @@
 </script>
 
 <Sidebar.Group class="group-data-[collapsible=icon]:hidden">
-	<Sidebar.GroupLabel>{"Playground"}</Sidebar.GroupLabel>
+	<Sidebar.GroupLabel><SquareTerminal class="me-1" />{"Playground"}</Sidebar.GroupLabel>
 	<Sidebar.GroupAction onclick={handle_plus_click}>
 		<Plus />
 		<span class="sr-only">{"Start a new one"}</span>
