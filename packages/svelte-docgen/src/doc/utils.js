@@ -1,5 +1,5 @@
 /**
- * @import * as Doc from "./type.ts";
+ * @import { TypeOrRef, TypeRef } from "./type.ts";
  */
 
 /**
@@ -19,8 +19,8 @@
  * }
  * ```
  *
- * @param {Doc.TypeOrRef} type
- * @returns {type is Doc.TypeRef}
+ * @param {TypeOrRef} type
+ * @returns {type is TypeRef}
  */
 export function isTypeRef(type) {
 	return typeof type === "string";

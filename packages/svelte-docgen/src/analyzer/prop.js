@@ -1,20 +1,20 @@
 /**
- * @import * as Doc from "../doc/type.ts";
+ * @import { Fn, Prop, Tuple, Type, Types } from "../doc/type.ts";
  */
 
 import path from "pathe";
 import { isTypeRef } from "../doc/utils.js";
 
 class PropAnalyzer {
-	/** @type {Doc.Prop} */
+	/** @type {Prop} */
 	#prop;
 
-	/** @type {Doc.Types} */
+	/** @type {Types} */
 	#types;
 
 	/**
-	 * @param {Doc.Prop} prop
-	 * @param {Doc.Types} types
+	 * @param {Prop} prop
+	 * @param {Types} types
 	 * */
 	constructor(prop, types) {
 		this.#prop = prop;
@@ -48,7 +48,7 @@ class PropAnalyzer {
 		return this.#is_snippet(this.#type);
 	}
 
-	/** @returns {ReturnType<typeof this.isSnippet> extends true ? Doc.Tuple : never} */
+	/** @returns {ReturnType<typeof this.isSnippet> extends true ? Tuple : never} */
 	getSnippetParameters() {
 		const fn = this.#snippet_fn;
 		// WARN: We don't expect that it can be overloaded
@@ -63,7 +63,7 @@ class PropAnalyzer {
 		return params_type;
 	}
 
-	/** @returns {Doc.Fn} */
+	/** @returns {Fn} */
 	get #snippet_fn() {
 		// TODO: Document error
 		if (!this.isSnippet) throw new Error("Not a snippet");
@@ -72,7 +72,7 @@ class PropAnalyzer {
 			if (typeof non_nullable === "string") {
 				non_nullable = this.#types.get(non_nullable);
 			}
-			return /** @type {Doc.Fn} */ (non_nullable);
+			return /** @type {Fn} */ (non_nullable);
 		}
 		if (this.#type.kind === "function") return this.#type;
 		// TODO:: Document error
@@ -92,7 +92,7 @@ class PropAnalyzer {
 	}
 
 	/**
-	 * @param {Doc.Type} type
+	 * @param {Type} type
 	 * @returns {boolean}
 	 */
 	#is_snippet(type) {
@@ -101,7 +101,7 @@ class PropAnalyzer {
 		return Iterator.from(type.sources).some((f) => this.#is_source_from_svelte(f));
 	}
 
-	/** @returns {Doc.Type} */
+	/** @returns {Type} */
 	get #type() {
 		const type = isTypeRef(this.#prop.type) ? this.#types.get(this.#prop.type) : this.#prop.type;
 		if (!type) throw new Error("Unreachable");
@@ -120,7 +120,7 @@ class PropAnalyzer {
  * @typedef SnippetPropAnalysis
  * @prop {true} isExtendedBySvelte
  * @prop {true} isSnippet
- * @prop {() => Doc.Tuple} getSnippetParameters
+ * @prop {() => Tuple} getSnippetParameters
  * @prop {false} isEventHandler
  */
 
@@ -136,8 +136,8 @@ class PropAnalyzer {
  */
 
 /**
- * @param {Doc.Prop} prop
- * @param {Doc.Types} types
+ * @param {Prop} prop
+ * @param {Types} types
  * @returns {PropAnalysis}
  */
 export function analyzeProperty(prop, types) {
