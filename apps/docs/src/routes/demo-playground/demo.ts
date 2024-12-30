@@ -11,7 +11,7 @@ export const COMPILER_OPTIONS: ts.CompilerOptions = {
 	module: ts.ModuleKind.ESNext,
 	esModuleInterop: true,
 	moduleResolution: ts.ModuleResolutionKind.Bundler,
-}
+};
 
 export function prepareDocgen(fsmap: Map<string, string>) {
 	fsmap.set("/node_modules/svelte2tsx/svelte-shims-v4.d.ts", shim);
@@ -24,8 +24,8 @@ export function prepareDocgen(fsmap: Map<string, string>) {
 		...{
 			readFile(path) {
 				return base_sys.readFile(path) || "";
-			}
-		}
+			},
+		},
 	};
 	const cache = createCacheStorage(sys);
 
@@ -35,7 +35,7 @@ export function prepareDocgen(fsmap: Map<string, string>) {
 			cache,
 			filepath: "/src/Demo.svelte",
 			sys: sys,
-			host: tsvfs.createVirtualCompilerHost(sys, COMPILER_OPTIONS, ts).compilerHost, 
+			host: tsvfs.createVirtualCompilerHost(sys, COMPILER_OPTIONS, ts).compilerHost,
 			ts_options: COMPILER_OPTIONS,
 		});
 		return encode(parsed, { indent: 2 });
