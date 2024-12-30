@@ -80,11 +80,7 @@ describe("NodeServer", () => {
 				              {
 				                "isOptional": false,
 				                "name": "args",
-				                "type": {
-				                  "elements": [],
-				                  "isReadonly": false,
-				                  "kind": "tuple",
-				                },
+				                "type": "[]",
 				              },
 				            ],
 				            "returns": {
@@ -116,8 +112,17 @@ describe("NodeServer", () => {
 				      },
 				    ],
 				    [
+				      "[]",
+				      {
+				        "elements": [],
+				        "isReadonly": false,
+				        "kind": "tuple",
+				      },
+				    ],
+				    [
 				      "SnippetReturn",
 				      {
+				        "alias": "SnippetReturn",
 				        "kind": "literal",
 				        "subkind": "symbol",
 				      },

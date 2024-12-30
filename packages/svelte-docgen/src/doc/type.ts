@@ -1,6 +1,6 @@
 import type { extract } from "@svelte-docgen/extractor";
 
-import type { TypeKind } from "./kind.js";
+import type { BaseTypeKind } from "./kind.js";
 
 /**
  * Type reference as key in the map {@link Types}.
@@ -22,7 +22,13 @@ export type Type =
 	| Literal
 	| Tuple
 	| TypeParam
-	| Union;
+	| Union
+	| Index
+	| IndexedAccess
+	| Conditional
+	| Substitution
+	| TemplateLiteral
+	| StringMapping;
 
 export type TypeOrRef = Type | TypeRef;
 
@@ -105,18 +111,7 @@ export interface WithName {
 
 export interface BaseType {
 	/** @see {@link TypeKind} */
-	kind: Exclude<
-		TypeKind,
-		| "array"
-		| "constructible"
-		| "function"
-		| "interface"
-		| "intersection"
-		| "literal"
-		| "tuple"
-		| "type-parameter"
-		| "union"
-	>;
+	kind: BaseTypeKind;
 }
 
 export interface ArrayType {
@@ -188,7 +183,7 @@ export interface LiteralString {
 export interface LiteralSymbol {
 	kind: "literal";
 	subkind: "symbol";
-	alias?: string;
+	alias: string;
 }
 export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralString | LiteralSymbol;
 
@@ -204,6 +199,12 @@ export interface Tuple extends WithAlias {
 	elements: TypeOrRef[];
 }
 
+export interface Union extends WithAlias {
+	kind: "union";
+	types: TypeOrRef[];
+	nonNullable?: TypeOrRef;
+}
+
 export interface TypeParam {
 	kind: "type-parameter";
 	name: string;
@@ -212,8 +213,43 @@ export interface TypeParam {
 	default?: TypeOrRef;
 }
 
-export interface Union extends WithAlias {
-	kind: "union";
+export interface Index {
+	kind: "index";
+	type: TypeOrRef;
+}
+
+export interface IndexedAccess {
+	kind: "indexed-access";
+	object: TypeOrRef;
+	index: TypeOrRef;
+	constraint?: TypeOrRef;
+	// TODO: Commenting these out for now as it's unclear if they are useful for users
+	// simplifiedForReading?: TypeOrRef;
+	// simplifiedForWriting?: TypeOrRef;
+}
+
+export interface Conditional {
+	kind: "conditional";
+	check: TypeOrRef;
+	extends: TypeOrRef;
+	truthy?: TypeOrRef;
+	falsy?: TypeOrRef;
+}
+
+export interface Substitution {
+	kind: "substitution";
+	base: TypeOrRef;
+	constraint: TypeOrRef;
+}
+
+export interface TemplateLiteral {
+	kind: "template-literal";
+	texts: readonly string[];
 	types: TypeOrRef[];
-	nonNullable?: TypeOrRef;
+}
+
+export interface StringMapping {
+	kind: "string-mapping";
+	type: TypeOrRef;
+	name: string;
 }

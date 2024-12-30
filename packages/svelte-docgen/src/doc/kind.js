@@ -3,11 +3,10 @@
  */
 
 import ts from "typescript";
-import * as v from "valibot";
 
 import { get_construct_signatures, is_object_type } from "../shared.js";
 
-export const BASE_TYPE_KIND = v.picklist([
+export const BASE_TYPE_KIND = /** @type {const} */ ([
 	"any",
 	"bigint",
 	"boolean",
@@ -21,7 +20,7 @@ export const BASE_TYPE_KIND = v.picklist([
 	"unknown",
 	"void",
 ]);
-export const ADVANCED_TYPE_KIND = v.picklist([
+export const ADVANCED_TYPE_KIND = /** @type {const} */ ([
 	"array",
 	"constructible",
 	"function",
@@ -29,16 +28,26 @@ export const ADVANCED_TYPE_KIND = v.picklist([
 	"intersection",
 	"literal",
 	"tuple",
-	"type-parameter",
 	"union",
 ]);
-export const TYPE_KIND = v.picklist([
+export const INSTANTIABLE_TYPE_KIND = /** @type {const} */ ([
+	"type-parameter",
+	"index",
+	"indexed-access",
+	"conditional",
+	"substitution",
+	"template-literal",
+	"string-mapping",
+]);
+export const TYPE_KIND = /** @type {const} */ ([
 	//
-	...BASE_TYPE_KIND.options,
-	...ADVANCED_TYPE_KIND.options,
+	...BASE_TYPE_KIND,
+	...ADVANCED_TYPE_KIND,
+	...INSTANTIABLE_TYPE_KIND,
 ]);
 
-/** @typedef {v.InferInput<typeof TYPE_KIND>} TypeKind */
+/** @typedef {typeof TYPE_KIND[number]} TypeKind */
+/** @typedef {typeof BASE_TYPE_KIND[number]} BaseTypeKind */
 
 /**
  * @param {GetTypeParams} params
@@ -54,17 +63,13 @@ export function get_type_kind(params) {
 	if (flags & ts.TypeFlags.Undefined) return "undefined";
 	if (flags & ts.TypeFlags.Unknown) return "unknown";
 	if (flags & ts.TypeFlags.Void) return "void";
-	if (flags & ts.TypeFlags.BigIntLiteral) return "literal";
-	if (flags & ts.TypeFlags.BooleanLiteral) return "literal";
-	if (flags & ts.TypeFlags.NumberLiteral) return "literal";
-	if (flags & ts.TypeFlags.StringLiteral) return "literal";
+	if (flags & ts.TypeFlags.Literal) return "literal"; // StringLiteral | NumberLiteral | BigIntLiteral | BooleanLiteral
 	if (flags & ts.TypeFlags.UniqueESSymbol) return "literal";
 	if (flags & ts.TypeFlags.BigInt) return "bigint";
 	if (flags & ts.TypeFlags.Boolean) return "boolean";
 	if (flags & ts.TypeFlags.Number) return "number";
 	if (flags & ts.TypeFlags.String) return "string";
 	if (flags & ts.TypeFlags.ESSymbol) return "symbol";
-	if (flags & ts.TypeFlags.ESSymbolLike) return "symbol";
 	if (extractor.checker.isTupleType(type)) return "tuple";
 	if (type.isIntersection()) return "intersection";
 	if (type.isUnion()) return "union";
@@ -73,6 +78,12 @@ export function get_type_kind(params) {
 	if (type.isClassOrInterface()) return is_constructible(type, extractor) ? "constructible" : "interface";
 	if (type.getCallSignatures().length > 0) return "function";
 	if (type.isTypeParameter()) return "type-parameter";
+	if (flags & ts.TypeFlags.Index) return "index";
+	if (flags & ts.TypeFlags.IndexedAccess) return "indexed-access";
+	if (flags & ts.TypeFlags.Conditional) return "conditional";
+	if (flags & ts.TypeFlags.Substitution) return "substitution";
+	if (flags & ts.TypeFlags.TemplateLiteral) return "template-literal";
+	if (flags & ts.TypeFlags.StringMapping) return "string-mapping";
 	// WARN: Must be last
 	if (is_object_type(type)) {
 		// FIXME: Sometimes the constructible type is not recognized with `ts.Type.isClassOrInterface()` - e.g. `Map` - don't know why.

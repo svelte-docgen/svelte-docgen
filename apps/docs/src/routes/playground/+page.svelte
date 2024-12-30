@@ -1,28 +1,21 @@
-<script module lang="ts">
-	export const frontmatter = {
-		title: "Playground",
-		description: "Play and test svelte-docgen in the browser.",
-	};
-</script>
-
 <script lang="ts">
-	import { Transaction } from "@codemirror/state";
-	import { Tabs, TabPanel } from "@sveltepress/theme-default/components";
-	import JSONTree from "@sveltejs/svelte-json-tree";
-	import * as tsvfs from "@typescript/vfs";
-	import { Debounced } from "runed";
 	import ts from "typescript";
+	import * as tsvfs from "@typescript/vfs";
 
 	import { browser } from "$app/environment";
-	import Editor from "$lib/components/editor/editor.svelte";
+	import { Debounced } from "runed";
 
-	import { prepareDocgen, COMPILER_OPTIONS } from "./demo.ts";
-	import initial from "./initial.svelte?raw";
+	import { prepareDocgen, COMPILER_OPTIONS } from "./demo";
+	import initial from "./initial.txt?raw";
 
-	let transaction = $state<Transaction>();
-	let source = new Debounced(() => transaction?.newDoc.toString() ?? initial, 500);
-	let docgen = $derived.by(async () => {
-		if (browser && source.current) { // FIXME:: is this check necessary? derived AFAIK always runs in browser
+	let docgen: ((source: string) => string) | undefined = $state();
+	let source = $state(initial);
+	let debouncedSource = new Debounced(() => source, 500);
+	let encoded = $state("");
+	let error: string = $state("");
+
+	if (browser) {
+		(async () => {
 			const fsmap = await tsvfs.createDefaultMapFromCDN(
 				COMPILER_OPTIONS,
 				ts.version,
@@ -30,47 +23,38 @@
 				ts,
 				// lzstring
 			);
+
 			for (const [k, v] of Object.entries(
 				import.meta.glob("/node_modules/svelte/**/*.d.ts", { query: "?raw", exhaustive: true, eager: true }),
 			)) {
 				// @ts-expect-error: v is a string
 				fsmap.set(k, v.default);
 			}
-			return prepareDocgen(fsmap)(source.current);
+
+			docgen = prepareDocgen(fsmap);
+		})();
+	}
+
+	$effect(() => {
+		if (!docgen) return;
+		try {
+			encoded = docgen(debouncedSource.current);
+			error = "";
+		} catch (e) {
+			error = String(e);
+			console.error(e);
 		}
 	});
 </script>
 
-<Tabs activeName="Source code">
-	<TabPanel name="Source code">
-		<Editor bind:transaction initial={source.current ?? initial} />
-		<!-- {#if error} -->
-		<!-- 	<pre style="color: red;">{error}</pre> -->
-		<!-- {/if} -->
-	</TabPanel>
+<textarea bind:value={source} rows="10" style="width: 100%;"></textarea>
 
-	<TabPanel name="Documentation">
-		{#await docgen}
-			<p>Loading...</p>
-		{:then doc}
-			{#if doc?.description && doc?.isLegacy}
-				{doc.description}
-			{/if}
-			<p><strong>Description</strong></p>
-			<p>A pretty documentation output will be here</p>
-		{/await}
-	</TabPanel>
+{#if error}
+	<pre style="color: red;">{error}</pre>
+{/if}
 
-	<TabPanel name="Raw data">
-		{#await docgen}
-			<p>Loading...</p>
-		{:then doc}
-			{#if doc}
-				<JSONTree value={{
-					props: doc.props,
-					types: doc.types,
-				}} />
-			{/if}
-		{/await}
-	</TabPanel>
-</Tabs>
+{#if docgen}
+	<pre>{encoded}</pre>
+{:else}
+	loading docgen...
+{/if}

@@ -35,8 +35,7 @@ export function prepareDocgen(fsmap: Map<string, string>) {
 			cache,
 			filepath: "/src/Demo.svelte",
 			sys: sys,
-			host: tsvfs.createVirtualCompilerHost(sys, COMPILER_OPTIONS, ts)
-				.compilerHost,
+			host: tsvfs.createVirtualCompilerHost(sys, COMPILER_OPTIONS, ts).compilerHost,
 			ts_options: COMPILER_OPTIONS,
 		});
 	};
