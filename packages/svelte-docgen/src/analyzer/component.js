@@ -1,5 +1,5 @@
 /**
- * @import * as Doc from "../doc/type.ts";
+ * @import { Props } from "../doc/type.ts";
  * @import { ParsedComponent } from "../parser/mod.ts";
  */
 
@@ -25,7 +25,7 @@ class ComponentAnalyzer {
 	/**
 	 * Filters out legacy event handler props if the component is modern.
 	 * Or filters out modern event handler props if the component is legacy.
-	 * @returns {Doc.Props}
+	 * @returns {Props}
 	 */
 	get props() {
 		return new Map(
