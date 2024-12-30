@@ -12,7 +12,8 @@ env:
   CI: true
 
 permissions:
-  contents: read
+  contents: write
+  id-token: write
   pull-requests: write
 
 jobs:
@@ -45,9 +46,12 @@ jobs:
       - name: Run tests with Vitest
         run: pnpm run "_ci:test"
 
-      # # https://github.com/davelosert/vitest-coverage-report-action
-      # - name: Generate tests coverage report
-      #   uses: davelosert/vitest-coverage-report-action@v2
+      - name: Check if secret is available
+        run: |
+          if [ -z "${{ secrets.CODECOV_TOKEN }}" ]; then
+            echo "Secret CODECOV_TOKEN is not available"
+            exit 1
+          fi
 
       # https://github.com/codecov/codecov-action
       - name: Upload coverage reports to Codecov
