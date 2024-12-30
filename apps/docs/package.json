@@ -25,6 +25,7 @@
 		"mdsvex": "^0.11.2",
 		"normalize-package-data": "^7.0.0",
 		"runed": "^0.22.0",
+		"shiki": "^1.24.4",
 		"svelte": "catalog:",
 		"svelte-docgen": "workspace:*",
 		"svelte2tsx": "^0.7.31",
