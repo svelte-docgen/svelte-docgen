@@ -10,6 +10,7 @@
 <script lang="ts">
 	import Home from "lucide-svelte/icons/house";
 
+	import { Button } from "$lib/components/ui/button/index.ts";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.ts";
 	import { Separator } from "$lib/components/ui/separator/index.ts";
@@ -19,6 +20,7 @@
 		routes: RouteMeta[];
 	}
 	let { routes }: Props = $props();
+	let is_playground = $derived(routes.find((r) => r.title === "Playground"));
 </script>
 
 <header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -48,5 +50,10 @@
 		</Breadcrumb.List>
 	</Breadcrumb.Root>
 
-	<ToggleScheme class="ml-auto" />
+	<div class="ml-auto flex flex-row items-center gap-4">
+		{#if !is_playground}
+			<Button href="/playground">{"Try out playground!"}</Button>
+		{/if}
+		<ToggleScheme />
+	</div>
 </header>
