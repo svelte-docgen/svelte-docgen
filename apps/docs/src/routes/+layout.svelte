@@ -1,8 +1,10 @@
 <script lang="ts">
- import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
- import AppSidebar from "$lib/components/app-sidebar.svelte";
+	import "../app.css";
 
- let { children } = $props();
+	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
+	import AppSidebar from "$lib/components/app-sidebar.svelte";
+
+	let { children } = $props();
 </script>
 
 <Sidebar.Provider>
