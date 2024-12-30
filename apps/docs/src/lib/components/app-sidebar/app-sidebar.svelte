@@ -29,10 +29,7 @@
 
 <Sidebar.Root {...rest_props} bind:ref>
 	<Sidebar.Header>
-		<VersionSwitcher
-			{versions}
-			default={default_version}
-		/>
+		<VersionSwitcher {versions} default={default_version} />
 		<SearchForm />
 	</Sidebar.Header>
 

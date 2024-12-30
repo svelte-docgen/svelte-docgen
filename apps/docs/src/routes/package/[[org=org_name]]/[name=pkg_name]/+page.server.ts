@@ -8,9 +8,7 @@ export async function load(ev) {
 	if (!building && !dev) throw new Error("Unreachable");
 	const { params, parent } = ev;
 	const { packages } = await parent();
-	const pkg = packages.get(
-		params.org ? `${params.org}/${params.name}` : params.name,
-	);
+	const pkg = packages.get(params.org ? `${params.org}/${params.name}` : params.name);
 	if (!pkg) throw error(404, `Unrecognized package name "${params.name}"`);
 	const html = await compile(pkg.readme, { highlight: HIGHLIGHT });
 	if (!html) {

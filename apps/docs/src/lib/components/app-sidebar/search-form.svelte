@@ -15,10 +15,7 @@
 	}: Props = $props();
 </script>
 
-<form
-	bind:this={ref}
-	{...rest_props}
->
+<form bind:this={ref} {...rest_props}>
 	<Sidebar.Group class="py-0">
 		<Sidebar.GroupContent class="relative">
 			<Label for="search" class="sr-only">Search</Label>

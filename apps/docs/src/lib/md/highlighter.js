@@ -15,15 +15,7 @@ export const DEFAULT_THEME = "github-dark";
 
 export const highlighter = await createHighlighter({
 	themes: [DEFAULT_THEME, "github-light"],
-	langs: [
-		"bash",
-		"javascript",
-		"json",
-		"jsonc",
-		"svelte",
-		"text",
-		"typescript",
-	],
+	langs: ["bash", "javascript", "json", "jsonc", "svelte", "text", "typescript"],
 });
 
 /** @satisfies {NonNullable<MdsvexCompileOptions['highlight']>} */

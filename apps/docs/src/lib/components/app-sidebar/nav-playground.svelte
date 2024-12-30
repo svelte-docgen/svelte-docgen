@@ -7,9 +7,9 @@
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 
 	interface Item {
-			name: string;
-			url: string;
-			icon: Component;
+		name: string;
+		url: string;
+		icon: Component;
 	}
 	interface Props {
 		items: Item[];
@@ -22,10 +22,10 @@
 </script>
 
 <Sidebar.Group class="group-data-[collapsible=icon]:hidden">
-	<Sidebar.GroupLabel>{'Playground'}</Sidebar.GroupLabel>
+	<Sidebar.GroupLabel>{"Playground"}</Sidebar.GroupLabel>
 	<Sidebar.GroupAction onclick={handle_plus_click}>
 		<Plus />
-		<span class="sr-only">{'Start a new one'}</span>
+		<span class="sr-only">{"Start a new one"}</span>
 	</Sidebar.GroupAction>
 
 	<Sidebar.Menu>

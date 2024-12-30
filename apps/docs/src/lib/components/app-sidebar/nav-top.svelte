@@ -10,22 +10,20 @@
 		title: string;
 	}
 	interface NavItem {
-			active?: boolean;
-			href: string;
-			icon: Component;
-			items?: NavSubItem[];
-			title: string;
+		active?: boolean;
+		href: string;
+		icon: Component;
+		items?: NavSubItem[];
+		title: string;
 	}
 	interface Props {
 		items: NavItem[];
 	}
-	let {
-		items,
-	}: Props = $props();
+	let { items }: Props = $props();
 </script>
 
 <Sidebar.Group>
-	<Sidebar.GroupLabel>{'Getting started'}</Sidebar.GroupLabel>
+	<Sidebar.GroupLabel>{"Getting started"}</Sidebar.GroupLabel>
 
 	<Sidebar.Menu>
 		{#each items as main_item (main_item.title)}
@@ -37,10 +35,7 @@
 								{main_item.title}
 							{/snippet}
 							{#snippet child({ props })}
-								<a
-									href={main_item.href}
-									{...props}
-								>
+								<a href={main_item.href} {...props}>
 									<main_item.icon />
 									<span>{main_item.title}</span>
 								</a>
@@ -50,10 +45,7 @@
 						{#if main_item.items?.length}
 							<Collapsible.Trigger>
 								{#snippet child({ props })}
-									<Sidebar.MenuAction
-										{...props}
-										class="data-[state=open]:rotate-90"
-									>
+									<Sidebar.MenuAction {...props} class="data-[state=open]:rotate-90">
 										<ChevronRight />
 										<span class="sr-only">Toggle</span>
 									</Sidebar.MenuAction>

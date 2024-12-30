@@ -10,10 +10,7 @@
 		versions: string[];
 		default: string;
 	}
-	let {
-		default: default_,
-		versions,
-	}: Props = $props();
+	let { default: default_, versions }: Props = $props();
 
 	let selected = $state(default_);
 </script>
@@ -34,7 +31,7 @@
 							<GalleryVerticalEnd class="size-4" />
 						</div>
 						<div class="flex flex-col gap-0.5 leading-none">
-							<span class="font-semibold">{'svelte-docgen'}</span>
+							<span class="font-semibold">{"svelte-docgen"}</span>
 							<span class="">{selected}</span>
 						</div>
 						<ChevronsUpDown class="ml-auto" />
@@ -42,10 +39,7 @@
 				{/snippet}
 			</DropdownMenu.Trigger>
 
-			<DropdownMenu.Content
-				align="start"
-				class="w-[--bits-dropdown-menu-anchor-width]"
-			>
+			<DropdownMenu.Content align="start" class="w-[--bits-dropdown-menu-anchor-width]">
 				{#each versions as version (version)}
 					<DropdownMenu.Item onSelect={() => (selected = version)}>
 						{version}
