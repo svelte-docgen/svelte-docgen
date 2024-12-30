@@ -1,26 +1,27 @@
 import { untrack } from "svelte";
 
+const MOBILE_BREAKPOINT = 768;
+
 export class IsMobile {
-	#breakpoint = 768;
 	#current = $state<boolean>(false);
 
 	constructor() {
 		$effect(() => {
 			return untrack(() => {
-				const mql = window.matchMedia(`(max-width: ${this.#breakpoint - 1}px)`);
-				const on_change = () => {
-					this.#current = window.innerWidth < this.#breakpoint;
+				const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+				const onChange = () => {
+					this.#current = window.innerWidth < MOBILE_BREAKPOINT;
 				};
-				mql.addEventListener("change", on_change);
-				on_change();
+				mql.addEventListener("change", onChange);
+				onChange();
 				return () => {
-					mql.removeEventListener("change", on_change);
+					mql.removeEventListener("change", onChange);
 				};
 			});
 		});
 	}
 
-	get current(): boolean {
+	get current() {
 		return this.#current;
 	}
 }

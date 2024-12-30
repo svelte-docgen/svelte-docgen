@@ -1,20 +1,19 @@
 <script lang="ts">
-	import { Label } from "bits-ui";
+	import { Label as LabelPrimitive } from "bits-ui";
+	import { cn } from "$lib/utils.js";
 
 	let {
-		// Custom
 		ref = $bindable(null),
-		// Native
-		class: class_,
-		...rest_props
-	}: Label.RootProps = $props();
+		class: className,
+		...restProps
+	}: LabelPrimitive.RootProps = $props();
 </script>
 
-<Label.Root
+<LabelPrimitive.Root
 	bind:ref
-	class={[
+	class={cn(
 		"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-		class_
-	]}
-	{...rest_props}
+		className
+	)}
+	{...restProps}
 />

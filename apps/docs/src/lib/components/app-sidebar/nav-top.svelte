@@ -33,7 +33,7 @@
 				{#snippet child({ props })}
 					<Sidebar.MenuItem {...props}>
 						<Sidebar.MenuButton>
-							{#snippet tooltip()}
+							{#snippet tooltipContent()}
 								{main_item.title}
 							{/snippet}
 							{#snippet child({ props })}

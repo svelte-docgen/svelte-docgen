@@ -1,17 +1,21 @@
 <script lang="ts">
-	import type { WithElementRef, WithoutChildren } from "bits-ui";
 	import type { HTMLAttributes } from "svelte/elements";
+	import type { WithElementRef } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 
 	let {
 		ref = $bindable(null),
 		class: className,
+		children,
 		...restProps
-	}: WithoutChildren<WithElementRef<HTMLAttributes<HTMLDivElement>>> = $props();
+	}: WithElementRef<HTMLAttributes<HTMLElement>> = $props();
 </script>
 
 <div
 	bind:this={ref}
-	class={cn("bg-primary/10 animate-pulse rounded-md", className)}
+	data-sidebar="footer"
+	class={cn("flex flex-col gap-2 p-2", className)}
 	{...restProps}
-></div>
+>
+	{@render children?.()}
+</div>

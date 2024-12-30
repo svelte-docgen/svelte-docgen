@@ -1,7 +1,9 @@
 <script lang="ts" module>
+	import type { WithElementRef } from "bits-ui";
+	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
 	import { type VariantProps, tv } from "tailwind-variants";
 
-	export const VARIANTS = tv({
+	export const buttonVariants = tv({
 		base: "focus-visible:ring-ring inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
 		variants: {
 			variant: {
@@ -27,48 +29,46 @@
 		},
 	});
 
-	export type Variant = VariantProps<typeof VARIANTS>["variant"];
-	export type Size = VariantProps<typeof VARIANTS>["size"];
+	export type ButtonVariant = VariantProps<typeof buttonVariants>["variant"];
+	export type ButtonSize = VariantProps<typeof buttonVariants>["size"];
+
+	export type ButtonProps = WithElementRef<HTMLButtonAttributes> &
+		WithElementRef<HTMLAnchorAttributes> & {
+			variant?: ButtonVariant;
+			size?: ButtonSize;
+		};
 </script>
 
 <script lang="ts">
-	import type { WithElementRef } from "bits-ui";
-	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
+	import { cn } from "$lib/utils.js";
 
-	type Props = WithElementRef<HTMLButtonAttributes> &
-		WithElementRef<HTMLAnchorAttributes> & {
-			variant?: Variant;
-			size?: Size;
-		};
 	let {
-		// Custom
-		ref = $bindable(null),
-		size = "default",
+		class: className,
 		variant = "default",
-		// Native
-		class: class_,
-		children,
+		size = "default",
+		ref = $bindable(null),
 		href = undefined,
 		type = "button",
-		...rest_props
-	}: Props = $props();
+		children,
+		...restProps
+	}: ButtonProps = $props();
 </script>
 
 {#if href}
 	<a
 		bind:this={ref}
-		class={[VARIANTS({ variant, size }), class_]}
+		class={cn(buttonVariants({ variant, size }), className)}
 		{href}
-		{...rest_props}
+		{...restProps}
 	>
 		{@render children?.()}
 	</a>
 {:else}
 	<button
 		bind:this={ref}
-		class={[VARIANTS({ variant, size }), class_]}
+		class={cn(buttonVariants({ variant, size }), className)}
 		{type}
-		{...rest_props}
+		{...restProps}
 	>
 		{@render children?.()}
 	</button>
