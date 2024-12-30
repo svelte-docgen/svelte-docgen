@@ -1,7 +1,3 @@
-// This help you get the type tips for sveltepress virtual modules
-/// <reference types="@sveltepress/theme-default/types" />
-/// <reference types="@sveltepress/vite/types" />
-
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {

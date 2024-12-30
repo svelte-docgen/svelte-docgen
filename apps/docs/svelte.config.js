@@ -1,10 +1,9 @@
 import adapter from "@sveltejs/adapter-cloudflare";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
-/** @type {import('@sveltejs/kit').Config} */
+/** @satisfies {import('@sveltejs/kit').Config} */
 const config = {
-	// SveltePress
-	extensions: [".svelte", ".md"],
+	extensions: [".md", ".svelte"],
 
 	// Consult https://svelte.dev/docs/kit/integrations
 	// for more information about preprocessors
@@ -15,10 +14,6 @@ const config = {
 		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter(),
-		prerender: {
-			// FIXME: `sveltepress` doesn't add IDs to headers, why?
-			handleMissingId: "warn",
-		},
 	},
 };
 
