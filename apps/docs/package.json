@@ -26,6 +26,12 @@
 		"runed": "^0.22.0",
 		"svelte": "catalog:",
 		"svelte-docgen": "workspace:*",
-		"svelte2tsx": "^0.7.31"
+		"svelte2tsx": "^0.7.31",
+		"tailwindcss": "^3.4.9"
+	},
+	"dependencies": {
+		"@tailwindcss/container-queries": "^0.1.1",
+		"@tailwindcss/forms": "^0.5.9",
+		"@tailwindcss/typography": "^0.5.15"
 	}
 }
