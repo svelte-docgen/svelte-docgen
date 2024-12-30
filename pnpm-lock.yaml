@@ -194,6 +194,9 @@ importers:
       svelte2tsx:
         specifier: ^0.7.31
         version: 0.7.31(svelte@5.16.0)(typescript@5.7.2)
+      sveltekit-search-params:
+        specifier: 4.0.0-next.0
+        version: 4.0.0-next.0(@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)
       tailwind-merge:
         specifier: ^2.6.0
         version: 2.6.0
@@ -3378,6 +3381,12 @@ packages:
   svelte@5.16.0:
     resolution: {integrity: sha512-Ygqsiac6UogVED2ruKclU+pOeMThxWtp9LG+li7BXeDKC2paVIsRTMkNmcON4Zejerd1s5sZHWx6ZtU85xklVg==}
     engines: {node: '>=18'}
+
+  sveltekit-search-params@4.0.0-next.0:
+    resolution: {integrity: sha512-haFr5seakusriPePAv2F5/lsOa37rr9AOGDa5JOZ9CaB0Vrl8V8PdtqNWfh/kF0jlANdkdqz5gKK66nhhHT8tg==}
+    peerDependencies:
+      '@sveltejs/kit': ^2.0.0
+      svelte: ^5.0.0
 
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
@@ -6890,6 +6899,11 @@ snapshots:
       locate-character: 3.0.0
       magic-string: 0.30.17
       zimmerframe: 1.1.2
+
+  sveltekit-search-params@4.0.0-next.0(@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0):
+    dependencies:
+      '@sveltejs/kit': 2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
+      svelte: 5.16.0
 
   symbol-tree@3.2.4: {}
 

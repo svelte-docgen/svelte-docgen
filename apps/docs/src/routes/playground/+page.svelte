@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Transaction } from "@codemirror/state";
 	import { Debounced } from "runed";
+	import { queryParameters, ssp } from 'sveltekit-search-params';
 	import ts from "typescript";
 	import * as tsvfs from "@typescript/vfs";
 
@@ -9,10 +10,20 @@
 	import { browser } from "$app/environment";
 
 	import { prepareDocgen, COMPILER_OPTIONS } from "./demo";
-	import initial from "./initial.svelte?raw";
+
+	const params = queryParameters({
+		input: {
+			decode(v) {
+				if (v) return ssp.lz().decode(v);
+			},
+			encode(v) {
+				return ssp.lz().encode(v);
+			},
+		},
+	});
 
 	let transaction = $state<Transaction>();
-	let source = new Debounced(() => transaction?.newDoc.toString() ?? initial, 500);
+	let source = new Debounced(() => transaction?.newDoc.toString() ?? params.input, 500);
 	let docgen = $derived.by(async () => {
 		if (browser && source.current) { // FIXME:: is this check necessary? derived AFAIK always runs in browser
 			const fsmap = await tsvfs.createDefaultMapFromCDN(
@@ -31,11 +42,15 @@
 			return prepareDocgen(fsmap)(source.current);
 		}
 	});
+
+	$effect(() => {
+		params.input = source.current;
+	});
 </script>
 
 <Repl.Root>
 	{#snippet input()}
-		<Repl.Editor bind:transaction initial={source?.current ?? initial} />
+		<Repl.Editor bind:transaction initial={source?.current} />
 	{/snippet}
 
 	{#snippet output()}

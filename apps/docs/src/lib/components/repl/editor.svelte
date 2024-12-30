@@ -42,6 +42,6 @@
 	});
 </script>
 
-<div bind:this={container} id="editor" class="container">
+<div bind:this={container} id="editor" class="size-full">
 	<!-- TODO: -->
 </div>
