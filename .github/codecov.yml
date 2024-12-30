@@ -1,0 +1,32 @@
+coverage:
+  status:
+    project:
+      default:
+        # allows a 5% drop from the previous base commit coverage
+        threshold: 5%
+    patch:
+      default:
+        target: 60%
+        threshold: 5%
+
+component_management:
+  individual_components:
+    - component_id: svelte-docgen
+      name: svelte-docgen
+      paths:
+        - packages/svelte-docgen
+
+    - component_id: extractor
+      name: extractor
+      paths:
+        - packages/extractor
+
+    - component_id: vite-plugin
+      name: vite-plugin
+      paths:
+        - packages/vite-plugin-svelte-docgen
+
+    - component_id: server
+      name: server
+      paths:
+        - packages/server
