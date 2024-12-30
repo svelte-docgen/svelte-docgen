@@ -29,31 +29,38 @@ jobs:
   lint_eslint:
     name: Lint
     uses: ./.github/workflows/eslint.yml
+    secrets: inherit
 
   lint_prettier:
     name: Lint
     uses: ./.github/workflows/prettier.yml
+    secrets: inherit
 
   lint_check:
     name: Lint
     uses: ./.github/workflows/check.yml
+    secrets: inherit
 
   lint_typos:
     name: Lint
     uses: ./.github/workflows/typos.yml
+    secrets: inherit
 
   test:
     name: Test
     uses: ./.github/workflows/test.yml
+    secrets: inherit
 
   publish_preview:
     name: Publish
     uses: ./.github/workflows/preview.yml
     needs: [lint_eslint, lint_prettier, lint_check, lint_typos, test]
+    secrets: inherit
 
   publish_typedoc:
     name: Publish
     uses: ./.github/workflows/typedoc.yml
     needs: [lint_eslint, lint_prettier, lint_check, lint_typos, test]
+    secrets: inherit
     with:
       type: ${{ github.event_name == 'pull_request' && contains(fromJson('["opened", "reopened", "synchronize"]'), github.event.action) && 'pr-preview' || 'deploy' }}

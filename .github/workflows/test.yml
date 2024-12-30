@@ -12,8 +12,7 @@ env:
   CI: true
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
   pull-requests: write
 
 jobs:
@@ -45,13 +44,6 @@ jobs:
       # https://vitest.dev/guide/cli.html
       - name: Run tests with Vitest
         run: pnpm run "_ci:test"
-
-      - name: Check if secret is available
-        run: |
-          if [ -z "${{ secrets.CODECOV_TOKEN }}" ]; then
-            echo "Secret CODECOV_TOKEN is not available"
-            exit 1
-          fi
 
       # https://github.com/codecov/codecov-action
       - name: Upload coverage reports to Codecov
