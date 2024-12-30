@@ -1,7 +1,14 @@
-<script>
-	import "../app.css";
-	const { children } = $props();
+<script lang="ts">
+ import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
+ import AppSidebar from "$lib/components/app-sidebar.svelte";
+
+ let { children } = $props();
 </script>
 
-<!-- Leave this. Or you can add more content for your custom layout -->
-{@render children?.()}
+<Sidebar.Provider>
+	<AppSidebar />
+	<main>
+		<Sidebar.Trigger />
+		{@render children?.()}
+	</main>
+</Sidebar.Provider>
