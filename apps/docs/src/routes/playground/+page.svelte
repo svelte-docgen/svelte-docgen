@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Transaction } from "@codemirror/state";
 	import { Debounced } from "runed";
-	import { queryParameters, ssp } from 'sveltekit-search-params';
+	import { queryParameters, ssp } from "sveltekit-search-params";
 	import ts from "typescript";
 	import * as tsvfs from "@typescript/vfs";
 
@@ -25,7 +25,8 @@
 	let transaction = $state<Transaction>();
 	let source = new Debounced(() => transaction?.newDoc.toString() ?? params.input, 500);
 	let docgen = $derived.by(async () => {
-		if (browser && source.current) { // FIXME:: is this check necessary? derived AFAIK always runs in browser
+		if (browser && source.current) {
+			// FIXME:: is this check necessary? derived AFAIK always runs in browser
 			const fsmap = await tsvfs.createDefaultMapFromCDN(
 				COMPILER_OPTIONS,
 				ts.version,
@@ -63,7 +64,6 @@
 		{/await}
 	{/snippet}
 </Repl.Root>
-
 
 <!-- {#if error} -->
 <!-- 	<pre style="color: red;">{error}</pre> -->

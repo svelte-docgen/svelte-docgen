@@ -11,11 +11,7 @@
 		initial?: string;
 		transaction?: Transaction;
 	}
-	let {
-		initial = "",
-		transaction = $bindable<Transaction>(),
-	}: Props = $props();
-
+	let { initial = "", transaction = $bindable<Transaction>() }: Props = $props();
 
 	let container: HTMLDivElement;
 	let view: EditorView;
@@ -38,7 +34,6 @@
 
 	$effect(() => {
 		if (transaction && transaction.docChanged) view.update([transaction]);
-
 	});
 </script>
 

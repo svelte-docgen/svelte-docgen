@@ -7,16 +7,10 @@
 		input: Snippet;
 		output: Snippet;
 	}
-	let {
-		input,
-		output
-	}: Props = $props();
+	let { input, output }: Props = $props();
 </script>
 
-<Resizable.PaneGroup
-	class="h-full"
-	direction="horizontal"
->
+<Resizable.PaneGroup class="h-full" direction="horizontal">
 	<Resizable.Pane>
 		{@render input()}
 	</Resizable.Pane>

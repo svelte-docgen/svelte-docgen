@@ -27,17 +27,20 @@
 
 	function get_route_meta(route: string): RouteMeta {
 		switch (route) {
-			case "package": return {
-				title: "Packages",
-				icon: Package as unknown as Component,
-			};
-			case "playground": return  {
-				title: "Playground",
-				icon: SquareTerminal as unknown as Component,
-			};
-			default: return {
-				title: route,
-			};
+			case "package":
+				return {
+					title: "Packages",
+					icon: Package as unknown as Component,
+				};
+			case "playground":
+				return {
+					title: "Playground",
+					icon: SquareTerminal as unknown as Component,
+				};
+			default:
+				return {
+					title: route,
+				};
 		}
 	}
 
@@ -89,7 +92,7 @@
 <Sidebar.Provider>
 	<AppSidebar {...sidebar} />
 
-	<main class="w-screen min-h-screen">
+	<main class="min-h-screen w-screen">
 		<AppHeader {routes} />
 		{@render children?.()}
 	</main>
