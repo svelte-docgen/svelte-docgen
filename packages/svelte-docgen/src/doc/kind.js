@@ -3,11 +3,10 @@
  */
 
 import ts from "typescript";
-import * as v from "valibot";
 
 import { get_construct_signatures, is_object_type } from "../shared.js";
 
-export const BASE_TYPE_KIND = v.picklist([
+export const BASE_TYPE_KIND = /** @type {const} */ ([
 	"any",
 	"bigint",
 	"boolean",
@@ -21,7 +20,7 @@ export const BASE_TYPE_KIND = v.picklist([
 	"unknown",
 	"void",
 ]);
-export const ADVANCED_TYPE_KIND = v.picklist([
+export const ADVANCED_TYPE_KIND = /** @type {const} */ ([
 	"array",
 	"constructible",
 	"function",
@@ -31,7 +30,7 @@ export const ADVANCED_TYPE_KIND = v.picklist([
 	"tuple",
 	"union",
 ]);
-export const INSTANTIABLE_TYPE_KIND = v.picklist([
+export const INSTANTIABLE_TYPE_KIND = /** @type {const} */ ([
 	"type-parameter",
 	"index",
 	"indexed-access",
@@ -40,15 +39,15 @@ export const INSTANTIABLE_TYPE_KIND = v.picklist([
 	"template-literal",
 	"string-mapping",
 ]);
-export const TYPE_KIND = v.picklist([
+export const TYPE_KIND = /** @type {const} */ ([
 	//
-	...BASE_TYPE_KIND.options,
-	...ADVANCED_TYPE_KIND.options,
-	...INSTANTIABLE_TYPE_KIND.options,
+	...BASE_TYPE_KIND,
+	...ADVANCED_TYPE_KIND,
+	...INSTANTIABLE_TYPE_KIND,
 ]);
 
-/** @typedef {v.InferInput<typeof TYPE_KIND>} TypeKind */
-/** @typedef {v.InferInput<typeof BASE_TYPE_KIND>} BaseTypeKind */
+/** @typedef {typeof TYPE_KIND[number]} TypeKind */
+/** @typedef {typeof BASE_TYPE_KIND[number]} BaseTypeKind */
 
 /**
  * @param {GetTypeParams} params

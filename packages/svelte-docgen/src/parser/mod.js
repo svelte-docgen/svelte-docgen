@@ -1,5 +1,36 @@
 /**
- * @import * as Doc from "../doc/type.ts";
+ * TODO: dts-buddy does not yet support `import * as Doc from "../doc/type.ts";`
+ * @import {
+ *	 Conditional,
+ *	 Fn,
+ *	 Index,
+ *	 IndexedAccess,
+ *	 Interface,
+ *	 StringMapping,
+ *	 Substitution,
+ *	 TemplateLiteral,
+ *	 Tuple,
+ *	 Type,
+ *	 TypeOrRef,
+ *	 TypeParam,
+ * 	 ArrayType,
+ * 	 Constructible,
+ * 	 Intersection,
+ * 	 Literal,
+ *   Docable,
+ *   Events,
+ *   Exports,
+ *   FnParam,
+ *   Member,
+ *   Prop,
+ *   Props,
+ *   Slots,
+ *   Tag,
+ *   Types,
+ *   Union,
+ *   WithAlias,
+ *   WithName,
+ * } from "../doc/type.ts";
  * @import { UserOptions } from "../options.js";
  */
 
@@ -37,9 +68,9 @@ class Parser {
 	/**
 	 * Some of types which extends `WithAlias` or `WithName` can cause recursion.
 	 * We isolate them in this map, so we can prevent this from happening.
-	 * @type {Doc.Types}
+	 * @type {Types}
 	 */
-	/** @type {Doc.Types} */
+	/** @type {Types} */
 	types = new Map();
 
 	/** @type {Map<ts.Type, string>} */
@@ -80,7 +111,7 @@ class Parser {
 		});
 	}
 
-	/** @returns {Doc.Docable['description']} */
+	/** @returns {Docable['description']} */
 	get description() {
 		return this.#extractor.description;
 	}
@@ -90,7 +121,7 @@ class Parser {
 		return this.#extractor.parser.hasLegacySyntax;
 	}
 
-	/** @returns {Doc.Events} */
+	/** @returns {Events} */
 	get events() {
 		// TODO: Document error
 		if (!this.isLegacy) throw new Error();
@@ -101,7 +132,7 @@ class Parser {
 		);
 	}
 
-	/** @returns {Doc.Exports} */
+	/** @returns {Exports} */
 	get exports() {
 		return new Map(
 			Iterator.from(this.#extractor.exports).map(([name, symbol]) => {
@@ -110,7 +141,7 @@ class Parser {
 		);
 	}
 
-	/** @returns {Doc.Props} */
+	/** @returns {Props} */
 	get props() {
 		return new Map(
 			Iterator.from(this.#extractor.props).map(([name, symbol]) => {
@@ -119,7 +150,7 @@ class Parser {
 		);
 	}
 
-	/** @returns {Doc.Slots} */
+	/** @returns {Slots} */
 	get slots() {
 		// TODO: Document error
 		if (!this.isLegacy) throw new Error();
@@ -133,7 +164,7 @@ class Parser {
 		);
 	}
 
-	/** @returns {Doc.Docable['tags']} */
+	/** @returns {Docable['tags']} */
 	get tags() {
 		return this.#extractor.tags;
 	}
@@ -144,7 +175,7 @@ class Parser {
 	}
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.ArrayType}
+	 * @returns {ArrayType}
 	 */
 	#get_array_doc(type) {
 		const index_info = this.#checker.getIndexInfoOfType(type, ts.IndexKind.Number);
@@ -162,7 +193,7 @@ class Parser {
 	 * Generates {@link Doc.Constructible}
 	 *
 	 * @param {ts.Type} type
-	 * @returns {Doc.Constructible}
+	 * @returns {Constructible}
 	 */
 	#get_constructible_doc(type) {
 		const symbol = get_type_symbol(type);
@@ -170,7 +201,7 @@ class Parser {
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
-		/** @type {Doc.Constructible['constructors']} */
+		/** @type {Constructible['constructors']} */
 		const constructors = get_construct_signatures(type, this.#extractor).map((s) =>
 			s.getParameters().map((p) => this.#get_fn_param_doc(p)),
 		);
@@ -184,7 +215,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Symbol} symbol
-	 * @returns {Doc.FnParam}
+	 * @returns {FnParam}
 	 */
 	#get_fn_param_doc(symbol) {
 		if (!symbol.valueDeclaration || !ts.isParameter(symbol.valueDeclaration)) {
@@ -193,7 +224,7 @@ class Parser {
 		}
 		const type = this.#checker.getTypeOfSymbol(symbol);
 		const isOptional = symbol.valueDeclaration.questionToken !== undefined;
-		/** @type {Doc.FnParam} */
+		/** @type {FnParam} */
 		let data = {
 			name: symbol.name,
 			isOptional,
@@ -210,7 +241,7 @@ class Parser {
 	 * Generates {@link Doc.Fn}
 	 *
 	 * @param {ts.Type} type
-	 * @returns {Doc.Fn}
+	 * @returns {Fn}
 	 */
 	#get_fn_doc(type) {
 		const calls = type.getCallSignatures().map((s) => {
@@ -219,7 +250,7 @@ class Parser {
 				returns: this.#get_type_doc(s.getReturnType()),
 			};
 		});
-		/** @type {Doc.Fn} */
+		/** @type {Fn} */
 		let results = {
 			kind: "function",
 			calls,
@@ -236,12 +267,12 @@ class Parser {
 	 * Generates {@link Doc.Interface}
 	 *
 	 * @param {ts.Type} type
-	 * @returns {Doc.Interface}
+	 * @returns {Interface}
 	 */
 	#get_interface_doc(type) {
-		/** @type {Doc.Interface['members']} */
+		/** @type {Interface['members']} */
 		const members = new Map(Iterator.from(type.getProperties()).map((p) => [p.name, this.#get_member_doc(p)]));
-		/** @type {Doc.Interface} */
+		/** @type {Interface} */
 		let results = {
 			kind: "interface",
 			members,
@@ -258,14 +289,14 @@ class Parser {
 	 * Generates {@link Doc.Intersection}
 	 *
 	 * @param {ts.Type} type
-	 * @returns {Doc.Intersection}
+	 * @returns {Intersection}
 	 */
 	#get_intersection_doc(type) {
 		// TODO: Document error
 		if (!type.isIntersection())
 			throw new Error(`Expected intersection type, got ${this.#checker.typeToString(type)}`);
 		const types = type.types.map((t) => this.#get_type_doc(t));
-		/** @type {Doc.Intersection} */
+		/** @type {Intersection} */
 		let results = { kind: "intersection", types };
 		if (type.aliasSymbol) {
 			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
@@ -277,7 +308,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Literal}
+	 * @returns {Literal}
 	 */
 	#get_literal_doc(type) {
 		const kind = "literal";
@@ -309,7 +340,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Symbol} symbol
-	 * @returns {Doc.Member}
+	 * @returns {Member}
 	 */
 	#get_member_doc(symbol) {
 		const type = this.#checker.getTypeOfSymbol(symbol);
@@ -332,12 +363,12 @@ class Parser {
 
 	/**
 	 * @param {ts.Symbol} symbol
-	 * @returns {Doc.Prop}
+	 * @returns {Prop}
 	 */
 	#get_prop_doc(symbol) {
 		const type = this.#checker.getTypeOfSymbol(symbol);
 		const sources = get_sources(symbol.getDeclarations() ?? [], this.#root_path_url);
-		/** @type {Doc.Prop} */
+		/** @type {Prop} */
 		let results = {
 			tags: this.#get_prop_tags(symbol),
 			isBindable: this.#extractor.bindings.has(symbol.name) || symbol.name.startsWith("bind:"),
@@ -358,11 +389,11 @@ class Parser {
 
 	/**
 	 * @param {ts.Symbol} symbol
-	 * @returns {Doc.Tag[]}
+	 * @returns {Tag[]}
 	 */
 	#get_prop_tags(symbol) {
 		return symbol.getJsDocTags(this.#checker).map((t) => {
-			/** @type {Doc.Tag} */
+			/** @type {Tag} */
 			let results = { name: t.name, content: "" };
 			// TODO: Why it would be an array? Overloads? How should we handle it?
 			const content = t.text?.[0]?.text;
@@ -373,7 +404,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Tuple}
+	 * @returns {Tuple}
 	 */
 	#get_tuple_doc(type) {
 		// TODO: Document error
@@ -384,7 +415,7 @@ class Parser {
 			throw new Error(`Expected tuple type, got ${this.#checker.typeToString(type)}`);
 		const isReadonly = type.target.readonly;
 		const elements = this.#checker.getTypeArguments(type).map((t) => this.#get_type_doc(t));
-		/** @type {Doc.Tuple} */
+		/** @type {Tuple} */
 		let results = {
 			kind: "tuple",
 			isReadonly,
@@ -400,14 +431,14 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.TypeParam}
+	 * @returns {TypeParam}
 	 */
 	#get_type_param_doc(type) {
 		// TODO: Document error
 		if (!type.isTypeParameter())
 			throw new Error(`Expected type parameter, got ${this.#checker.typeToString(type)}`);
 		const constraint = type.getConstraint();
-		/** @type {Doc.TypeParam} */
+		/** @type {TypeParam} */
 		let results = {
 			kind: "type-parameter",
 			name: type.symbol.name,
@@ -421,12 +452,12 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Index}
+	 * @returns {Index}
 	 */
 	#get_index_doc(type) {
 		// TODO: Document error
 		if (!type.isIndexType()) throw new Error(`Expected Index type, got ${this.#checker.typeToString(type)}`);
-		/** @type {Doc.Index} */
+		/** @type {Index} */
 		let results = {
 			kind: "index",
 			type: this.#get_type_doc(type.type),
@@ -436,14 +467,14 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.IndexedAccess}
+	 * @returns {IndexedAccess}
 	 */
 	#get_indexed_access_doc(type) {
 		// TODO: Document error
 		if (!(type.flags & ts.TypeFlags.IndexedAccess))
 			throw new Error(`Expected indexed access type, got ${this.#checker.typeToString(type)}`);
 		let ia_type = /** @type {ts.IndexedAccessType} */ (type);
-		/** @type {Doc.IndexedAccess} */
+		/** @type {IndexedAccess} */
 		let results = {
 			kind: "indexed-access",
 			object: this.#get_type_doc(ia_type.objectType),
@@ -462,14 +493,14 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Conditional}
+	 * @returns {Conditional}
 	 */
 	#get_conditional_doc(type) {
 		// TODO: Document error
 		if (!(type.flags & ts.TypeFlags.Conditional))
 			throw new Error(`Expected conditional type, got ${this.#checker.typeToString(type)}`);
 		let conditional = /** @type {ts.ConditionalType} */ (type);
-		/** @type {Doc.Conditional} */
+		/** @type {Conditional} */
 		let results = {
 			kind: "conditional",
 			check: this.#get_type_doc(conditional.checkType),
@@ -482,7 +513,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Substitution}
+	 * @returns {Substitution}
 	 */
 	#get_substitution_doc(type) {
 		// TODO: Document error
@@ -498,14 +529,14 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.StringMapping}
+	 * @returns {StringMapping}
 	 */
 	#get_string_mapping_doc(type) {
 		// TODO: Document error
 		if (!(type.flags & ts.TypeFlags.StringMapping))
 			throw new Error(`Expected string mapping type, got ${this.#checker.typeToString(type)}`);
 		let string_mapping = /** @type {ts.StringMappingType} */ (type);
-		/** @type {Doc.StringMapping} */
+		/** @type {StringMapping} */
 		let results = {
 			kind: "string-mapping",
 			type: this.#get_type_doc(string_mapping.type),
@@ -516,14 +547,14 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.TemplateLiteral}
+	 * @returns {TemplateLiteral}
 	 */
 	#get_template_literal_doc(type) {
 		// TODO: Document error
 		if (!(type.flags & ts.TypeFlags.TemplateLiteral))
 			throw new Error(`Expected template literal type, got ${this.#checker.typeToString(type)}`);
 		let template_literal = /** @type {ts.TemplateLiteralType} */ (type);
-		/** @type {Doc.TemplateLiteral} */
+		/** @type {TemplateLiteral} */
 		let results = {
 			kind: "template-literal",
 			texts: template_literal.texts,
@@ -534,7 +565,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.WithAlias['sources'] | Doc.WithName["sources"]}
+	 * @returns {WithAlias['sources'] | WithName["sources"]}
 	 */
 	#get_type_sources(type) {
 		/** @type {ts.Symbol | undefined} */
@@ -551,13 +582,13 @@ class Parser {
 	/**
 	 * Generates {@link Doc.Union}
 	 * @param {ts.Type} type
-	 * @returns {Doc.Union}
+	 * @returns {Union}
 	 */
 	#get_union_doc(type) {
 		// TODO: Document error
 		if (!type.isUnion()) throw new Error(`Expected union type, got ${this.#checker.typeToString(type)}`);
 
-		/** @type {Doc.TypeOrRef[]} */
+		/** @type {TypeOrRef[]} */
 		let types = [];
 		const non_nullable = type.getNonNullableType();
 
@@ -582,7 +613,7 @@ class Parser {
 			}
 		}
 
-		/** @type {Doc.Union} */
+		/** @type {Union} */
 		let results = {
 			kind: "union",
 			types,
@@ -599,7 +630,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.TypeOrRef}
+	 * @returns {TypeOrRef}
 	 */
 	#get_type_doc(type) {
 		if (
@@ -702,7 +733,7 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {Doc.Type}
+	 * @returns {Type}
 	 */
 	#get_type_doc_internal(type) {
 		const kind = get_type_kind({ type, extractor: this.#extractor });
@@ -746,25 +777,25 @@ class Parser {
 /**
  * @typedef LegacyComponent
  * @prop {true} isLegacy
- * @prop {Doc.Docable['description']} description
- * @prop {Doc.Docable['tags']} tags
- * @prop {Doc.Props} props
- * @prop {Doc.Exports} exports
- * @prop {Doc.Events} events
- * @prop {Doc.Slots} slots
- * @prop {Doc.Types} types
+ * @prop {Docable['description']} description
+ * @prop {Docable['tags']} tags
+ * @prop {Props} props
+ * @prop {Exports} exports
+ * @prop {Events} events
+ * @prop {Slots} slots
+ * @prop {Types} types
  */
 
 /**
  * @typedef ModernComponent
  * @prop {false} isLegacy
- * @prop {Doc.Docable['description']} description
- * @prop {Doc.Docable['tags']} tags
- * @prop {Doc.Props} props
- * @prop {Doc.Exports} exports
+ * @prop {Docable['description']} description
+ * @prop {Docable['tags']} tags
+ * @prop {Props} props
+ * @prop {Exports} exports
  * @prop {never} events
  * @prop {never} slots
- * @prop {Doc.Types} types
+ * @prop {Types} types
  */
 
 /** @typedef {LegacyComponent | ModernComponent} ParsedComponent */
