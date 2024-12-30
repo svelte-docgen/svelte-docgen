@@ -19,6 +19,7 @@ import {
 	is_tuple_type,
 	is_type_reference,
 } from "../shared.js";
+import { isTypeRef } from "../doc/utils.js";
 
 const AnonTypeLiteralSymbolName = ts.InternalSymbolName.Type;
 
@@ -40,6 +41,9 @@ class Parser {
 	 */
 	/** @type {Doc.Types} */
 	types = new Map();
+
+	/** @type {Map<ts.Type, string>} */
+	#reference_name_cache = new Map();
 
 	/**
 	 * @param {string} source
@@ -162,7 +166,7 @@ class Parser {
 	 */
 	#get_constructible_doc(type) {
 		const symbol = get_type_symbol(type);
-		const name = this.#checker.getFullyQualifiedName(symbol);
+		const name = this.#get_fully_qualified_name(symbol);
 		const sources = this.#get_type_sources(type);
 		// TODO: Document error
 		if (!sources) throw new Error();
@@ -220,8 +224,8 @@ class Parser {
 			kind: "function",
 			calls,
 		};
-		if (type.aliasSymbol || type.symbol.name !== AnonTypeLiteralSymbolName) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
+		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -242,8 +246,8 @@ class Parser {
 			kind: "interface",
 			members,
 		};
-		if (type.aliasSymbol || type.symbol.name !== AnonTypeLiteralSymbolName) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol);
+		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol || type.symbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -264,7 +268,7 @@ class Parser {
 		/** @type {Doc.Intersection} */
 		let results = { kind: "intersection", types };
 		if (type.aliasSymbol) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -296,6 +300,7 @@ class Parser {
 			return {
 				kind,
 				subkind: "symbol",
+				alias: this.#get_fully_qualified_name(/** @type {ts.UniqueESSymbolType} */ (type).symbol),
 			};
 		}
 		// TODO: Document error
@@ -386,7 +391,7 @@ class Parser {
 			elements,
 		};
 		if (type.aliasSymbol) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
@@ -416,6 +421,119 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
+	 * @returns {Doc.Index}
+	 */
+	#get_index_doc(type) {
+		// TODO: Document error
+		if (!type.isIndexType()) throw new Error(`Expected Index type, got ${this.#checker.typeToString(type)}`);
+		/** @type {Doc.Index} */
+		let results = {
+			kind: "index",
+			type: this.#get_type_doc(type.type),
+		};
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.IndexedAccess}
+	 */
+	#get_indexed_access_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.IndexedAccess))
+			throw new Error(`Expected indexed access type, got ${this.#checker.typeToString(type)}`);
+		let ia_type = /** @type {ts.IndexedAccessType} */ (type);
+		/** @type {Doc.IndexedAccess} */
+		let results = {
+			kind: "indexed-access",
+			object: this.#get_type_doc(ia_type.objectType),
+			index: this.#get_type_doc(ia_type.indexType),
+		};
+		if (ia_type.constraint) results.constraint = this.#get_type_doc(ia_type.constraint);
+
+		// TODO: Commenting these out for now as it's unclear if they are useful for users
+		//
+		// if (ia_type.simplifiedForReading && ia_type.simplifiedForReading !== type)
+		// 	results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForReading);
+		// if (ia_type.simplifiedForWriting && ia_type.simplifiedForWriting !== type)
+		// 	results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForWriting);
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.Conditional}
+	 */
+	#get_conditional_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.Conditional))
+			throw new Error(`Expected conditional type, got ${this.#checker.typeToString(type)}`);
+		let conditional = /** @type {ts.ConditionalType} */ (type);
+		/** @type {Doc.Conditional} */
+		let results = {
+			kind: "conditional",
+			check: this.#get_type_doc(conditional.checkType),
+			extends: this.#get_type_doc(conditional.extendsType),
+		};
+		if (conditional.resolvedTrueType) results.truthy = this.#get_type_doc(conditional.resolvedTrueType);
+		if (conditional.resolvedFalseType) results.falsy = this.#get_type_doc(conditional.resolvedFalseType);
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.Substitution}
+	 */
+	#get_substitution_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.Substitution))
+			throw new Error(`Expected substitution type, got ${this.#checker.typeToString(type)}`);
+		let substitution = /** @type {ts.SubstitutionType} */ (type);
+		return {
+			kind: "substitution",
+			base: this.#get_type_doc(substitution.baseType),
+			constraint: this.#get_type_doc(substitution.constraint),
+		};
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.StringMapping}
+	 */
+	#get_string_mapping_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.StringMapping))
+			throw new Error(`Expected string mapping type, got ${this.#checker.typeToString(type)}`);
+		let string_mapping = /** @type {ts.StringMappingType} */ (type);
+		/** @type {Doc.StringMapping} */
+		let results = {
+			kind: "string-mapping",
+			type: this.#get_type_doc(string_mapping.type),
+			name: string_mapping.symbol.name,
+		};
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {Doc.TemplateLiteral}
+	 */
+	#get_template_literal_doc(type) {
+		// TODO: Document error
+		if (!(type.flags & ts.TypeFlags.TemplateLiteral))
+			throw new Error(`Expected template literal type, got ${this.#checker.typeToString(type)}`);
+		let template_literal = /** @type {ts.TemplateLiteralType} */ (type);
+		/** @type {Doc.TemplateLiteral} */
+		let results = {
+			kind: "template-literal",
+			texts: template_literal.texts,
+			types: template_literal.types.map((t) => this.#get_type_doc(t)),
+		};
+		return results;
+	}
+
+	/**
+	 * @param {ts.Type} type
 	 * @returns {Doc.WithAlias['sources'] | Doc.WithName["sources"]}
 	 */
 	#get_type_sources(type) {
@@ -438,19 +556,44 @@ class Parser {
 	#get_union_doc(type) {
 		// TODO: Document error
 		if (!type.isUnion()) throw new Error(`Expected union type, got ${this.#checker.typeToString(type)}`);
-		const types = type.types.map((t) => this.#get_type_doc(t));
+
+		/** @type {Doc.TypeOrRef[]} */
+		let types = [];
+		const non_nullable = type.getNonNullableType();
+
+		if (type.aliasSymbol || type === non_nullable) {
+			types = type.types.map((t) => this.#get_type_doc(t));
+		} else {
+			// The TypeScript compiler expands unions eagerly:
+			//     type U = a | b;
+			//     x?: U; // expands to `a | b | undefined` instead of `U | undefined`
+			// To minimize such expansions, we explicitly combine the nullable and non-nullable elements of a union.
+			types.push(
+				...type.types
+					.filter((t) => t.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined | ts.TypeFlags.Void))
+					.map((t) => this.#get_type_doc(t)),
+			);
+			const non_nullable_doc = this.#get_type_doc(non_nullable);
+			if (isTypeRef(non_nullable_doc)) types.push(non_nullable_doc);
+			else if (non_nullable_doc.kind === "union") {
+				types.push(...non_nullable_doc.types);
+			} else {
+				types.push(non_nullable_doc);
+			}
+		}
+
 		/** @type {Doc.Union} */
 		let results = {
 			kind: "union",
 			types,
 		};
 		if (type.aliasSymbol) {
-			results.alias = this.#checker.getFullyQualifiedName(type.aliasSymbol);
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
 			const sources = this.#get_type_sources(type);
 			if (sources) results.sources = sources;
 		}
-		const nonNullable = type.getNonNullableType();
-		if (nonNullable !== type) results.nonNullable = this.#get_type_doc(nonNullable);
+		if (non_nullable !== type) results.nonNullable = this.#get_type_doc(non_nullable);
+
 		return results;
 	}
 
@@ -461,16 +604,17 @@ class Parser {
 	#get_type_doc(type) {
 		if (
 			!type.aliasSymbol &&
-			(!type.symbol || type.symbol.name === AnonTypeLiteralSymbolName || type.isTypeParameter())
+			!is_type_reference(type) &&
+			(!type.symbol || type.symbol.name === AnonTypeLiteralSymbolName)
 		) {
-			// anonymous type
+			// immediate type
 			return this.#get_type_doc_internal(type);
 		}
 
 		// type reference
-		const name = this.#get_qualified_typeref_name(type);
-		if (this.types.get(name) === undefined) {
-			this.types.set(name, { kind: "unknown" }); // reservation to prevent infinite loop
+		const name = this.#get_reference_name(type);
+		if (!this.types.has(name)) {
+			this.types.set(name, { kind: "unknown" }); // reserve to prevent infinite recursion
 			const doc = this.#get_type_doc_internal(type);
 			this.types.set(name, doc);
 		}
@@ -478,38 +622,82 @@ class Parser {
 	}
 
 	/**
+	 * Get fully qualified name of a symbol with hiding private file path.
+	 * @param {ts.Symbol} symbol
+	 * @returns {string}
+	 */
+	#get_fully_qualified_name(symbol) {
+		const name = this.#checker.getFullyQualifiedName(symbol);
+		return name.replace(this.#root_path_url.pathname, "");
+	}
+
+	/**
+	 * Get a unique name for an aliased/named type or ReferenceType.
 	 * @param {ts.Type} type
 	 * @returns {string}
 	 */
-	#get_qualified_typeref_name(type) {
-		if (is_type_reference(type)) {
-			// type reference
-			return (
-				this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
+	#get_reference_name(type) {
+		const cached = this.#reference_name_cache.get(type);
+		if (cached) return cached;
+
+		// type reference (tuple, array, type reference)
+		if (!type.aliasSymbol && is_type_reference(type)) {
+			// tuples
+			if (this.#checker.isTupleType(type)) {
+				const readonly_prefix = /** @type {ts.TupleType} */ (type.target).readonly ? "readonly " : "";
+				const name =
+					readonly_prefix +
+					"[" +
+					(type.typeArguments ?? []).map((type) => this.#get_reference_name(type)).join(", ") +
+					"]";
+				this.#reference_name_cache.set(type, name);
+				return name;
+			}
+			// others
+			const name =
+				this.#get_fully_qualified_name(type.symbol) +
 				(type.typeArguments && type.typeArguments.length
-					? "<" +
-						type.typeArguments
-							.map((type) => {
-								return this.#checker.typeToString(type);
-							})
-							.join(", ") +
-						">"
-					: "")
-			);
+					? "<" + type.typeArguments.map((type) => this.#get_reference_name(type)).join(", ") + ">"
+					: "");
+			this.#reference_name_cache.set(type, name);
+			return name;
 		}
-		// alias
-		return (
-			this.#checker.getFullyQualifiedName(type.aliasSymbol || type.symbol) +
-			(type.aliasTypeArguments && type.aliasTypeArguments.length
-				? "<" +
-					type.aliasTypeArguments
-						.map((type) => {
-							return this.#checker.typeToString(type);
-						})
-						.join(", ") +
-					">"
-				: "")
-		);
+
+		// aliased or named type
+		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
+			const name =
+				this.#get_fully_qualified_name(type.aliasSymbol || type.symbol) +
+				(type.aliasTypeArguments && type.aliasTypeArguments.length
+					? "<" + type.aliasTypeArguments.map((type) => this.#get_reference_name(type)).join(", ") + ">"
+					: "");
+			this.#reference_name_cache.set(type, name);
+			return name;
+		}
+
+		if (
+			type.flags &
+			(ts.TypeFlags.Any |
+				ts.TypeFlags.Unknown |
+				ts.TypeFlags.StringLike |
+				ts.TypeFlags.NumberLike |
+				ts.TypeFlags.BigIntLike |
+				ts.TypeFlags.BooleanLike |
+				ts.TypeFlags.EnumLike |
+				ts.TypeFlags.VoidLike |
+				ts.TypeFlags.Null |
+				ts.TypeFlags.ESSymbolLike |
+				ts.TypeFlags.TypeParameter |
+				ts.TypeFlags.Never)
+		) {
+			return this.#checker.typeToString(type);
+		}
+
+		// anonymous type
+		const name = `<anon:${this.#reference_name_cache.size}>`;
+		this.#reference_name_cache.set(type, name);
+		this.types.set(name, this.#get_type_doc_internal(type));
+		this.#reference_name_cache.set(type, name);
+		return name;
 	}
 
 	/**
@@ -533,10 +721,22 @@ class Parser {
 				return this.#get_literal_doc(type);
 			case "tuple":
 				return this.#get_tuple_doc(type);
-			case "type-parameter":
-				return this.#get_type_param_doc(type);
 			case "union":
 				return this.#get_union_doc(type);
+			case "type-parameter":
+				return this.#get_type_param_doc(type);
+			case "index":
+				return this.#get_index_doc(type);
+			case "indexed-access":
+				return this.#get_indexed_access_doc(type);
+			case "conditional":
+				return this.#get_conditional_doc(type);
+			case "substitution":
+				return this.#get_substitution_doc(type);
+			case "template-literal":
+				return this.#get_template_literal_doc(type);
+			case "string-mapping":
+				return this.#get_string_mapping_doc(type);
 			default:
 				return { kind };
 		}
