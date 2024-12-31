@@ -50,15 +50,6 @@ export function is_symbol_optional(symbol) {
 
 /**
  * @internal
- * @param {string} source
- * @returns {string}
- */
-export function remove_tsx_extension(source) {
-	return source.replace(/\.tsx$/, "");
-}
-
-/**
- * @internal
  * @param {ts.Type} type
  * @returns {ts.Symbol}
  */
