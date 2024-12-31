@@ -167,23 +167,25 @@ export function get_sources(declarations, root_path_url) {
  * Field `package.json#workspaces` is also case for: npm, yarn, Deno, and Bun.
  *
  * @param {ts.System} sys TypeScript system for I/O operations.
+ * @param {string} [directory] Directory to start searching from. Default is `process.cwd()`.
  * @returns {URL} URI with path of either monorepo root or a basename of nearest `package.json` file.
  * @throws {Error} If it cannot find nearest `package.json` file if project isn't a monorepo.
  */
-export function get_root_path_url(sys) {
+export function get_root_path_url(sys, directory) {
 	if (!IS_NODE_LIKE) {
 		// Set the root of the virtual file system (VFS) as the root
 		return new URL("file:///");
 	}
 
-	let directory = pathe.resolve(process.cwd());
+	directory = pathe.resolve(directory ?? process.cwd());
 	const { root } = pathe.parse(directory);
 	/** @type {string | undefined} */
 	let found_dir;
 	while (directory) {
 		// Case 1: pnpm workspace
-		const pnpm_workspace_filepath = pathe.join(directory, "pnpm-workspace.yaml");
-		if (sys.fileExists(pnpm_workspace_filepath)) {
+		const pnpm_workspace_yaml_filepath = pathe.join(directory, "pnpm-workspace.yaml");
+		const pnpm_workspace_yml_filepath = pathe.join(directory, "pnpm-workspace.yml");
+		if (sys.fileExists(pnpm_workspace_yml_filepath) || sys.fileExists(pnpm_workspace_yaml_filepath)) {
 			found_dir = directory;
 			break;
 		}
