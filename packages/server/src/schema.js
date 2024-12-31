@@ -27,6 +27,7 @@ const PARSED_COMPONENT_FIELDS = /** @type {(keyof ParsedComponent)[]} */ ([
 	"events",
 	"exports",
 	"props",
+	"types",
 	"slots",
 	"tags",
 ]);

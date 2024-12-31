@@ -35,7 +35,7 @@ export function transform_encoded(ast) {
 				node.value.type === "ArrayExpression"
 			) {
 				/** Revive those keys values as {@link Map} */
-				if (["events", "exports", "props", "slots"].includes(node.key.value)) {
+				if (["events", "exports", "props", "types", "slots"].includes(node.key.value)) {
 					return /** @type {AST.Property} */ ({
 						...node,
 						value: {
@@ -44,8 +44,7 @@ export function transform_encoded(ast) {
 								type: "Identifier",
 								name: "Map",
 							},
-							// NOTE: Visit nested nodes _(if exists)_ to look for properties needed for further transformation
-							arguments: [ctx.visit(node.value)],
+							arguments: [node.value],
 						},
 					});
 				}

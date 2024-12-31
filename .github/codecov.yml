@@ -1,7 +1,7 @@
 ignore:
   - "**/lib/components/ui/**" # shadcn-svelte
   - "**/lib/components/app-sidebar/**" # shadcn-svelte
-  - "examples/component-documentation/**"
+  - "**/examples/**"
   - "**/*.config.js"
   - "**/*.config.ts"
 
