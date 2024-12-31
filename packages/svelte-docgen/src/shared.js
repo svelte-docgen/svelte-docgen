@@ -161,9 +161,8 @@ export function get_root_path_url(sys, directory) {
 	let found_dir;
 	while (directory) {
 		// Case 1: pnpm workspace
-		const pnpm_workspace_yaml_filepath = pathe.join(directory, "pnpm-workspace.yaml");
-		const pnpm_workspace_yml_filepath = pathe.join(directory, "pnpm-workspace.yml");
-		if (sys.fileExists(pnpm_workspace_yml_filepath) || sys.fileExists(pnpm_workspace_yaml_filepath)) {
+		const pnpm_workspace_filepath = pathe.join(directory, "pnpm-workspace.yaml");
+		if (sys.fileExists(pnpm_workspace_filepath)) {
 			found_dir = directory;
 			break;
 		}
