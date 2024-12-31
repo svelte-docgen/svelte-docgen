@@ -14,19 +14,6 @@ const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
 
 /**
  * @internal
- * @param {string} stringified
- * @returns {ReturnType<typeof JSON.parse>}
- */
-export function parse_stringified_type(stringified) {
-	try {
-		return JSON.parse(stringified);
-	} catch {
-		return stringified;
-	}
-}
-
-/**
- * @internal
  * @param {ts.Type} type
  * @returns {type is ts.ObjectType}
  */
