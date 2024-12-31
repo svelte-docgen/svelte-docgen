@@ -62,6 +62,7 @@ export function decode(stringified) {
 			case "events":
 			case "members":
 			case "props":
+			case "types":
 			case "slots":
 				return is_mappable(value) ? new Map(value) : value;
 			case "sources":

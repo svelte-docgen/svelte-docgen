@@ -69,65 +69,56 @@ describe("NodeServer", () => {
 				      },
 				    },
 				  },
-				  "types": [
-				    [
-				      ""svelte".Snippet<[]>",
-				      {
-				        "alias": ""svelte".Snippet",
-				        "calls": [
-				          {
-				            "parameters": [
+				  "types": Map {
+				    ""svelte".Snippet<[]>" => {
+				      "alias": ""svelte".Snippet",
+				      "calls": [
+				        {
+				          "parameters": [
+				            {
+				              "isOptional": false,
+				              "name": "args",
+				              "type": "[]",
+				            },
+				          ],
+				          "returns": {
+				            "kind": "intersection",
+				            "types": [
 				              {
-				                "isOptional": false,
-				                "name": "args",
-				                "type": "[]",
-				              },
-				            ],
-				            "returns": {
-				              "kind": "intersection",
-				              "types": [
-				                {
-				                  "kind": "interface",
-				                  "members": Map {
-				                    "{@render ...} must be called with a Snippet" => {
-				                      "isOptional": false,
-				                      "isReadonly": false,
-				                      "type": {
-				                        "kind": "literal",
-				                        "subkind": "string",
-				                        "value": "import type { Snippet } from 'svelte'",
-				                      },
+				                "kind": "interface",
+				                "members": Map {
+				                  "{@render ...} must be called with a Snippet" => {
+				                    "isOptional": false,
+				                    "isReadonly": false,
+				                    "type": {
+				                      "kind": "literal",
+				                      "subkind": "string",
+				                      "value": "import type { Snippet } from 'svelte'",
 				                    },
 				                  },
 				                },
-				                "SnippetReturn",
-				              ],
-				            },
+				              },
+				              "SnippetReturn",
+				            ],
 				          },
-				        ],
-				        "kind": "function",
-				        "sources": Set {
-				          /node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
 				        },
+				      ],
+				      "kind": "function",
+				      "sources": Set {
+				        /node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
 				      },
-				    ],
-				    [
-				      "[]",
-				      {
-				        "elements": [],
-				        "isReadonly": false,
-				        "kind": "tuple",
-				      },
-				    ],
-				    [
-				      "SnippetReturn",
-				      {
-				        "alias": "SnippetReturn",
-				        "kind": "literal",
-				        "subkind": "symbol",
-				      },
-				    ],
-				  ],
+				    },
+				    "[]" => {
+				      "elements": [],
+				      "isReadonly": false,
+				      "kind": "tuple",
+				    },
+				    "SnippetReturn" => {
+				      "alias": "SnippetReturn",
+				      "kind": "literal",
+				      "subkind": "symbol",
+				    },
+				  },
 				}
 			`);
 			server.shutdown();
