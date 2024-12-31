@@ -34,21 +34,6 @@ export function transform_encoded(ast) {
 				typeof node.key.value === "string" &&
 				node.value.type === "ArrayExpression"
 			) {
-				/** Revive those keys values as {@link Map} */
-				if (["events", "exports", "props", "slots"].includes(node.key.value)) {
-					return /** @type {AST.Property} */ ({
-						...node,
-						value: {
-							type: "NewExpression",
-							callee: {
-								type: "Identifier",
-								name: "Map",
-							},
-							// NOTE: Visit nested nodes _(if exists)_ to look for properties needed for further transformation
-							arguments: [ctx.visit(node.value)],
-						},
-					});
-				}
 				/* Revive `sources` entry value as {@link Set} */
 				if (node.key.value === "sources") {
 					return /** @type {AST.Property} */ ({
@@ -62,6 +47,26 @@ export function transform_encoded(ast) {
 							arguments: [node.value],
 						},
 					});
+				}
+				const is_toplevel =
+					/** @type {AST.ObjectExpression} */ (ctx.path[ctx.path.length - 1]).properties.find(
+						(p) => p.type === "Property" && p.key.type === "Literal" && p.key.value === "props",
+					) !== undefined;
+				if (is_toplevel) {
+					/** Revive those keys values as {@link Map} */
+					if (["events", "exports", "props", "types", "slots"].includes(node.key.value)) {
+						return /** @type {AST.Property} */ ({
+							...node,
+							value: {
+								type: "NewExpression",
+								callee: {
+									type: "Identifier",
+									name: "Map",
+								},
+								arguments: [ctx.visit(node.value)],
+							},
+						});
+					}
 				}
 			}
 			// NOTE: Go to the next object property
