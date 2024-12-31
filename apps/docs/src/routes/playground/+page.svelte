@@ -39,16 +39,16 @@
 		return prepareDocgen(fsmap)(manager.source.current);
 	});
 
-	$effect(() => {
-		params.input = manager?.source.current;
-	});
-
 	onMount(() => {
 		if (!editor) throw new Error("Unreachable");
 		manager = new Repl.Manager({ editor, initial: params.input });
 		return () => {
 			manager?.destroy();
 		};
+	});
+
+	$effect(() => {
+		params.input = manager?.source.current ?? null;
 	});
 </script>
 

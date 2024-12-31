@@ -1,53 +1,53 @@
 import { indentWithTab } from "@codemirror/commands";
-import { EditorState, type EditorStateConfig, type Transaction } from "@codemirror/state";
-import { keymap, EditorView } from "@codemirror/view";
+import { indentUnit } from "@codemirror/language";
+import { EditorState, type EditorStateConfig } from "@codemirror/state";
+import { keymap, EditorView, ViewUpdate } from "@codemirror/view";
 import { svelte } from "@replit/codemirror-lang-svelte";
 import { basicSetup } from "codemirror";
 import { Debounced } from "runed";
 
 export class Manager {
-	#view: EditorView;
-
-	transaction = $state<Transaction>();
 	source: Debounced<string>;
+	view: EditorView;
+	update = $state<ViewUpdate>();
 
 	#default_extensions = [
 		basicSetup,
 		EditorState.tabSize.of(2),
 		// NOTE: Understand this: https://codemirror.net/examples/tab/
 		keymap.of([indentWithTab]),
+		indentUnit.of("\t"),
 		svelte(),
 	] satisfies EditorStateConfig["extensions"];
 
-	constructor(options: { editor: HTMLDivElement; initial: string; debounce_delay?: number }) {
-		this.#view = new EditorView({
-			dispatch: (t) => {
-				this.transaction = t;
-			},
+	constructor(options: {
+		editor: HTMLDivElement;
+		initial: string;
+		debounce_delay?: number;
+	}) {
+		this.view = new EditorView({
 			parent: options.editor,
 			state: EditorState.create({
 				doc: options.initial,
-				extensions: this.#default_extensions,
+				extensions: [
+					//
+					...this.#default_extensions,
+					EditorView.updateListener.of((update) => {
+						this.update = update;
+					}),
+				],
 			}),
 		});
 
-		this.source = new Debounced(() => this.transaction?.newDoc.toString() ?? "", options.debounce_delay ?? 500);
-
-		/**
-		 * Reactivity - update the editor view whenever there's a new transaction.
-		 */
-		$effect(() => {
-			const { transaction } = this;
-			if (transaction && transaction.docChanged) {
-				this.#view.update([transaction]);
-			}
-		});
+		this.source = new Debounced(() => {
+			return this.update?.state.doc.toString() ?? "";
+		}, options.debounce_delay ?? 500);
 	}
 
 	/**
-	 * Destroy the editor view to prevent memory leaks. Should be run `onMount` return;
+	 * Destroy the editor view to prevent memory leaks. Should be run in `onMount` return;
 	 */
 	destroy() {
-		this.#view.destroy();
+		this.view.destroy();
 	}
 }
