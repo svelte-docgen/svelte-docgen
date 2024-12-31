@@ -4,6 +4,7 @@ ignore:
   - "**/examples/**"
   - "**/*.config.js"
   - "**/*.config.ts"
+  - "**/scripts/*.ts"
 
 coverage:
   status:
