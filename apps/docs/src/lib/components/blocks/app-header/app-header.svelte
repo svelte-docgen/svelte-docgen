@@ -14,7 +14,7 @@
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.ts";
 	import { Separator } from "$lib/components/ui/separator/index.ts";
-	import { ToggleScheme } from "$lib/components/toggle-scheme/index.ts";
+	import { ToggleScheme } from "$lib/components/blocks/toggle-scheme/index.ts";
 
 	interface Props {
 		routes: RouteMeta[];

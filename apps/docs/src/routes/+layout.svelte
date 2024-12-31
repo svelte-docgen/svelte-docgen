@@ -10,8 +10,8 @@
 	import { page } from "$app/state";
 
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
-	import { AppHeader, type RouteMeta } from "$lib/components/app-header/index.ts";
-	import { AppSidebar } from "$lib/components/app-sidebar/index.ts";
+	import { AppHeader, type RouteMeta } from "$lib/components/blocks/app-header/index.ts";
+	import { AppSidebar } from "$lib/components/blocks/app-sidebar/index.ts";
 
 	let { children } = $props();
 

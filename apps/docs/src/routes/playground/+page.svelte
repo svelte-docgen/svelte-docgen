@@ -5,9 +5,7 @@
 	import ts from "typescript";
 	import * as tsvfs from "@typescript/vfs";
 
-	import * as Repl from "$lib/components/repl/index.ts";
-
-	import { browser } from "$app/environment";
+	import * as Repl from "$lib/components/blocks/repl/index.ts";
 
 	import { prepareDocgen, COMPILER_OPTIONS } from "./demo";
 
@@ -25,8 +23,7 @@
 	let transaction = $state<Transaction>();
 	let source = new Debounced(() => transaction?.newDoc.toString() ?? params.input, 500);
 	let docgen = $derived.by(async () => {
-		if (browser && source.current) {
-			// FIXME:: is this check necessary? derived AFAIK always runs in browser
+		if (source.current) {
 			const fsmap = await tsvfs.createDefaultMapFromCDN(
 				COMPILER_OPTIONS,
 				ts.version,
