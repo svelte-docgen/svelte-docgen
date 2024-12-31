@@ -1,42 +1,12 @@
 <script lang="ts">
-	import { EditorState, Transaction } from "@codemirror/state";
-	import { EditorView } from "@codemirror/view";
-	import { svelte } from "@replit/codemirror-lang-svelte";
-	import { basicSetup } from "codemirror";
-	import { onMount } from "svelte";
+	import type { HTMLAttributes } from "svelte/elements";
 
-	import { Manager } from "./manager.svelte";
-
-	interface Props {
-		initial?: string;
-		transaction?: Transaction;
+	interface Props extends HTMLAttributes<HTMLDivElement> {
+		ref?: HTMLDivElement;
 	}
-	let { initial = "", transaction = $bindable<Transaction>() }: Props = $props();
-
-	let container: HTMLDivElement;
-	let view: EditorView;
-
-	onMount(() => {
-		view = new EditorView({
-			dispatch(transaction_) {
-				transaction = transaction_;
-			},
-			parent: container,
-			state: EditorState.create({
-				doc: initial,
-				extensions: [basicSetup, svelte()],
-			}),
-		});
-		return () => {
-			view?.destroy();
-		};
-	});
-
-	$effect(() => {
-		if (transaction && transaction.docChanged) view.update([transaction]);
-	});
+	let { ref = $bindable() }: Props = $props();
 </script>
 
-<div bind:this={container} id="editor" class="size-full">
-	<!-- TODO: -->
+<div bind:this={ref} class="size-full">
+	<!-- TODO:-->
 </div>

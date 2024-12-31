@@ -1,35 +1,47 @@
-import { EditorState } from "@codemirror/state";
-import type { EditorView } from "@codemirror/view";
+import { EditorState, type Transaction } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
+import { svelte } from "@replit/codemirror-lang-svelte";
+import { basicSetup } from "codemirror";
+import { Debounced } from "runed";
 
 export class Manager {
-	view = $state<EditorView>();
-	state: EditorState | undefined = $derived(this.view?.state);
+	#view: EditorView;
 
-	constructor() {
-		// this.#view = view;
-		// this.state = EditorState.create({
-		// 	doc: initial,
-		// 	extensions: [svelte()],
-		// });
+	transaction = $state<Transaction>();
+	source: Debounced<string>;
+
+	constructor(params: { editor: HTMLDivElement; initial: string }) {
+		this.#view = new EditorView({
+			dispatch: (t) => {
+				this.transaction = t;
+			},
+			parent: params.editor,
+			state: EditorState.create({
+				doc: params.initial,
+				extensions: [basicSetup, svelte()],
+			}),
+		});
+
+		this.source = new Debounced(
+			() => this.transaction?.newDoc.toString() ?? "",
+			500,
+		);
+
+		/**
+		 * Reactivity - update the editor view whenever there's a new transaction.
+		 */
+		$effect(() => {
+			const { transaction } = this;
+			if (transaction && transaction.docChanged) {
+				this.#view.update([transaction]);
+			}
+		});
 	}
 
-	// set view(view: EditorView) {
-	// 	this.#view = view;
-	// }
-	//
-	// get view(): EditorView {
-	// 	if (this.#view) return this.#view;
-	// 	throw new Error("EditorView was not set before accessing.");
-	// }
-
-	// #update_state(content: string): void {
-	// 	const current = this.state.doc.toString();
-	// 	this.state.update({
-	// 		changes: {
-	// 			from: 0,
-	// 			to: current.length,
-	// 			insert: content,
-	// 		},
-	// 	});
-	// }
+	/**
+	 * Destroy the editor view to prevent memory leaks. Should be run `onMount` return;
+	 */
+	destroy() {
+		this.#view.destroy();
+	}
 }

@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { Transaction } from "@codemirror/state";
-	import { Debounced } from "runed";
+	import { onMount } from "svelte";
 	import { queryParameters, ssp } from "sveltekit-search-params";
 	import ts from "typescript";
 	import * as tsvfs from "@typescript/vfs";
@@ -20,35 +19,42 @@
 		},
 	});
 
-	let transaction = $state<Transaction>();
-	let source = new Debounced(() => transaction?.newDoc.toString() ?? params.input, 500);
+	let editor = $state<HTMLDivElement>();
+	let manager = $state<Repl.Manager>();
 	let docgen = $derived.by(async () => {
-		if (source.current) {
-			const fsmap = await tsvfs.createDefaultMapFromCDN(
-				COMPILER_OPTIONS,
-				ts.version,
-				false,
-				ts,
-				// lzstring
-			);
-			for (const [k, v] of Object.entries(
-				import.meta.glob("/node_modules/svelte/**/*.d.ts", { query: "?raw", exhaustive: true, eager: true }),
-			)) {
-				// @ts-expect-error: v is a string
-				fsmap.set(k, v.default);
-			}
-			return prepareDocgen(fsmap)(source.current);
+		if (!manager) throw new Error("Unreachable");
+		const fsmap = await tsvfs.createDefaultMapFromCDN(
+			COMPILER_OPTIONS,
+			ts.version,
+			false,
+			ts,
+			// lzstring
+		);
+		for (const [k, v] of Object.entries(
+			import.meta.glob("/node_modules/svelte/**/*.d.ts", { query: "?raw", exhaustive: true, eager: true }),
+		)) {
+			// @ts-expect-error: v is a string
+			fsmap.set(k, v.default);
 		}
+		return prepareDocgen(fsmap)(manager.source.current);
 	});
 
 	$effect(() => {
-		params.input = source.current;
+		params.input = manager?.source.current;
+	});
+
+	onMount(() => {
+		if (!editor) throw new Error("Unreachable");
+		manager = new Repl.Manager({ editor, initial: params.input });
+		return () => {
+			manager?.destroy();
+		};
 	});
 </script>
 
 <Repl.Root>
 	{#snippet input()}
-		<Repl.Editor bind:transaction initial={source?.current} />
+		<Repl.Editor bind:ref={editor} />
 	{/snippet}
 
 	{#snippet output()}
