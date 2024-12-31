@@ -14,19 +14,6 @@ const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
 
 /**
  * @internal
- * @param {string} stringified
- * @returns {ReturnType<typeof JSON.parse>}
- */
-export function parse_stringified_type(stringified) {
-	try {
-		return JSON.parse(stringified);
-	} catch {
-		return stringified;
-	}
-}
-
-/**
- * @internal
  * @param {ts.Type} type
  * @returns {type is ts.ObjectType}
  */
@@ -59,15 +46,6 @@ export function is_tuple_type(type) {
  */
 export function is_symbol_optional(symbol) {
 	return (symbol.flags & ts.SymbolFlags.Optional) !== 0;
-}
-
-/**
- * @internal
- * @param {string} source
- * @returns {string}
- */
-export function remove_tsx_extension(source) {
-	return source.replace(/\.tsx$/, "");
 }
 
 /**
