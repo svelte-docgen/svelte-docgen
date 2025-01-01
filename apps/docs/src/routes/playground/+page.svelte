@@ -5,7 +5,7 @@
 
 	import * as Repl from "$lib/components/blocks/repl/index.ts";
 
-	import { generate_docgen } from "./util.ts";
+	import { generate_docgen } from "./docgen.ts";
 
 	const params = queryParameters({
 		input: {
@@ -20,8 +20,10 @@
 
 	let editor = $state<HTMLDivElement>();
 	let manager = $state<Repl.Manager>();
-	let source = $derived(manager?.source.current ?? "");
-	let docgen = $derived(generate_docgen(manager));
+	let docgen = $derived.by(() => {
+		if (!manager) return;
+		return generate_docgen(manager.source.current);
+	});
 
 	onMount(() => {
 		if (!editor) throw new Error("Unreachable");
@@ -32,7 +34,7 @@
 	});
 
 	$effect(() => {
-		params.input = source;
+		params.input = manager?.source.current ?? null;
 	});
 </script>
 
@@ -42,14 +44,14 @@
 	{/snippet}
 
 	{#snippet output()}
-		<!-- TODO: Add error output -->
-		<!-- {#if error} -->
-		<!-- 	<pre style="color: red;">{error}</pre> -->
-		<!-- {/if} -->
+		{#if docgen}
 		{#await docgen}
 			<p>Loading...</p>
 		{:then data}
 			{encode(data, { indent: "\t" })}
+		{:catch error}
+			<pre class="text-red-700">{error}</pre>
 		{/await}
+		{/if}
 	{/snippet}
 </Repl.Root>

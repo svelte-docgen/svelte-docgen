@@ -3,10 +3,37 @@ import { ssp } from "sveltekit-search-params";
 import ts from "typescript";
 import * as tsvfs from "@typescript/vfs";
 
-import * as Repl from "$lib/components/blocks/repl/index.ts";
-
 // TODO: This can be removed once we migrate away from using `svelte2tsx`
 import shim from "svelte2tsx/svelte-shims-v4.d.ts?raw";
+
+export async function generate_docgen(source: string) {
+	const fsmap = await tsvfs.createDefaultMapFromCDN(
+		COMPILER_OPTIONS,
+		ts.version,
+		false,
+		ts,
+		{
+			// @ts-expect-error value can be undefined
+			compressToUTF16: ssp.lz().encode,
+			decompressFromUTF16: ssp.lz().decode,
+		},
+	);
+	for (const [k, v] of Object.entries(
+		import.meta.glob("/node_modules/svelte/**/*.d.ts", {
+			eager: true,
+			exhaustive: true,
+			import: "default",
+			query: "?raw",
+		}),
+	)) {
+		fsmap.set(k, v as string);
+	}
+	try {
+		return Promise.resolve(prepare_docgen(fsmap)(source));
+	} catch (error) {
+		return Promise.reject(error);
+	}
+}
 
 const COMPILER_OPTIONS: ts.CompilerOptions = {
 	moduleDetection: ts.ModuleDetectionKind.Force,
@@ -36,28 +63,9 @@ function prepare_docgen(fsmap: Map<string, string>) {
 			cache,
 			filepath: "/src/Demo.svelte",
 			sys: sys,
-			host: tsvfs.createVirtualCompilerHost(sys, COMPILER_OPTIONS, ts).compilerHost,
+			host: tsvfs.createVirtualCompilerHost(sys, COMPILER_OPTIONS, ts)
+				.compilerHost,
 			ts_options: COMPILER_OPTIONS,
 		});
 	};
-}
-
-export async function generate_docgen(manager?: Repl.Manager) {
-	if (!manager?.source.current) throw new Error("Unreachable");
-	const fsmap = await tsvfs.createDefaultMapFromCDN(COMPILER_OPTIONS, ts.version, false, ts, {
-		// @ts-expect-error value can be undefined
-		compressToUTF16: ssp.lz().encode,
-		decompressFromUTF16: ssp.lz().decode,
-	});
-	for (const [k, v] of Object.entries(
-		import.meta.glob("/node_modules/svelte/**/*.d.ts", {
-			eager: true,
-			exhaustive: true,
-			import: "default",
-			query: "?raw",
-		}),
-	)) {
-		fsmap.set(k, v as string);
-	}
-	return prepare_docgen(fsmap)(manager.source.current);
 }
