@@ -1,7 +1,7 @@
 import { indentWithTab } from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import { Compartment, EditorState, type EditorStateConfig } from "@codemirror/state";
-import { keymap, EditorView, ViewUpdate } from "@codemirror/view";
+import { type ViewUpdate, keymap, EditorView } from "@codemirror/view";
 import { svelte } from "@replit/codemirror-lang-svelte";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { basicSetup } from "codemirror";

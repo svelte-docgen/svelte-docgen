@@ -45,13 +45,13 @@
 
 	{#snippet output()}
 		{#if docgen}
-		{#await docgen}
-			<p>Loading...</p>
-		{:then data}
-			{encode(data, { indent: "\t" })}
-		{:catch error}
-			<pre class="text-red-700">{error}</pre>
-		{/await}
+			{#await docgen}
+				<p>Loading...</p>
+			{:then data}
+				{encode(data, { indent: "\t" })}
+			{:catch error}
+				<pre class="text-red-700">{error}</pre>
+			{/await}
 		{/if}
 	{/snippet}
 </Repl.Root>

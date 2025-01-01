@@ -7,17 +7,11 @@ import * as tsvfs from "@typescript/vfs";
 import shim from "svelte2tsx/svelte-shims-v4.d.ts?raw";
 
 export async function generate_docgen(source: string) {
-	const fsmap = await tsvfs.createDefaultMapFromCDN(
-		COMPILER_OPTIONS,
-		ts.version,
-		false,
-		ts,
-		{
-			// @ts-expect-error value can be undefined
-			compressToUTF16: ssp.lz().encode,
-			decompressFromUTF16: ssp.lz().decode,
-		},
-	);
+	const fsmap = await tsvfs.createDefaultMapFromCDN(COMPILER_OPTIONS, ts.version, false, ts, {
+		// @ts-expect-error value can be undefined
+		compressToUTF16: ssp.lz().encode,
+		decompressFromUTF16: ssp.lz().decode,
+	});
 	for (const [k, v] of Object.entries(
 		import.meta.glob("/node_modules/svelte/**/*.d.ts", {
 			eager: true,
@@ -63,8 +57,7 @@ function prepare_docgen(fsmap: Map<string, string>) {
 			cache,
 			filepath: "/src/Demo.svelte",
 			sys: sys,
-			host: tsvfs.createVirtualCompilerHost(sys, COMPILER_OPTIONS, ts)
-				.compilerHost,
+			host: tsvfs.createVirtualCompilerHost(sys, COMPILER_OPTIONS, ts).compilerHost,
 			ts_options: COMPILER_OPTIONS,
 		});
 	};
