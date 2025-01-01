@@ -36,11 +36,11 @@ export function transform_encoded(ast) {
 			) {
 				/* Revive `sources` entry value as {@link Set} */
 				if (node.key.value === "sources") {
-					return transform(node, "Set", node.value);
+					return wrap_value(node, "Set", node.value);
 				}
 				/* Revive those keys values as {@link Map} */
 				if (["events", "exports", "props", "members", "slots"].includes(node.key.value)) {
-					return transform(node, "Map", ctx.visit(node.value));
+					return wrap_value(node, "Map", ctx.visit(node.value));
 				}
 				const is_toplevel =
 					/** @type {AST.ObjectExpression} */ (ctx.path[ctx.path.length - 1]).properties.find(
@@ -48,7 +48,7 @@ export function transform_encoded(ast) {
 					) !== undefined;
 				/** Revive 'types' entry value at the top-level as {@link Map} */
 				if (is_toplevel && node.key.value === "types") {
-					return transform(node, "Map", ctx.visit(node.value));
+					return wrap_value(node, "Map", ctx.visit(node.value));
 				}
 			}
 			// NOTE: Go to the next object property
@@ -63,7 +63,7 @@ export function transform_encoded(ast) {
  * @param {AST.Node} elements
  * @returns {AST.Property}
  */
-function transform(node, name, elements) {
+function wrap_value(node, name, elements) {
 	return /** @type {AST.Property} */ ({
 		...node,
 		value: {
