@@ -2,7 +2,7 @@
  * @import { extract } from "@svelte-docgen/extractor";
  */
 
-import path from "pathe";
+import pathe from "pathe";
 import ts from "typescript";
 
 const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
@@ -11,19 +11,6 @@ const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
  * @internal
  * @typedef {ReturnType<typeof extract>} Extractor
  */
-
-/**
- * @internal
- * @param {string} stringified
- * @returns {ReturnType<typeof JSON.parse>}
- */
-export function parse_stringified_type(stringified) {
-	try {
-		return JSON.parse(stringified);
-	} catch {
-		return stringified;
-	}
-}
 
 /**
  * @internal
@@ -59,15 +46,6 @@ export function is_tuple_type(type) {
  */
 export function is_symbol_optional(symbol) {
 	return (symbol.flags & ts.SymbolFlags.Optional) !== 0;
-}
-
-/**
- * @internal
- * @param {string} source
- * @returns {string}
- */
-export function remove_tsx_extension(source) {
-	return source.replace(/\.tsx$/, "");
 }
 
 /**
@@ -167,38 +145,49 @@ export function get_sources(declarations, root_path_url) {
  * Field `package.json#workspaces` is also case for: npm, yarn, Deno, and Bun.
  *
  * @param {ts.System} sys TypeScript system for I/O operations.
+ * @param {string} [directory] Directory to start searching from. Default is `process.cwd()`.
  * @returns {URL} URI with path of either monorepo root or a basename of nearest `package.json` file.
  * @throws {Error} If it cannot find nearest `package.json` file if project isn't a monorepo.
  */
-export function get_root_path_url(sys) {
+export function get_root_path_url(sys, directory) {
 	if (!IS_NODE_LIKE) {
 		// Set the root of the virtual file system (VFS) as the root
 		return new URL("file:///");
 	}
-	let directory = path.resolve(process.cwd());
-	const { root } = path.parse(directory);
+
+	directory = pathe.resolve(directory ?? process.cwd());
+	const { root } = pathe.parse(directory);
 	/** @type {string | undefined} */
-	let package_json_filepath;
-	while (directory && directory !== root) {
+	let found_dir;
+	while (directory) {
 		// Case 1: pnpm workspace
-		const pnpm_workspace_filepath = path.join(directory, "pnpm-workspace.yaml");
+		const pnpm_workspace_filepath = pathe.join(directory, "pnpm-workspace.yaml");
 		if (sys.fileExists(pnpm_workspace_filepath)) {
-			return new URL(`file://${directory}`);
+			found_dir = directory;
+			break;
 		}
 		// Case 2: Others
-		package_json_filepath = path.join(directory, "package.json");
+		const package_json_filepath = pathe.join(directory, "package.json");
 		if (sys.fileExists(package_json_filepath)) {
 			const content = sys.readFile(package_json_filepath, "utf-8");
-			if (content && JSON.parse(content).workspaces) {
-				return new URL(`file://${directory}`);
+			if (content) {
+				if (JSON.parse(content).workspaces) {
+					// workspaces field found
+					found_dir = directory;
+					break;
+				} else if (!found_dir) {
+					found_dir = directory;
+				}
 			}
 		}
 		// NOTE: This goes root up
-		directory = path.dirname(directory);
+		if (directory === root) break;
+		directory = pathe.dirname(directory);
 	}
-	if (package_json_filepath) {
-		return new URL(`file://${path.dirname(package_json_filepath)}`);
+
+	if (!found_dir) {
+		// TODO: Document error
+		throw new Error("Could not determine the the root path.");
 	}
-	// TODO: Document error
-	throw new Error("Could not determine the the root path.");
+	return new URL(`file://${found_dir}`);
 }

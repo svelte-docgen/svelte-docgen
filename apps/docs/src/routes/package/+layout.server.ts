@@ -14,7 +14,7 @@ interface Package {
 export async function load() {
 	if (!building && !dev) throw new Error("Unreachable");
 	const [{ default: normalize }, path] = await Promise.all([import("normalize-package-data"), import("node:path")]);
-	const glob_packages = import.meta.glob("../../../../../packages/**/package.json", {
+	const glob_packages = import.meta.glob("../../../../../packages/*/package.json", {
 		import: "default",
 	});
 	const packages = new Map<string, Package>(

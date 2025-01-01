@@ -34,38 +34,45 @@ export function transform_encoded(ast) {
 				typeof node.key.value === "string" &&
 				node.value.type === "ArrayExpression"
 			) {
-				/** Revive those keys values as {@link Map} */
-				if (["events", "exports", "props", "slots"].includes(node.key.value)) {
-					return /** @type {AST.Property} */ ({
-						...node,
-						value: {
-							type: "NewExpression",
-							callee: {
-								type: "Identifier",
-								name: "Map",
-							},
-							// NOTE: Visit nested nodes _(if exists)_ to look for properties needed for further transformation
-							arguments: [ctx.visit(node.value)],
-						},
-					});
-				}
 				/* Revive `sources` entry value as {@link Set} */
 				if (node.key.value === "sources") {
-					return /** @type {AST.Property} */ ({
-						...node,
-						value: {
-							type: "NewExpression",
-							callee: {
-								type: "Identifier",
-								name: "Set",
-							},
-							arguments: [node.value],
-						},
-					});
+					return wrap_value(node, "Set", node.value);
+				}
+				/* Revive those keys values as {@link Map} */
+				if (["events", "exports", "props", "members", "slots"].includes(node.key.value)) {
+					return wrap_value(node, "Map", ctx.visit(node.value));
+				}
+				const is_toplevel =
+					/** @type {AST.ObjectExpression} */ (ctx.path[ctx.path.length - 1]).properties.find(
+						(p) => p.type === "Property" && p.key.type === "Literal" && p.key.value === "props",
+					) !== undefined;
+				/** Revive 'types' entry value at the top-level as {@link Map} */
+				if (is_toplevel && node.key.value === "types") {
+					return wrap_value(node, "Map", ctx.visit(node.value));
 				}
 			}
 			// NOTE: Go to the next object property
 			ctx.next();
+		},
+	});
+}
+
+/**
+ * @param {AST.Node} node
+ * @param {string} name
+ * @param {AST.Node} elements
+ * @returns {AST.Property}
+ */
+function wrap_value(node, name, elements) {
+	return /** @type {AST.Property} */ ({
+		...node,
+		value: {
+			type: "NewExpression",
+			callee: {
+				type: "Identifier",
+				name,
+			},
+			arguments: [elements],
 		},
 	});
 }
