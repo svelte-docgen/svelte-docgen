@@ -29,6 +29,7 @@ describe("plugin", async () => {
 		expect(docgen.default.types).toBeInstanceOf(Map);
 		expect(docgen.default.types.size).toBe(101);
 		expect(docgen.default.props.get("disabled").sources).toBeInstanceOf(Set);
+		expect(docgen.default.types.get("FocusEventInit").members).toBeInstanceOf(Map);
 	});
 
 	it("should handle both relative paths to importer and absolute paths from the project root", async ({ expect }) => {
