@@ -56,7 +56,6 @@ class PropAnalyzer {
 		// TODO: Document error
 		if (!call) throw new Error("");
 		const params = call.parameters[0];
-		if (params === "self") throw new Error("Self-referencing snippet is not supported");
 		// NOTE: Parameters is always a single item and tuple
 		const params_type = isTypeRef(params.type) ? this.#types.get(params.type) : params.type;
 		if (params_type?.kind !== "tuple") throw new Error("Not a tuple");

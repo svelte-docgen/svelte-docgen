@@ -142,7 +142,7 @@ export type FnParam = {
 } & (OptionalFnParam | RequiredFnParam);
 
 export interface FnCall {
-	parameters: (FnParam | "self")[];
+	parameters: FnParam[];
 	returns: TypeOrRef;
 }
 export interface Fn extends WithAlias {
