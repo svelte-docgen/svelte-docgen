@@ -1,25 +1,49 @@
+<script lang="ts" module>
+	export const TABS = new Set(["overview", "docgen"] as const);
+	export const TYPES = new Set(["raw", "json"] as const);
+
+	export type Tab = typeof TABS extends Set<infer T> ? T : never;
+	export type Type = typeof TYPES extends Set<infer T> ? T : never;
+</script>
+
 <script lang="ts">
 	import DOMPurify from "isomorphic-dompurify";
 	import IconDatabase from "lucide-svelte/icons/database";
-	import IconNotepad from "lucide-svelte/icons/notepad-text";
-	import IconNotepadDashed from "lucide-svelte/icons/notepad-text-dashed";
 	import IconPresentation from "lucide-svelte/icons/presentation";
 	import { mode } from "mode-watcher";
 	import { encode, type parse } from "svelte-docgen";
 
-	import * as Accordion from "$lib/components/ui/accordion/index.ts";
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.ts";
 	import * as Tabs from "$lib/components/ui/tabs/index.ts";
 	import * as ToggleGroup from "$lib/components/ui/toggle-group/index.ts";
 	import { highlighter } from "$lib/md/highlighter";
+
+	import OutputOverview from "./output/overview.svelte";
 
 	interface Props {
 		data: ReturnType<typeof parse>;
 	}
 	let { data }: Props = $props();
 
-	let current_tab = $state<"overview" | "docgen">("docgen");
-	let output_type = $state<"raw" | "json">("json");
+	// Session storage keys
+	const ss_current_tab = "output-tab";
+	const ss_output_type = "output-type";
+
+	let current_tab = $state<Tab>((window.sessionStorage.getItem(ss_current_tab) as Tab) ?? "docgen");
+	let current_output_type = $state<Type>((window.sessionStorage.getItem(ss_output_type) as Type) ?? "raw");
+
+	/**
+	 * Store in session storage the current tab, because it loses output on editor update
+	 */
+	$effect(() => {
+		window.sessionStorage.setItem(ss_current_tab, current_tab);
+	});
+	/**
+	 * Store in session storage the output type, because it loses output on editor update
+	 */
+	$effect(() => {
+		window.sessionStorage.setItem(ss_output_type, current_output_type);
+	});
 </script>
 
 <ScrollArea class="h-full">
@@ -28,52 +52,19 @@
 			<Tabs.Trigger value="overview" class="rounded-b-none">
 				<IconPresentation class="me-2" /> Overview
 			</Tabs.Trigger>
+
 			<Tabs.Trigger value="docgen" class="rounded-b-none">
 				<IconDatabase class="me-2" /> Docgen
 			</Tabs.Trigger>
 		</Tabs.List>
 
 		<Tabs.Content value="overview" class="px-4">
-			<Accordion.Root type="multiple">
-				{@const has_description = Boolean(data.description)}
-				<Accordion.Item value="description" disabled={!has_description}>
-					<Accordion.Trigger class="trigger">
-						<span class="inline-flex items-center gap-2">
-							{#if has_description}
-								<IconNotepad class="notepad" />
-							{:else}
-								<IconNotepadDashed class="notepad" />
-							{/if}
-							Description
-						</span>
-					</Accordion.Trigger>
-					<Accordion.Content>
-						{data.description}
-					</Accordion.Content>
-				</Accordion.Item>
-
-				{@const has_props = data.props.size > 0}
-				<Accordion.Item value="props" disabled={!has_props}>
-					<Accordion.Trigger class="trigger">
-						<span class="inline-flex items-center gap-2">
-							{#if has_props}
-								<IconNotepad class="notepad" />
-							{:else}
-								<IconNotepadDashed class="notepad" />
-							{/if}
-							Props
-						</span>
-					</Accordion.Trigger>
-					<Accordion.Content>
-						{data.props}
-					</Accordion.Content>
-				</Accordion.Item>
-			</Accordion.Root>
+			<OutputOverview {data} />
 		</Tabs.Content>
 
 		<Tabs.Content value="docgen" class="h-full">
 			<ToggleGroup.Root
-				bind:value={output_type}
+				bind:value={current_output_type}
 				type="single"
 				class={"absolute right-4 top-12 z-40"}
 				variant="outline"
@@ -88,7 +79,7 @@
 			</ToggleGroup.Root>
 
 			<ScrollArea class="h-full">
-				{#if output_type === "raw"}
+				{#if current_output_type === "raw"}
 					<pre>Tree explorer</pre>
 				{:else}
 					{@const code = encode(data, { indent: "\t" })}
@@ -99,13 +90,3 @@
 		</Tabs.Content>
 	</Tabs.Root>
 </ScrollArea>
-
-<style>
-	:global(.trigger[aria-disabled="true"]) {
-		@apply text-muted-foreground;
-		@apply no-underline;
-	}
-	:global(.trigger[data-state="open"] > svg.notepad) {
-		@apply rotate-0;
-	}
-</style>
