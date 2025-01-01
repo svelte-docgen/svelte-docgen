@@ -48,6 +48,20 @@ export function transform_encoded(ast) {
 						},
 					});
 				}
+				/* Revive `members` entry value as {@link Map} */
+				if (node.key.value === "members") {
+					return /** @type {AST.Property} */ ({
+						...node,
+						value: {
+							type: "NewExpression",
+							callee: {
+								type: "Identifier",
+								name: "Map",
+							},
+							arguments: [ctx.visit(node.value)],
+						},
+					});
+				}
 				const is_toplevel =
 					/** @type {AST.ObjectExpression} */ (ctx.path[ctx.path.length - 1]).properties.find(
 						(p) => p.type === "Property" && p.key.type === "Literal" && p.key.value === "props",
