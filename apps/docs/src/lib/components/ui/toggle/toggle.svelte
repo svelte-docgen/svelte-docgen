@@ -6,8 +6,7 @@
 		variants: {
 			variant: {
 				default: "bg-transparent",
-				outline:
-					"border-input hover:bg-accent hover:text-accent-foreground border bg-transparent shadow-sm",
+				outline: "border-input hover:bg-accent hover:text-accent-foreground border bg-transparent shadow-sm",
 			},
 			size: {
 				default: "h-9 min-w-9 px-3",
@@ -43,9 +42,4 @@
 	} = $props();
 </script>
 
-<TogglePrimitive.Root
-	bind:ref
-	bind:pressed
-	class={cn(toggleVariants({ variant, size }), className)}
-	{...restProps}
-/>
+<TogglePrimitive.Root bind:ref bind:pressed class={cn(toggleVariants({ variant, size }), className)} {...restProps} />

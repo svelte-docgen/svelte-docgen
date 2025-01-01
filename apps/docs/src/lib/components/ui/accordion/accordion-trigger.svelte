@@ -19,13 +19,11 @@
 		bind:ref
 		class={cn(
 			"flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
-			className
+			className,
 		)}
 		{...restProps}
 	>
 		{@render children?.()}
-		<ChevronDown
-			class="text-muted-foreground size-4 shrink-0 transition-transform duration-200"
-		/>
+		<ChevronDown class="text-muted-foreground size-4 shrink-0 transition-transform duration-200" />
 	</AccordionPrimitive.Trigger>
 </AccordionPrimitive.Header>

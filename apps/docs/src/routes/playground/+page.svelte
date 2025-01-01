@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick } from "svelte";
-	import { encode } from "svelte-docgen";
 	import { queryParameters, ssp } from "sveltekit-search-params";
 
 	import * as Repl from "$lib/components/blocks/repl/index.ts";
@@ -47,14 +46,14 @@
 	{/snippet}
 
 	{#snippet output()}
-			{#if parsed_component}
-				{#await parsed_component}
-					<p>{"Generating..."}</p>
-				{:then data}
-					<pre>{encode(data, { indent: "\t"})}</pre>
-				{:catch error}
-					<pre class="text-red-700">{error}</pre>
-				{/await}
-			{/if}
+		{#if parsed_component}
+			{#await parsed_component}
+				<p>{"Generating..."}</p>
+			{:then data}
+				<Repl.Output {data} />
+			{:catch error}
+				<pre class="text-red-700">{error}</pre>
+			{/await}
+		{/if}
 	{/snippet}
 </Repl.Root>
