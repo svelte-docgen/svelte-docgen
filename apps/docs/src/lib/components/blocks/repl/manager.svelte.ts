@@ -20,11 +20,7 @@ export class Manager {
 		svelte(),
 	] satisfies EditorStateConfig["extensions"];
 
-	constructor(options: {
-		editor: HTMLDivElement;
-		initial: string;
-		debounce_delay?: number;
-	}) {
+	constructor(options: { editor: HTMLDivElement; initial: string; debounce_delay?: number }) {
 		this.view = new EditorView({
 			parent: options.editor,
 			state: EditorState.create({

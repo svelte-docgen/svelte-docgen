@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { encode } from "svelte-docgen";
 	import { queryParameters, ssp } from "sveltekit-search-params";
-	import ts from "typescript";
-	import * as tsvfs from "@typescript/vfs";
 
 	import * as Repl from "$lib/components/blocks/repl/index.ts";
 
-	import { prepareDocgen, COMPILER_OPTIONS } from "./demo";
+	import { generate_docgen } from "./util.ts";
 
 	const params = queryParameters({
 		input: {
 			decode(v) {
-				if (v) return ssp.lz().decode(v);
+				return ssp.lz().decode(v) as string;
 			},
 			encode(v) {
 				return ssp.lz().encode(v);
@@ -21,34 +20,19 @@
 
 	let editor = $state<HTMLDivElement>();
 	let manager = $state<Repl.Manager>();
-	let docgen = $derived.by(async () => {
-		if (!manager) throw new Error("Unreachable");
-		const fsmap = await tsvfs.createDefaultMapFromCDN(
-			COMPILER_OPTIONS,
-			ts.version,
-			false,
-			ts,
-			// lzstring
-		);
-		for (const [k, v] of Object.entries(
-			import.meta.glob("/node_modules/svelte/**/*.d.ts", { query: "?raw", exhaustive: true, eager: true }),
-		)) {
-			// @ts-expect-error: v is a string
-			fsmap.set(k, v.default);
-		}
-		return prepareDocgen(fsmap)(manager.source.current);
-	});
+	let source = $derived(manager?.source.current ?? "");
+	let docgen = $derived(generate_docgen(manager));
 
 	onMount(() => {
 		if (!editor) throw new Error("Unreachable");
-		manager = new Repl.Manager({ editor, initial: params.input });
+		manager = new Repl.Manager({ editor, initial: params.input ?? "" });
 		return () => {
 			manager?.destroy();
 		};
 	});
 
 	$effect(() => {
-		params.input = manager?.source.current ?? null;
+		params.input = source;
 	});
 </script>
 
@@ -58,16 +42,14 @@
 	{/snippet}
 
 	{#snippet output()}
+		<!-- TODO: Add error output -->
+		<!-- {#if error} -->
+		<!-- 	<pre style="color: red;">{error}</pre> -->
+		<!-- {/if} -->
 		{#await docgen}
 			<p>Loading...</p>
 		{:then data}
-			{#if data}
-				{JSON.stringify(data, undefined, 2)}
-			{/if}
+			{encode(data, { indent: "\t" })}
 		{/await}
 	{/snippet}
 </Repl.Root>
-
-<!-- {#if error} -->
-<!-- 	<pre style="color: red;">{error}</pre> -->
-<!-- {/if} -->

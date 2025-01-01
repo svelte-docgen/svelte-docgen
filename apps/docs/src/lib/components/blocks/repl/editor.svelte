@@ -7,12 +7,7 @@
 		ref?: HTMLDivElement;
 		// manager: Manager,
 	}
-	let {
-		ref = $bindable(),
-	}: Props = $props();
+	let { ref = $bindable() }: Props = $props();
 </script>
 
-<div
-	bind:this={ref}
-	class="size-full"
-></div>
+<div bind:this={ref} class="size-full"></div>
