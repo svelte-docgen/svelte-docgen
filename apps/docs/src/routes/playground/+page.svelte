@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from "svelte";
+	import { onDestroy, onMount, tick } from "svelte";
 	import { encode } from "svelte-docgen";
 	import { queryParameters, ssp } from "sveltekit-search-params";
 
@@ -18,19 +18,19 @@
 		},
 	});
 
-	const docgen = new Docgen();
-
+	let docgen = $state<Docgen>();
 	let editor = $state<HTMLDivElement>();
 	let manager = $state<Repl.Manager>();
 	let parsed_component = $derived.by(() => {
-		if (!manager) return;
+		if (!manager || !docgen) return;
 		return docgen.generate(manager.source.current);
 	});
 
 	onMount(async () => {
 		if (!editor) throw new Error("Unreachable");
 		manager = new Repl.Manager({ editor, initial: params.input ?? "" });
-		await docgen.init();
+		docgen = await Docgen.init();
+		await tick();
 	});
 	onDestroy(() => {
 		manager?.destroy();
