@@ -113,9 +113,6 @@ importers:
 
   apps/docs:
     devDependencies:
-      '@codemirror/autocomplete':
-        specifier: ^6.18.4
-        version: 6.18.4
       '@codemirror/commands':
         specifier: ^6.7.1
         version: 6.7.1
@@ -140,9 +137,6 @@ importers:
       '@sveltejs/kit':
         specifier: ^2.15.1
         version: 2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
-      '@sveltejs/site-kit':
-        specifier: 6.0.0-next.64
-        version: 6.0.0-next.64(@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.0
         version: 5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
@@ -161,6 +155,9 @@ importers:
       '@typescript/vfs':
         specifier: ^1.6.0
         version: 1.6.0(typescript@5.7.2)
+      '@uiw/codemirror-theme-github':
+        specifier: ^4.23.7
+        version: 4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.0)(@codemirror/view@6.36.1)
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
@@ -1387,12 +1384,6 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       vite: ^6.0.5
 
-  '@sveltejs/site-kit@6.0.0-next.64':
-    resolution: {integrity: sha512-SosLY07DBA79yJhRR9vQpk9eXlSc3VjzOlIJQFvPzgsbu727rq5u3dudFEsm0NeQFoAF+NNgDYi5D85v5Yc+vQ==}
-    peerDependencies:
-      '@sveltejs/kit': ^1.20.0
-      svelte: ^4.0.0
-
   '@sveltejs/vite-plugin-svelte-inspector@4.0.1':
     resolution: {integrity: sha512-J/Nmb2Q2y7mck2hyCX4ckVHcR5tu2J+MtBEQqpDrrgELZ2uvraQcK/ioCV61AqkdXFgriksOKIceDcQmqnGhVw==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22}
@@ -1528,6 +1519,16 @@ packages:
     resolution: {integrity: sha512-hvJUjNVeBMp77qPINuUvYXj4FyWeeMMKZkxEATEU3hqBAQ7qdTBCUFT7Sp0Zu0faeEtFf+ldXxMEDr/bk73ISg==}
     peerDependencies:
       typescript: '*'
+
+  '@uiw/codemirror-theme-github@4.23.7':
+    resolution: {integrity: sha512-r9SstBZD7Ow1sQ8F0EpsRGx9b11K552M2FayvyLWTkal64YJmQMKW0S2KcWykgCMKLWhmDFi7LX+h8cg6nek8g==}
+
+  '@uiw/codemirror-themes@4.23.7':
+    resolution: {integrity: sha512-UNf1XOx1hG9OmJnrtT86PxKcdcwhaNhbrcD+nsk8WxRJ3n5c8nH6euDvgVPdVLPwbizsaQcZTILACgA/FjRpVg==}
+    peerDependencies:
+      '@codemirror/language': '>=6.0.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
 
   '@ungap/structured-clone@1.2.1':
     resolution: {integrity: sha512-fEzPV3hSkSMltkw152tJKNARhOupqbH96MZWyRjNaYZOMIzbrTeQDG+MTc6Mr2pgzFQzFxAfmhGDNP5QK++2ZA==}
@@ -3384,12 +3385,6 @@ packages:
       svelte:
         optional: true
 
-  svelte-persisted-store@0.9.4:
-    resolution: {integrity: sha512-Em3cDSsd3fAkQhvNc4+V7ZT86GnIkFrlcKK/oNSHFhF5fbNoavdxvtTZ0pCF2ueG/Oqg5kSbAFxn0rkeICpHUA==}
-    engines: {node: '>=0.14'}
-    peerDependencies:
-      svelte: ^3.48.0 || ^4.0.0 || ^5.0.0-next.0
-
   svelte-toolbelt@0.4.6:
     resolution: {integrity: sha512-k8OUvXBUifHZcAlWeY/HLg/4J0v5m2iOfOhn8fDmjt4AP8ZluaDh9eBFus9lFiLX6O5l6vKqI1dKL5wy7090NQ==}
     engines: {node: '>=18', pnpm: '>=8.7.0'}
@@ -4808,13 +4803,6 @@ snapshots:
       tiny-glob: 0.2.9
       vite: 6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)
 
-  '@sveltejs/site-kit@6.0.0-next.64(@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)':
-    dependencies:
-      '@sveltejs/kit': 2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
-      esm-env: 1.2.1
-      svelte: 5.16.0
-      svelte-persisted-store: 0.9.4(svelte@5.16.0)
-
   '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)))(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))':
     dependencies:
       '@sveltejs/vite-plugin-svelte': 5.0.3(svelte@5.16.0)(vite@6.0.5(@types/node@22.10.2)(jiti@1.21.7)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
@@ -4992,6 +4980,20 @@ snapshots:
       typescript: 5.7.2
     transitivePeerDependencies:
       - supports-color
+
+  '@uiw/codemirror-theme-github@4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.0)(@codemirror/view@6.36.1)':
+    dependencies:
+      '@uiw/codemirror-themes': 4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.0)(@codemirror/view@6.36.1)
+    transitivePeerDependencies:
+      - '@codemirror/language'
+      - '@codemirror/state'
+      - '@codemirror/view'
+
+  '@uiw/codemirror-themes@4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.0)(@codemirror/view@6.36.1)':
+    dependencies:
+      '@codemirror/language': 6.10.8
+      '@codemirror/state': 6.5.0
+      '@codemirror/view': 6.36.1
 
   '@ungap/structured-clone@1.2.1': {}
 
@@ -6899,10 +6901,6 @@ snapshots:
       postcss: 8.4.49
       postcss-scss: 4.0.9(postcss@8.4.49)
     optionalDependencies:
-      svelte: 5.16.0
-
-  svelte-persisted-store@0.9.4(svelte@5.16.0):
-    dependencies:
       svelte: 5.16.0
 
   svelte-toolbelt@0.4.6(svelte@5.16.0):

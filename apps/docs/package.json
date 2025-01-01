@@ -15,7 +15,6 @@
 		"test": "npm run test:unit -- --run"
 	},
 	"devDependencies": {
-		"@codemirror/autocomplete": "^6.18.4",
 		"@codemirror/commands": "^6.7.1",
 		"@codemirror/language": "^6.10.8",
 		"@codemirror/state": "^6.5.0",
@@ -30,6 +29,7 @@
 		"@tailwindcss/typography": "^0.5.15",
 		"@types/normalize-package-data": "^2.4.4",
 		"@typescript/vfs": "^1.6.0",
+		"@uiw/codemirror-theme-github": "^4.23.7",
 		"autoprefixer": "^10.4.20",
 		"bits-ui": "1.0.0-next.74",
 		"clsx": "^2.1.1",
