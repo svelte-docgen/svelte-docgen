@@ -3,6 +3,12 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig((env) => {
 	return {
+		build: {
+			target: "esnext",
+		},
+
+		plugins: [sveltekit()],
+
 		resolve: {
 			alias: {
 				// Because `svelte2tsx` relies on "node:path", we need to polyfill `node:path` with `pathe`.
@@ -12,8 +18,6 @@ export default defineConfig((env) => {
 				path: env.isSsrBuild ? "node:path" : "pathe",
 			},
 		},
-
-		plugins: [sveltekit()],
 
 		test: {
 			include: ["src/**/*.{test,spec}.{js,ts}"],
