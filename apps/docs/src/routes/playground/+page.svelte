@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onDestroy, onMount, tick } from "svelte";
 	import { encode } from "svelte-docgen";
 	import { queryParameters, ssp } from "sveltekit-search-params";
 
 	import * as Repl from "$lib/components/blocks/repl/index.ts";
 
-	import { generate_docgen } from "./docgen.ts";
+	import { Docgen } from "./docgen.svelte.ts";
 
 	const params = queryParameters({
 		input: {
@@ -18,19 +18,22 @@
 		},
 	});
 
+	let docgen = $state<Docgen>();
 	let editor = $state<HTMLDivElement>();
 	let manager = $state<Repl.Manager>();
-	let docgen = $derived.by(() => {
-		if (!manager) return;
-		return generate_docgen(manager.source.current);
+	let parsed_component = $derived.by(() => {
+		if (!manager || !docgen) return;
+		return docgen.generate(manager.source.current);
 	});
 
-	onMount(() => {
+	onMount(async () => {
 		if (!editor) throw new Error("Unreachable");
 		manager = new Repl.Manager({ editor, initial: params.input ?? "" });
-		return () => {
-			manager?.destroy();
-		};
+		docgen = await Docgen.init();
+		await tick();
+	});
+	onDestroy(() => {
+		manager?.destroy();
 	});
 
 	$effect(() => {
@@ -44,14 +47,14 @@
 	{/snippet}
 
 	{#snippet output()}
-		{#if docgen}
-			{#await docgen}
-				<p>Loading...</p>
-			{:then data}
-				{encode(data, { indent: "\t" })}
-			{:catch error}
-				<pre class="text-red-700">{error}</pre>
-			{/await}
-		{/if}
+			{#if parsed_component}
+				{#await parsed_component}
+					<p>{"Generating..."}</p>
+				{:then data}
+					<pre>{encode(data, { indent: "\t"})}</pre>
+				{:catch error}
+					<pre class="text-red-700">{error}</pre>
+				{/await}
+			{/if}
 	{/snippet}
 </Repl.Root>
