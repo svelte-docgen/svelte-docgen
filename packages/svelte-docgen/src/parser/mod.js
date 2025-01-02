@@ -2,6 +2,7 @@
  * TODO: dts-buddy does not yet support `import * as Doc from "../doc/type.ts";`
  * @import {
  *	 Conditional,
+ *   DisplayPart,
  *	 Fn,
  *	 Index,
  *	 IndexedAccess,
@@ -353,12 +354,11 @@ class Parser {
 
 	/**
 	 * @param {ts.Symbol} symbol
-	 * @returns {string | undefined}
+	 * @returns {DisplayPart[] | undefined}
 	 */
 	#get_prop_description(symbol) {
 		const description = symbol.getDocumentationComment(this.#checker);
-		// TODO: Why it would be an array? Overloads? How should we handle it?
-		return description?.[0]?.text;
+		if (description && description.length) return description.map((d) => ({ text: d.text, kind: d.kind }));
 	}
 
 	/**
@@ -394,10 +394,9 @@ class Parser {
 	#get_prop_tags(symbol) {
 		return symbol.getJsDocTags(this.#checker).map((t) => {
 			/** @type {Tag} */
-			let results = { name: t.name, content: "" };
-			// TODO: Why it would be an array? Overloads? How should we handle it?
-			const content = t.text?.[0]?.text;
-			if (content) results.content = content;
+			let results = { name: t.name };
+			const content = t.text?.map((c) => ({ kind: c.kind, text: c.text }));
+			if (content && content.length) results.content = content;
 			return results;
 		});
 	}

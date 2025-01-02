@@ -24,7 +24,14 @@ describe("description", () => {
 			create_options("parser-component-description-some.svelte"),
 		);
 		expect(description).toBeDefined();
-		expect(description).toMatchInlineSnapshot(`"This is a description that should be extracted."`);
+		expect(description).toMatchInlineSnapshot(`
+			[
+			  {
+			    "kind": "text",
+			    "text": "This is a description that should be extracted.",
+			  },
+			]
+		`);
 	});
 
 	it("ignores HTML comment at the root without `@component` tag", ({ expect }) => {
@@ -81,11 +88,11 @@ describe("tags", () => {
 		);
 		expect(tags).toBeDefined();
 		expect(tags).toContainEqual({
-			content: "Atom",
+			content: [{ kind: "text", text: "Atom" }],
 			name: "category",
 		});
 		expect(tags).toContainEqual({
-			content: "Native",
+			content: [{ kind: "text", text: "Native" }],
 			name: "subcategory",
 		});
 	});

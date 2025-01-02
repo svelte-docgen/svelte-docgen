@@ -58,9 +58,10 @@ export interface WithName {
  * Represents a documentation tag in JSDoc
  */
 export type Tag = NonNullable<ReturnType<typeof extract>["tags"]>[number];
+export type DisplayPart = NonNullable<Tag["content"]>[number];
 
 export interface Docable {
-	description?: string;
+	description?: DisplayPart[];
 	tags?: Tag[];
 }
 

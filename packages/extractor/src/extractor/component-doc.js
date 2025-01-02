@@ -3,15 +3,22 @@
  */
 
 /**
- * @typedef Tag
- * @prop {string} name
- * @prop {string} content
+ * @typedef DisplayPart
+ * @prop {string} kind
+ * @prop {string} text
  */
 
+/**
+ * @typedef Tag
+ * @prop {string} name
+ * @prop {DisplayPart[]} [content]
+ */
+
+// FIXME: Support for inline JSDoc/TSDoc tags in component documentation
 export class ComponentDocExtractor {
 	/** @type {AST.Comment} */
 	node;
-	/** @type {string | undefined} */
+	/** @type {DisplayPart[] | undefined} */
 	description;
 	/** @type {Tag[] | undefined} */
 	tags;
@@ -50,10 +57,10 @@ export class ComponentDocExtractor {
 
 	#wrap_latest_tag() {
 		const content = this.#latest_tag_content.join("\n").trim();
-		if (this.#latest_tag === "component") this.description = content;
+		if (this.#latest_tag === "component" && content) this.description = [{ kind: "text", text: content }];
 		else if (this.#latest_tag) {
 			if (!this.tags) this.tags = [];
-			this.tags.push({ name: this.#latest_tag, content });
+			this.tags.push({ name: this.#latest_tag, content: [{ kind: "text", text: content }] });
 		}
 		this.#latest_tag = undefined;
 		this.#latest_tag_content = [];
