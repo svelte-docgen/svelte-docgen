@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { type parse } from "svelte-docgen";
+	import type * as Doc from "svelte-docgen/doc";
 	import { Badge, badgeVariants } from "$lib/components/ui/badge/index.ts";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.ts";
 	import type { HTMLAttributes } from "svelte/elements";
 
 	interface Props extends HTMLAttributes<HTMLDivElement> {
-		tags: ReturnType<typeof parse>["tags"];
+		tags: Doc.Tag[];
 	}
 	let {
 		// Custom
@@ -16,14 +16,15 @@
 	}: Props = $props();
 
 	let tags_map = $derived.by(() => {
-		let results = new Map<string, string[]>();
+		let results = new Map<string, NonNullable<Doc.Tag['content']>[]>();
 		if (!tags) return results;
 		for (const tag of tags) {
 			const current = results.get(tag.name);
 			if (!current) {
-				results.set(tag.name, [tag.content]);
+				// FIXME: This will need a change
+				results.set(tag.name, [tag.content ?? []]);
 			} else {
-				current.push(tag.content);
+				// current.push(tag.content);
 			}
 		}
 		return results;
@@ -33,7 +34,7 @@
 <div class={["flex w-fit flex-row gap-1 p-2", class_]} {...rest_props}>
 	{#each tags_map as [name, content]}
 		{@const is_repetive = content.length > 1}
-		{@const is_empty = content.length === 1 && content[0] === ""}
+		{@const is_empty = content.length === 1 && content[0][0].text === ""}
 		{#if is_empty}
 			<Badge class="hover:bg-unset" variant="outline">
 				{name}

@@ -47,7 +47,7 @@
 			</Accordion.Trigger>
 
 			<Accordion.Content>
-				<OverviewTags tags={data.tags} />
+				<OverviewTags {...data} />
 			</Accordion.Content>
 		</Accordion.Item>
 
