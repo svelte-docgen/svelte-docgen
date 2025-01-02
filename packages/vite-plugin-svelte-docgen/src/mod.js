@@ -56,43 +56,45 @@ const CACHE_STORAGE = docgen.createCacheStorage();
  * //                                                              👆 Add this query parameter
  * ```
  *
- * @returns {Promise<PluginOption>}
+ * @returns {Promise<PluginOption[]>}
  */
 async function plugin() {
 	// TODO: Decide whether there is a need for plugin options
 	// const user_options = new Options(user_options);
-	return {
-		name: "vite-plugin-svelte-docgen",
-		enforce: "pre",
-		async resolveId(source, importer, options) {
-			// https://rollupjs.org/plugin-development/#resolveid
-			if (!importer) return;
-			if (!source.endsWith(".svelte?docgen")) return;
-			const resolution = await this.resolve(source.replace(/\?docgen$/, ""), importer, options);
-			if (resolution) {
-				return `\0virtual:${resolution.id}.docgen.js`;
-			}
-		},
-		load(id) {
-			if (id.startsWith("\0virtual:") && id.endsWith(".docgen.js")) {
-				/* prettier-ignore */
-				const original_svelte_filepath = id
+	return [
+		{
+			name: "vite-plugin-svelte-docgen",
+			enforce: "pre",
+			async resolveId(source, importer, options) {
+				// https://rollupjs.org/plugin-development/#resolveid
+				if (!importer) return;
+				if (!source.endsWith(".svelte?docgen")) return;
+				const resolution = await this.resolve(source.replace(/\?docgen$/, ""), importer, options);
+				if (resolution) {
+					return `\0virtual:${resolution.id}.docgen.js`;
+				}
+			},
+			load(id) {
+				if (id.startsWith("\0virtual:") && id.endsWith(".docgen.js")) {
+					/* prettier-ignore */
+					const original_svelte_filepath = id
 					.replace("\0virtual:", "")
 					.replace(".docgen.js", "");
-				const svelte_filepath_url = url.pathToFileURL(original_svelte_filepath);
-				const source = fs.readFileSync(svelte_filepath_url, "utf-8");
-				const parsed = docgen.parse(source, {
-					// @ts-expect-error: FIXME: Perhaps we really should change this to loose string type
-					filepath: svelte_filepath_url.pathname,
-					cache: CACHE_STORAGE,
-				});
-				const stringified = `export default /** @type {const} */(${docgen.encode(parsed)});`;
-				const ast = transform_encoded(this.parse(stringified));
-				const { code } = print(ast);
-				return code;
-			}
+					const svelte_filepath_url = url.pathToFileURL(original_svelte_filepath);
+					const source = fs.readFileSync(svelte_filepath_url, "utf-8");
+					const parsed = docgen.parse(source, {
+						// @ts-expect-error: FIXME: Perhaps we really should change this to loose string type
+						filepath: svelte_filepath_url.pathname,
+						cache: CACHE_STORAGE,
+					});
+					const stringified = `export default /** @type {const} */(${docgen.encode(parsed)});`;
+					const ast = transform_encoded(this.parse(stringified));
+					const { code } = print(ast);
+					return code;
+				}
+			},
 		},
-	};
+	];
 }
 
 export default plugin;
