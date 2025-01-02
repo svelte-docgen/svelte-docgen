@@ -2,16 +2,23 @@
 	import { type parse } from "svelte-docgen";
 	import { Badge, badgeVariants } from "$lib/components/ui/badge/index.ts";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.ts";
+	import type { HTMLAttributes } from "svelte/elements";
 
-	interface Props {
-		data: ReturnType<typeof parse>["tags"];
+	interface Props extends HTMLAttributes<HTMLDivElement> {
+		tags: ReturnType<typeof parse>["tags"];
 	}
-	let { data }: Props = $props();
+	let {
+		// Custom
+		tags,
+		// Native
+		class: class_,
+		...rest_props
+	}: Props = $props();
 
 	let tags_map = $derived.by(() => {
 		let results = new Map<string, string[]>();
-		if (!data) return results;
-		for (const tag of data) {
+		if (!tags) return results;
+		for (const tag of tags) {
 			const current = results.get(tag.name);
 			if (!current) {
 				results.set(tag.name, [tag.content]);
@@ -21,11 +28,9 @@
 		}
 		return results;
 	});
-
-	$inspect({ tags_map });
 </script>
 
-<div class="flex w-fit flex-row gap-1 p-2">
+<div class={["flex w-fit flex-row gap-1 p-2", class_]} {...rest_props}>
 	{#each tags_map as [name, content]}
 		{@const is_repetive = content.length > 1}
 		{@const is_empty = content.length === 1 && content[0] === ""}
@@ -37,10 +42,7 @@
 			<Tooltip.Provider>
 				<Tooltip.Root>
 					<Tooltip.Trigger class={badgeVariants({ variant: is_repetive ? "default" : "secondary" })}>
-						{name}
-						{#if is_repetive}
-							({content.length}x)
-						{/if}
+						{name}{is_repetive ? ` (${content.length}x)` : ""}
 					</Tooltip.Trigger>
 
 					<Tooltip.Content>

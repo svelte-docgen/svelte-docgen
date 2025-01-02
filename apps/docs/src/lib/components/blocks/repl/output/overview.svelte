@@ -6,16 +6,20 @@
 	import * as Accordion from "$lib/components/ui/accordion/index.ts";
 	import * as Tabs from "$lib/components/ui/tabs/index.ts";
 
-	import Tags from "./overview-tabs.svelte";
+	import OverviewProps from "./overview-props.svelte";
+	import OverviewTags from "./overview-tags.svelte";
 
 	interface Props {
 		data: ReturnType<typeof parse>;
 	}
 	let { data }: Props = $props();
+
+	type Items = "description" | "tags" | "props";
+	let accordion_state = $state<Items[]>(["props"]);
 </script>
 
 <Tabs.Content value="overview" class="px-4">
-	<Accordion.Root type="multiple">
+	<Accordion.Root type="multiple" bind:value={accordion_state}>
 		{@const has_description = Boolean(data.description)}
 		<Accordion.Item value="description" disabled={!has_description}>
 			<Accordion.Trigger class="trigger">
@@ -30,7 +34,7 @@
 			</Accordion.Trigger>
 
 			<Accordion.Content>
-				{data.description}
+				<pre>{data.description}</pre>
 			</Accordion.Content>
 		</Accordion.Item>
 
@@ -43,7 +47,20 @@
 			</Accordion.Trigger>
 
 			<Accordion.Content>
-				<Tags data={data.tags} />
+				<OverviewTags tags={data.tags} />
+			</Accordion.Content>
+		</Accordion.Item>
+
+		{@const has_props = data.props.size > 0}
+		<Accordion.Item value="props" disabled={!has_props}>
+			<Accordion.Trigger class="trigger">
+				<span class="inline-flex items-center gap-2">
+					<IconTags /> Props
+				</span>
+			</Accordion.Trigger>
+
+			<Accordion.Content>
+				<OverviewProps {...data} />
 			</Accordion.Content>
 		</Accordion.Item>
 	</Accordion.Root>
