@@ -85,8 +85,8 @@ class PropAnalyzer {
 	#is_source_from_svelte(source) {
 		const { dir } = path.parse(source);
 		return (
-			dir.endsWith(path.join(path.sep, "node_modules", "svelte", "types")) ||
-			dir.endsWith(path.join(path.sep, "node_modules", "svelte"))
+			dir.endsWith(path.join("node_modules", "svelte", "types")) ||
+			dir.endsWith(path.join("node_modules", "svelte"))
 		);
 	}
 
@@ -95,7 +95,7 @@ class PropAnalyzer {
 	 * @returns {boolean}
 	 */
 	#is_snippet(type) {
-		if (type.kind !== "function" || type.alias !== '"svelte".Snippet') return false;
+		if (type.kind !== "function" || !type.alias?.startsWith('"svelte".Snippet')) return false;
 		if (!type.sources) return false;
 		return Iterator.from(type.sources).some((f) => this.#is_source_from_svelte(f));
 	}
