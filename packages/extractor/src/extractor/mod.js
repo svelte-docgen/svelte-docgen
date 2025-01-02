@@ -6,7 +6,7 @@ import { Options } from "../options.js";
 import { Parser } from "../parser.js";
 
 /**
- * @import { Tag } from "./component-doc.js";
+ * @import { Tag, DisplayPart } from "./component-doc.js";
  * @import { Source } from "../util.js";
  * @import { createCacheStorage } from "../cache.js";
  */
@@ -35,7 +35,7 @@ class Extractor {
 		this.compiler = new Compiler(this.source, this.parser, this.#options);
 	}
 
-	/** @returns {string | undefined} */
+	/** @returns {DisplayPart[] | undefined} */
 	get description() {
 		return this.#component_doc_extractor?.description;
 	}
