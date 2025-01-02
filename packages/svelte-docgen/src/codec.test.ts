@@ -64,10 +64,10 @@ describe("encode()", () => {
 			          "kind": "union",
 			          "types": [
 			            {
-			              "kind": "undefined"
+			              "kind": "boolean"
 			            },
 			            {
-			              "kind": "boolean"
+			              "kind": "undefined"
 			            }
 			          ],
 			          "nonNullable": {
@@ -134,10 +134,10 @@ describe("encode()", () => {
 			                "kind": "union",
 			                "types": [
 			                  {
-			                    "kind": "undefined"
+			                    "kind": "number"
 			                  },
 			                  {
-			                    "kind": "number"
+			                    "kind": "undefined"
 			                  }
 			                ],
 			                "nonNullable": {
@@ -152,10 +152,10 @@ describe("encode()", () => {
 			                "kind": "union",
 			                "types": [
 			                  {
-			                    "kind": "undefined"
+			                    "kind": "number"
 			                  },
 			                  {
-			                    "kind": "number"
+			                    "kind": "undefined"
 			                  }
 			                ],
 			                "nonNullable": {
@@ -170,10 +170,10 @@ describe("encode()", () => {
 			                "kind": "union",
 			                "types": [
 			                  {
-			                    "kind": "undefined"
+			                    "kind": "number"
 			                  },
 			                  {
-			                    "kind": "number"
+			                    "kind": "undefined"
 			                  }
 			                ],
 			                "nonNullable": {
@@ -188,10 +188,10 @@ describe("encode()", () => {
 			                "kind": "union",
 			                "types": [
 			                  {
-			                    "kind": "undefined"
+			                    "kind": "number"
 			                  },
 			                  {
-			                    "kind": "number"
+			                    "kind": "undefined"
 			                  }
 			                ],
 			                "nonNullable": {
@@ -206,10 +206,10 @@ describe("encode()", () => {
 			                "kind": "union",
 			                "types": [
 			                  {
-			                    "kind": "undefined"
+			                    "kind": "number"
 			                  },
 			                  {
-			                    "kind": "number"
+			                    "kind": "undefined"
 			                  }
 			                ],
 			                "nonNullable": {

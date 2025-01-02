@@ -53,10 +53,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "number",
 			        },
 			        {
-			          "kind": "number",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -71,10 +71,10 @@ describe("props", () => {
 			      "kind": "union",
 			      "nonNullable": "Array<string>",
 			      "types": [
+			        "Array<string>",
 			        {
 			          "kind": "undefined",
 			        },
-			        "Array<string>",
 			      ],
 			    },
 			  },
@@ -95,10 +95,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "boolean",
 			        },
 			        {
-			          "kind": "boolean",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -115,10 +115,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "boolean",
 			        },
 			        {
-			          "kind": "boolean",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -165,10 +165,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "string",
 			        },
 			        {
-			          "kind": "string",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -199,10 +199,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "string",
 			        },
 			        {
-			          "kind": "string",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -224,10 +224,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "number",
 			        },
 			        {
-			          "kind": "number",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -318,13 +318,13 @@ describe("props", () => {
 			    },
 			    "types": [
 			      {
+			        "kind": "boolean",
+			      },
+			      {
 			        "kind": "undefined",
 			      },
 			      {
 			        "kind": "null",
-			      },
-			      {
-			        "kind": "boolean",
 			      },
 			    ],
 			  },

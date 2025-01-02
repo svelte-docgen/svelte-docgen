@@ -86,10 +86,10 @@ describe("Fn", () => {
 			            "kind": "union",
 			            "nonNullable": "Baz",
 			            "types": [
+			              "Baz",
 			              {
 			                "kind": "undefined",
 			              },
-			              "Baz",
 			            ],
 			          },
 			        },
