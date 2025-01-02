@@ -598,11 +598,6 @@ class Parser {
 			//     type U = a | b;
 			//     x?: U; // expands to `a | b | undefined` instead of `U | undefined`
 			// To minimize such expansions, we explicitly combine the nullable and non-nullable elements of a union.
-			types.push(
-				...type.types
-					.filter((t) => t.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined | ts.TypeFlags.Void))
-					.map((t) => this.#get_type_doc(t)),
-			);
 			const non_nullable_doc = this.#get_type_doc(non_nullable);
 			if (isTypeRef(non_nullable_doc)) types.push(non_nullable_doc);
 			else if (non_nullable_doc.kind === "union") {
@@ -610,6 +605,11 @@ class Parser {
 			} else {
 				types.push(non_nullable_doc);
 			}
+			types.push(
+				...type.types
+					.filter((t) => t.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined | ts.TypeFlags.Void))
+					.map((t) => this.#get_type_doc(t)),
+			);
 		}
 
 		/** @type {Union} */

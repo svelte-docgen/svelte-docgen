@@ -72,7 +72,11 @@ export class Docgen {
 				cache: this.#cache,
 				filepath: "/src/Demo.svelte",
 				sys: this.#sys,
-				host: tsvfs.createVirtualCompilerHost(this.#sys, Docgen.#compiler_options, ts).compilerHost,
+				host: tsvfs.createVirtualCompilerHost(
+					this.#sys,
+					Docgen.#compiler_options,
+					ts,
+				).compilerHost,
 				ts_options: Docgen.#compiler_options,
 			});
 			return Promise.resolve(parsed);
