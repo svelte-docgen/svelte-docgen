@@ -14,12 +14,12 @@ class ComponentAnalyzer {
 
 	/** @returns {string | undefined} */
 	get category() {
-		return this.#component.tags?.find((t) => t.name === "category")?.content;
+		return this.#component.tags?.find((t) => t.name === "category")?.content?.[0]?.text;
 	}
 
 	/** @returns {string | undefined} */
 	get subcategory() {
-		return this.#component.tags?.find((t) => t.name === "subcategory")?.content;
+		return this.#component.tags?.find((t) => t.name === "subcategory")?.content?.[0]?.text;
 	}
 
 	/**
