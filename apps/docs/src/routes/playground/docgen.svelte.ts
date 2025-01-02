@@ -18,17 +18,23 @@ export class Docgen {
 		moduleResolution: ts.ModuleResolutionKind.Bundler,
 	} satisfies ts.CompilerOptions;
 
-	#fsmap = $state<SvelteMap<string, string>>(new SvelteMap());
+	#fsmap: Map<string, string>;
 
 	#sys: ts.System;
 
 	static async init(): Promise<Docgen> {
 		const map = new SvelteMap(
-			await tsvfs.createDefaultMapFromCDN(this.#compiler_options, ts.version, false, ts, {
-				// @ts-expect-error value can be undefined
-				compressToUTF16: ssp.lz().encode,
-				decompressFromUTF16: ssp.lz().decode,
-			}),
+			await tsvfs.createDefaultMapFromCDN(
+				this.#compiler_options,
+				ts.version,
+				true,
+				ts,
+				{
+					// @ts-expect-error value can be undefined
+					compressToUTF16: ssp.lz().encode,
+					decompressFromUTF16: ssp.lz().decode,
+				},
+			),
 		);
 		// Load all of the Svelte `.d.ts` files in advance for the users
 		for (const [k, v] of Object.entries(
