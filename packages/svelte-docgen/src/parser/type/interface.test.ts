@@ -110,10 +110,10 @@ describe("Interface", () => {
 			        },
 			        "types": [
 			          {
-			            "kind": "undefined",
+			            "kind": "number",
 			          },
 			          {
-			            "kind": "number",
+			            "kind": "undefined",
 			          },
 			        ],
 			      },
@@ -226,10 +226,10 @@ describe("Interface", () => {
 			          },
 			          "types": [
 			            {
-			              "kind": "undefined",
+			              "kind": "number",
 			            },
 			            {
-			              "kind": "number",
+			              "kind": "undefined",
 			            },
 			          ],
 			        },
@@ -336,10 +336,10 @@ describe("Interface", () => {
 			          "kind": "union",
 			          "nonNullable": "CircularB",
 			          "types": [
+			            "CircularB",
 			            {
 			              "kind": "undefined",
 			            },
-			            "CircularB",
 			          ],
 			        },
 			      },
@@ -359,10 +359,10 @@ describe("Interface", () => {
 			          "kind": "union",
 			          "nonNullable": "CircularA",
 			          "types": [
+			            "CircularA",
 			            {
 			              "kind": "undefined",
 			            },
-			            "CircularA",
 			          ],
 			        },
 			      },

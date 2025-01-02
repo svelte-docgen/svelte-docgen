@@ -61,10 +61,10 @@ describe("NodeServer", () => {
 				        "kind": "union",
 				        "nonNullable": ""svelte".Snippet<[]>",
 				        "types": [
+				          ""svelte".Snippet<[]>",
 				          {
 				            "kind": "undefined",
 				          },
-				          ""svelte".Snippet<[]>",
 				        ],
 				      },
 				    },

@@ -58,10 +58,10 @@ describe("Constructible", () => {
 			          },
 			          "types": [
 			            {
-			              "kind": "undefined",
+			              "kind": "number",
 			            },
 			            {
-			              "kind": "number",
+			              "kind": "undefined",
 			            },
 			          ],
 			        },
@@ -141,10 +141,10 @@ describe("Constructible", () => {
 			          },
 			          "types": [
 			            {
-			              "kind": "undefined",
+			              "kind": "number",
 			            },
 			            {
-			              "kind": "number",
+			              "kind": "undefined",
 			            },
 			          ],
 			        },
@@ -159,10 +159,10 @@ describe("Constructible", () => {
 			          },
 			          "types": [
 			            {
-			              "kind": "undefined",
+			              "kind": "number",
 			            },
 			            {
-			              "kind": "number",
+			              "kind": "undefined",
 			            },
 			          ],
 			        },
@@ -177,10 +177,10 @@ describe("Constructible", () => {
 			          },
 			          "types": [
 			            {
-			              "kind": "undefined",
+			              "kind": "number",
 			            },
 			            {
-			              "kind": "number",
+			              "kind": "undefined",
 			            },
 			          ],
 			        },
@@ -195,10 +195,10 @@ describe("Constructible", () => {
 			          },
 			          "types": [
 			            {
-			              "kind": "undefined",
+			              "kind": "number",
 			            },
 			            {
-			              "kind": "number",
+			              "kind": "undefined",
 			            },
 			          ],
 			        },
@@ -213,10 +213,10 @@ describe("Constructible", () => {
 			          },
 			          "types": [
 			            {
-			              "kind": "undefined",
+			              "kind": "number",
 			            },
 			            {
-			              "kind": "number",
+			              "kind": "undefined",
 			            },
 			          ],
 			        },
@@ -270,13 +270,13 @@ describe("Constructible", () => {
 			          "kind": "union",
 			          "nonNullable": "ReadonlyArray<readonly [K, V]>",
 			          "types": [
+			            "ReadonlyArray<readonly [K, V]>",
 			            {
 			              "kind": "undefined",
 			            },
 			            {
 			              "kind": "null",
 			            },
-			            "ReadonlyArray<readonly [K, V]>",
 			          ],
 			        },
 			      },
@@ -290,13 +290,13 @@ describe("Constructible", () => {
 			          "kind": "union",
 			          "nonNullable": "Iterable<readonly [K, V], any, any>",
 			          "types": [
+			            "Iterable<readonly [K, V], any, any>",
 			            {
 			              "kind": "undefined",
 			            },
 			            {
 			              "kind": "null",
 			            },
-			            "Iterable<readonly [K, V], any, any>",
 			          ],
 			        },
 			      },
@@ -330,13 +330,13 @@ describe("Constructible", () => {
 			          "kind": "union",
 			          "nonNullable": "ReadonlyArray<T>",
 			          "types": [
+			            "ReadonlyArray<T>",
 			            {
 			              "kind": "undefined",
 			            },
 			            {
 			              "kind": "null",
 			            },
-			            "ReadonlyArray<T>",
 			          ],
 			        },
 			      },
@@ -349,13 +349,13 @@ describe("Constructible", () => {
 			          "kind": "union",
 			          "nonNullable": "Iterable<T, any, any>",
 			          "types": [
+			            "Iterable<T, any, any>",
 			            {
 			              "kind": "undefined",
 			            },
 			            {
 			              "kind": "null",
 			            },
-			            "Iterable<T, any, any>",
 			          ],
 			        },
 			      },

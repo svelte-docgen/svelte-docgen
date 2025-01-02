@@ -25,7 +25,7 @@ describe("POST /", () => {
 		expect(response.status).toBe(200);
 		const data = await response.json();
 		expect(data).toMatchInlineSnapshot(
-			`"{"props":[["custom",{"tags":[],"isBindable":false,"isExtended":true,"isOptional":false,"type":{"kind":"string"},"sources":["/packages/server/examples/test.svelte"]}],["children",{"tags":[],"isBindable":false,"isExtended":true,"isOptional":true,"type":{"kind":"union","types":[{"kind":"undefined"},"\\"svelte\\".Snippet<[]>"],"nonNullable":"\\"svelte\\".Snippet<[]>"},"sources":["/packages/server/examples/test.svelte"]}]]}"`,
+			`"{"props":[["custom",{"tags":[],"isBindable":false,"isExtended":true,"isOptional":false,"type":{"kind":"string"},"sources":["/packages/server/examples/test.svelte"]}],["children",{"tags":[],"isBindable":false,"isExtended":true,"isOptional":true,"type":{"kind":"union","types":["\\"svelte\\".Snippet<[]>",{"kind":"undefined"}],"nonNullable":"\\"svelte\\".Snippet<[]>"},"sources":["/packages/server/examples/test.svelte"]}]]}"`,
 		);
 	});
 
