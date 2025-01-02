@@ -1,7 +1,10 @@
 <script lang="ts">
+	import IconSvelte from "@icons-pack/svelte-simple-icons/icons/SiSvelte";
 	import DOMPurify from "isomorphic-dompurify";
 	// FIXME: It throws error when trying to optimize import path
 	import { Braces as IconBraces, BadgeInfo as IconBadgeInfo } from "lucide-svelte";
+	import IconAlert from "lucide-svelte/icons/circle-alert";
+	import IconExtended from "lucide-svelte/icons/diamond-plus";
 	import { mode } from "mode-watcher";
 	import { analyzeProperty, parse } from "svelte-docgen";
 	import type { ComponentProps } from "svelte";
@@ -12,6 +15,7 @@
 	import { Code } from "$lib/components/ui/code/index.ts";
 	import * as Dialog from "$lib/components/ui/dialog/index.ts";
 	import * as Table from "$lib/components/ui/table/index.ts";
+	import * as Tooltip from "$lib/components/ui/tooltip/index.ts";
 
 	import { highlighter } from "$lib/md/highlighter.js";
 
@@ -33,13 +37,17 @@ interface Props {
 		return highlighter.codeToHtml(code, { lang: "diff", theme: `github-${$mode ?? "light"}` });
 	}
 
-	$effect(() => {
-		for (const [n, prop] of props) {
-			if (n === "children") {
-				console.log({ analyis: analyzeProperty(prop, types) })
-			}
-		}
-	});
+	// function stringify_snippet_parameters(prop: ReturnType<typeof analyzeProperty>): string | undefined {
+	// 	if (!prop.isSnippet) throw new Error("Unreachable");
+	// 	const params = prop.getSnippetParameters();
+	// 	if (params.elements.length === 0) return;
+	// 	const stringified = params.elements.map((type_or_alias) => {
+	// 		// TODO: We will need to handle it better... perhaps some function or property to return a stringified type?
+	// 		if (typeof type_or_alias === "string") return type_or_alias;
+	// 		return type_or_alias.kind;
+	// 	});
+	// 	return `<[${stringified.join(", ")}]>`;
+	// }
 </script>
 
 <Accordion.Item
@@ -69,12 +77,73 @@ interface Props {
 					<Table.Row>
 						<Table.Cell class="font-medium">
 							<div class="flex flex-col items-start gap-1">
-								<Code>{name}</Code>
+								<span class="inline-flex flex-row gap-1">
+									<Code class={[!prop.isOptional && "border-2 border-destructive"]}>{name}</Code>
+									{#if !prop.isOptional}
+										<Tooltip.Provider>
+											<Tooltip.Root>
+												<Tooltip.Trigger class="text-sm text-destructive">
+													<IconAlert />
+												</Tooltip.Trigger>
+
+												<Tooltip.Content>
+													<p>This is a <strong>required</strong> property.</p>
+												</Tooltip.Content>
+											</Tooltip.Root>
+										</Tooltip.Provider>
+									{/if}
+
+									{#if prop.isExtended}
+										<Tooltip.Provider>
+											<Tooltip.Root>
+												<Tooltip.Trigger class="text-cyan-500">
+													<IconExtended />
+												</Tooltip.Trigger>
+
+												<Tooltip.Content>
+													<p>This property was <strong>extended</strong> from other type/interface.</p>
+												</Tooltip.Content>
+											</Tooltip.Root>
+										</Tooltip.Provider>
+									{/if}
+
+									{#if analysis.isExtendedBySvelte}
+										<Tooltip.Provider>
+											<Tooltip.Root>
+												<Tooltip.Trigger>
+													<IconSvelte />
+												</Tooltip.Trigger>
+
+												<Tooltip.Content>
+													<p>This property was <strong>extended</strong> from Svelte types.</p>
+												</Tooltip.Content>
+											</Tooltip.Root>
+										</Tooltip.Provider>
+									{/if}
+								</span>
+
 								{#if prop.isBindable}
-									<Badge variant="outline">$bindable()</Badge>
+									<a href="https://svelte.dev/docs/svelte/$bindable">
+										<Badge variant="outline">
+											$bindable
+										</Badge>
+									</a>
 								{/if}
+
+								{#if analysis.isEventHandler}
+									<a href="https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers">
+										<Badge variant="outline">
+											Event handler
+										</Badge>
+									</a>
+								{/if}
+
 								{#if analysis.isSnippet}
-									<Badge variant="outline">Snippet</Badge>
+									<a href="https://svelte.dev/docs/svelte/svelte#Snippet">
+										<Badge variant="outline">
+											Snippet
+										</Badge>
+									</a>
 								{/if}
 							</div>
 						</Table.Cell>
