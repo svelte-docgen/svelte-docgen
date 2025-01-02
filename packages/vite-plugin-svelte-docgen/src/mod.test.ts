@@ -14,7 +14,7 @@ let VITE_DEV_SERVER: ViteDevServer;
 beforeEach(async () => {
 	VITE_DEV_SERVER = await createServer({
 		root: path.join(__dirname, ".."),
-		plugins: [await plugin()],
+		plugins: [plugin()],
 	});
 });
 
