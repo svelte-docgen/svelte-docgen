@@ -5,7 +5,7 @@ import { ComponentDocExtractor } from "./component-doc.js";
 
 describe(ComponentDocExtractor.name, () => {
 	describe("description", () => {
-		it("returns empty string when no description is found, but other tags are present", ({ expect }) => {
+		it("returns undefined when no description is found, but other tags are present", ({ expect }) => {
 			const { componentComment } = new Parser(`
 				<!--
 				@component
@@ -16,8 +16,7 @@ describe(ComponentDocExtractor.name, () => {
 			expect(componentComment).toBeDefined();
 			if (componentComment) {
 				const { description } = new ComponentDocExtractor(componentComment);
-				expect(description).toBeDefined();
-				expect(description).toBe("");
+				expect(description).toBeUndefined();
 			}
 		});
 
@@ -33,7 +32,14 @@ describe(ComponentDocExtractor.name, () => {
 			if (componentComment) {
 				const { description } = new ComponentDocExtractor(componentComment);
 				expect(description).toBeDefined();
-				expect(description).toMatchInlineSnapshot(`"Native button component description"`);
+				expect(description).toMatchInlineSnapshot(`
+					[
+					  {
+					    "kind": "text",
+					    "text": "Native button component description",
+					  },
+					]
+				`);
 			}
 		});
 
@@ -55,7 +61,14 @@ describe(ComponentDocExtractor.name, () => {
 				const { description } = new ComponentDocExtractor(componentComment);
 				expect(description).toBeDefined();
 				expect(description).toMatchInlineSnapshot(
-					`"Leading an trailing whitespaces from description are removed."`,
+					`
+					[
+					  {
+					    "kind": "text",
+					    "text": "Leading an trailing whitespaces from description are removed.",
+					  },
+					]
+				`,
 				);
 			}
 		});
@@ -90,7 +103,10 @@ describe(ComponentDocExtractor.name, () => {
 				const { description } = new ComponentDocExtractor(componentComment);
 				expect(description).toBeDefined();
 				expect(description).toMatchInlineSnapshot(`
-					"This is first paragraph.
+					[
+					  {
+					    "kind": "text",
+					    "text": "This is first paragraph.
 
 
 					This is second paragraph.
@@ -102,7 +118,9 @@ describe(ComponentDocExtractor.name, () => {
 
 					---
 
-					This is footnote;"
+					This is footnote;",
+					  },
+					]
 				`);
 			}
 		});
@@ -135,11 +153,11 @@ describe(ComponentDocExtractor.name, () => {
 					expect(tags).toHaveLength(2);
 					expect(tags).toContainEqual({
 						name: "category",
-						content: "Atom",
+						content: [{ kind: "text", text: "Atom" }],
 					});
 					expect(tags).toContainEqual({
 						name: "subcategory",
-						content: "Semantic",
+						content: [{ kind: "text", text: "Semantic" }],
 					});
 				}
 			});
@@ -178,7 +196,10 @@ describe(ComponentDocExtractor.name, () => {
 					const customTag = tags?.find((tag) => tag.name === "custom");
 					expect(customTag).toBeDefined();
 					expect(customTag?.content).toMatchInlineSnapshot(`
-						"Very complex tag with {@link https://example.com}
+						[
+						  {
+						    "kind": "text",
+						    "text": "Very complex tag with {@link https://example.com}
 						and multi-line {@link https://example.com}.
 
 						It also should ignore markdownlint syntax unless some of lines starts with \`@\`.
@@ -197,7 +218,9 @@ describe(ComponentDocExtractor.name, () => {
 						| ------ | --- | ---- |
 						|        |     |      |
 
-						[text]: https://example.com"
+						[text]: https://example.com",
+						  },
+						]
 					`);
 				}
 			});
