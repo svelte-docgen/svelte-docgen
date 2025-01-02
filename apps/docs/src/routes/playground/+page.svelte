@@ -1,60 +1,60 @@
 <script lang="ts">
-	import ts from "typescript";
-	import * as tsvfs from "@typescript/vfs";
+	import { onDestroy, onMount, tick } from "svelte";
+	import { encode } from "svelte-docgen";
+	import { queryParameters, ssp } from "sveltekit-search-params";
 
-	import { browser } from "$app/environment";
-	import { Debounced } from "runed";
+	import * as Repl from "$lib/components/blocks/repl/index.ts";
 
-	import { prepareDocgen, COMPILER_OPTIONS } from "./demo";
-	import initial from "./initial.txt?raw";
+	import { Docgen } from "./docgen.svelte.ts";
 
-	let docgen: ((source: string) => string) | undefined = $state();
-	let source = $state(initial);
-	let debouncedSource = new Debounced(() => source, 500);
-	let encoded = $state("");
-	let error: string = $state("");
+	const params = queryParameters({
+		input: {
+			decode(v) {
+				return ssp.lz().decode(v) as string;
+			},
+			encode(v) {
+				return ssp.lz().encode(v);
+			},
+		},
+	});
 
-	if (browser) {
-		(async () => {
-			const fsmap = await tsvfs.createDefaultMapFromCDN(
-				COMPILER_OPTIONS,
-				ts.version,
-				false,
-				ts,
-				// lzstring
-			);
+	let docgen = $state<Docgen>();
+	let editor = $state<HTMLDivElement>();
+	let manager = $state<Repl.Manager>();
+	let parsed_component = $derived.by(() => {
+		if (!manager || !docgen) return;
+		return docgen.generate(manager.source.current);
+	});
 
-			for (const [k, v] of Object.entries(
-				import.meta.glob("/node_modules/svelte/**/*.d.ts", { query: "?raw", exhaustive: true, eager: true }),
-			)) {
-				// @ts-expect-error: v is a string
-				fsmap.set(k, v.default);
-			}
-
-			docgen = prepareDocgen(fsmap);
-		})();
-	}
+	onMount(async () => {
+		if (!editor) throw new Error("Unreachable");
+		manager = new Repl.Manager({ editor, initial: params.input ?? "" });
+		docgen = await Docgen.init();
+		await tick();
+	});
+	onDestroy(() => {
+		manager?.destroy();
+	});
 
 	$effect(() => {
-		if (!docgen) return;
-		try {
-			encoded = docgen(debouncedSource.current);
-			error = "";
-		} catch (e) {
-			error = String(e);
-			console.error(e);
-		}
+		params.input = manager?.source.current ?? null;
 	});
 </script>
 
-<textarea bind:value={source} rows="10" style="width: 100%;"></textarea>
+<Repl.Root>
+	{#snippet input()}
+		<Repl.Editor bind:ref={editor} />
+	{/snippet}
 
-{#if error}
-	<pre style="color: red;">{error}</pre>
-{/if}
-
-{#if docgen}
-	<pre>{encoded}</pre>
-{:else}
-	loading docgen...
-{/if}
+	{#snippet output()}
+			{#if parsed_component}
+				{#await parsed_component}
+					<p>{"Generating..."}</p>
+				{:then data}
+					<pre>{encode(data, { indent: "\t"})}</pre>
+				{:catch error}
+					<pre class="text-red-700">{error}</pre>
+				{/await}
+			{/if}
+	{/snippet}
+</Repl.Root>

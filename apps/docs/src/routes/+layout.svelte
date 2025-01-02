@@ -10,8 +10,8 @@
 	import { page } from "$app/state";
 
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
-	import { AppHeader, type RouteMeta } from "$lib/components/app-header/index.ts";
-	import { AppSidebar } from "$lib/components/app-sidebar/index.ts";
+	import { AppHeader, type RouteMeta } from "$lib/components/blocks/app-header/index.ts";
+	import { AppSidebar } from "$lib/components/blocks/app-sidebar/index.ts";
 
 	let { children } = $props();
 
@@ -27,17 +27,20 @@
 
 	function get_route_meta(route: string): RouteMeta {
 		switch (route) {
-			case "package": return {
-				title: "Packages",
-				icon: Package as unknown as Component,
-			};
-			case "playground": return  {
-				title: "Playground",
-				icon: SquareTerminal as unknown as Component,
-			};
-			default: return {
-				title: route,
-			};
+			case "package":
+				return {
+					title: "Packages",
+					icon: Package as unknown as Component,
+				};
+			case "playground":
+				return {
+					title: "Playground",
+					icon: SquareTerminal as unknown as Component,
+				};
+			default:
+				return {
+					title: route,
+				};
 		}
 	}
 
@@ -89,7 +92,7 @@
 <Sidebar.Provider>
 	<AppSidebar {...sidebar} />
 
-	<main class="size-full">
+	<main class="min-h-screen w-screen">
 		<AppHeader {routes} />
 		{@render children?.()}
 	</main>

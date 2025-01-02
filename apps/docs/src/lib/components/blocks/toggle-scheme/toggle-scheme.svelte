@@ -7,9 +7,7 @@
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 
-	let {
-		class: class_
-	}: ComponentProps<typeof DropdownMenu.Trigger> = $props();
+	let { class: class_ }: ComponentProps<typeof DropdownMenu.Trigger> = $props();
 </script>
 
 <DropdownMenu.Root>
