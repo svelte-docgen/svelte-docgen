@@ -18,7 +18,7 @@ export class Docgen {
 		moduleResolution: ts.ModuleResolutionKind.Bundler,
 	} satisfies ts.CompilerOptions;
 
-	#fsmap = $state<SvelteMap<string, string>>(new SvelteMap());
+	#fsmap: Map<string, string>;
 
 	#sys: ts.System;
 
@@ -27,7 +27,7 @@ export class Docgen {
 			await tsvfs.createDefaultMapFromCDN(
 				this.#compiler_options,
 				ts.version,
-				false,
+				true,
 				ts,
 				{
 					// @ts-expect-error value can be undefined
