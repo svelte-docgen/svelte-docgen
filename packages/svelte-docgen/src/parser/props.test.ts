@@ -339,5 +339,21 @@ describe("props", () => {
 		if (disabled?.isExtended && disabled?.sources) {
 			expect(Iterator.from(disabled.sources).some((s) => s.endsWith("/svelte/elements.d.ts")));
 		}
+		const custom = props.get("custom");
+		expect(custom).toBeDefined();
+		expect(custom).toMatchInlineSnapshot(`
+			{
+			  "isBindable": false,
+			  "isExtended": false,
+			  "isOptional": false,
+			  "tags": [],
+			  "type": {
+			    "kind": "string",
+			  },
+			}
+		`);
+		if (custom) {
+			expect(custom.isExtended).toBe(false);
+		}
 	});
 });
