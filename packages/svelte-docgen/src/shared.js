@@ -133,7 +133,7 @@ export function get_sources(declarations, root_path_url) {
 			return d
 				.getSourceFile()
 				.fileName.replace(".tsx", "")
-				.replace(root_path_url.pathname, "");
+				.replace(root_path_url.pathname + pathe.sep, "");
 		}),
 	);
 }
