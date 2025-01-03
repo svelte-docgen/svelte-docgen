@@ -43,6 +43,26 @@ describe(analyzeProperty.name, () => {
 				expect(analyzer.isEventHandler).toBe(true);
 			}
 		});
+
+		it("recognizes event handlers from extended props", ({ expect }) => {
+			const { props, types } = parse(
+				`
+			<script lang="ts">
+				import type { HTMLButtonAttributes } from "svelte/elements";
+
+				interface Props extends HTMLButtonAttributes {
+				}
+				let { ..._ }: Props = $props();
+			</script>
+			`,
+				create_options("analyze-property-event-handler-extended.svelte"),
+			);
+			const onfocus = props.get("onfocus");
+			if (onfocus) {
+				const analyzer = analyzeProperty(onfocus, types);
+				expect(analyzer.isEventHandler).toBe(true);
+			}
+		});
 	});
 
 	describe("getter .isExtendedBySvelte", () => {
