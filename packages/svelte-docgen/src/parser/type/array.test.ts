@@ -10,9 +10,11 @@ describe("Array", () => {
 		<script lang="ts">
 			type Letter = "a" | "b" | "c";
 			type Num = 0 | 1 | 2;
+			type Aliased = number[];
 			interface Props {
 				letters: Letter[];
 				numbers: readonly Num[];
+				aliased: Aliased;
 			}
 			let { ..._ }: Props = $props();
 		</script>
@@ -89,6 +91,16 @@ describe("Array", () => {
 			      "value": 2,
 			    },
 			  ],
+			}
+		`);
+		expect(types.get("Aliased")).toMatchInlineSnapshot(`
+			{
+			  "alias": "Aliased",
+			  "element": {
+			    "kind": "number",
+			  },
+			  "isReadonly": false,
+			  "kind": "array",
 			}
 		`);
 	});

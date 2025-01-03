@@ -42,7 +42,7 @@ describe("NodeServer", () => {
 				      "isExtended": true,
 				      "isOptional": false,
 				      "sources": Set {
-				        "/packages/server/examples/test.svelte",
+				        "packages/server/examples/test.svelte",
 				      },
 				      "tags": [],
 				      "type": {
@@ -54,7 +54,7 @@ describe("NodeServer", () => {
 				      "isExtended": true,
 				      "isOptional": true,
 				      "sources": Set {
-				        "/packages/server/examples/test.svelte",
+				        "packages/server/examples/test.svelte",
 				      },
 				      "tags": [],
 				      "type": {
@@ -105,7 +105,7 @@ describe("NodeServer", () => {
 				      ],
 				      "kind": "function",
 				      "sources": Set {
-				        /node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
+				        node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
 				      },
 				    },
 				    "[]" => {
@@ -114,8 +114,8 @@ describe("NodeServer", () => {
 				      "kind": "tuple",
 				    },
 				    "SnippetReturn" => {
-				      "alias": "SnippetReturn",
 				      "kind": "literal",
+				      "name": "SnippetReturn",
 				      "subkind": "symbol",
 				    },
 				  },

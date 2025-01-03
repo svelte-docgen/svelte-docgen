@@ -81,7 +81,7 @@ describe(analyzeProperty.name, () => {
 					  "isExtended": true,
 					  "isOptional": false,
 					  "sources": Set {
-					    "/packages/svelte-docgen/tests/custom-extended.ts",
+					    "packages/svelte-docgen/tests/custom-extended.ts",
 					  },
 					  "tags": [],
 					  "type": {

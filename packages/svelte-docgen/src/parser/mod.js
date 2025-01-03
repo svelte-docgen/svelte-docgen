@@ -183,11 +183,16 @@ class Parser {
 		// TODO: Document error
 		if (!index_info) throw new Error(`Could not get index info of type ${this.#checker.typeToString(type)}`);
 		const { isReadonly } = index_info;
-		return {
+		/** @type {ArrayType} */
+		let results = {
 			kind: "array",
 			isReadonly,
 			element: this.#get_type_doc(index_info.type),
 		};
+		if (type.aliasSymbol) {
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
+		}
+		return results;
 	}
 
 	/**
@@ -206,12 +211,19 @@ class Parser {
 		const constructors = get_construct_signatures(type, this.#extractor).map((s) =>
 			s.getParameters().map((p) => this.#get_fn_param_doc(p)),
 		);
-		return {
+		/** @type {Constructible} */
+		const results = {
 			kind: "constructible",
 			name,
 			constructors,
 			sources,
 		};
+		if (type.aliasSymbol) {
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
+		}
+		return results;
 	}
 
 	/**
@@ -226,16 +238,16 @@ class Parser {
 		const type = this.#checker.getTypeOfSymbol(symbol);
 		const isOptional = symbol.valueDeclaration.questionToken !== undefined;
 		/** @type {FnParam} */
-		let data = {
+		let results = {
 			name: symbol.name,
 			isOptional,
 			type: this.#get_type_doc(type),
 		};
 		if (symbol.valueDeclaration.initializer) {
 			const default_ = this.#checker.getTypeAtLocation(symbol.valueDeclaration.initializer);
-			data.default = this.#get_type_doc(default_);
+			results.default = this.#get_type_doc(default_);
 		}
-		return data;
+		return results;
 	}
 
 	/**
@@ -332,7 +344,7 @@ class Parser {
 			return {
 				kind,
 				subkind: "symbol",
-				alias: this.#get_fully_qualified_name(/** @type {ts.UniqueESSymbolType} */ (type).symbol),
+				name: this.#get_fully_qualified_name(/** @type {ts.UniqueESSymbolType} */ (type).symbol),
 			};
 		}
 		// TODO: Document error
@@ -487,6 +499,12 @@ class Parser {
 		// 	results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForReading);
 		// if (ia_type.simplifiedForWriting && ia_type.simplifiedForWriting !== type)
 		// 	results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForWriting);
+
+		if (type.aliasSymbol) {
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
+		}
 		return results;
 	}
 
@@ -507,6 +525,12 @@ class Parser {
 		};
 		if (conditional.resolvedTrueType) results.truthy = this.#get_type_doc(conditional.resolvedTrueType);
 		if (conditional.resolvedFalseType) results.falsy = this.#get_type_doc(conditional.resolvedFalseType);
+
+		if (type.aliasSymbol) {
+			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
+			const sources = this.#get_type_sources(type);
+			if (sources) results.sources = sources;
+		}
 		return results;
 	}
 
@@ -559,6 +583,9 @@ class Parser {
 			texts: template_literal.texts,
 			types: template_literal.types.map((t) => this.#get_type_doc(t)),
 		};
+		if (type.aliasSymbol || type.aliasTypeArguments) {
+			throw new Error("Template literals should not have alias symbols");
+		}
 		return results;
 	}
 
@@ -662,7 +689,7 @@ class Parser {
 	}
 
 	/**
-	 * Get a unique name for an aliased/named type or ReferenceType.
+	 * Get a unique name for a given type, used as a reference identifier.
 	 * @param {ts.Type} type
 	 * @returns {string}
 	 */
@@ -704,6 +731,7 @@ class Parser {
 			return name;
 		}
 
+		// names of these types are safe to be used as-is
 		if (
 			type.flags &
 			(ts.TypeFlags.Any |
