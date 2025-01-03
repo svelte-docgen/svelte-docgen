@@ -22,6 +22,11 @@ class PropAnalyzer {
 	}
 
 	/**
+	 * Checks if the prop is an event handler, under following conditions:
+	 * 1. Type is a function kind
+	 * 2. It uses types from svelte
+	 * 3. Alias contains the pattern `EventHandler`
+	 *
 	 * @param {Type} type
 	 * @returns {boolean}
 	 */
@@ -33,7 +38,10 @@ class PropAnalyzer {
 		return Boolean(type.alias?.includes("EventHandler"));
 	}
 
-	/** @returns {boolean} */
+	/**
+	 * Checks if the prop is an event handler, including a case where it can be a _nullable_ union.
+	 * @returns {boolean}
+	 */
 	get isEventHandler() {
 		if (this.#type.kind === "union") {
 			const type_or_ref = this.#type.nonNullable;
