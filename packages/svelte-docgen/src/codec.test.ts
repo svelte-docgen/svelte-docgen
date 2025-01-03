@@ -238,9 +238,9 @@ describe("encode()", () => {
 			          ]
 			        ],
 			        "sources": [
-			          "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts",
-			          "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
-			          "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2020.date.d.ts"
+			          "node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts",
+			          "node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
+			          "node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2020.date.d.ts"
 			        ]
 			      }
 			    ]
