@@ -18,8 +18,13 @@ describe("Constructible", () => {
 					this.baz = baz;
 				}
 			}
+			class Custom2<T> {
+			  foo: T;
+			}
+			type Aliased = Custom2<string>;
 			interface Props {
 				custom: Custom;
+				aliased: Aliased;
 				date: Date;
 				map: Map<string, number>;
 				set: Set<string>;
@@ -82,6 +87,26 @@ describe("Constructible", () => {
 			  ],
 			  "kind": "constructible",
 			  "name": "Custom",
+			  "sources": Set {
+			    "constructible.svelte",
+			  },
+			}
+		`);
+	});
+
+	it("recognizes 'aliased'", ({ expect }) => {
+		const aliased = props.get("aliased");
+		expect(aliased?.type).toBe("Aliased");
+		const type = types.get("Aliased");
+		expect(type?.kind).toBe("constructible");
+		expect(type).toMatchInlineSnapshot(`
+			{
+			  "alias": "Aliased",
+			  "constructors": [
+			    [],
+			  ],
+			  "kind": "constructible",
+			  "name": "Custom2",
 			  "sources": Set {
 			    "constructible.svelte",
 			  },

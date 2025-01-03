@@ -9,12 +9,17 @@ describe("Instantiable types", () => {
 	const { props, types } = parse(
 		`
 		<script lang="ts" generics="K">
-			let { ..._ }: {
-			  index: keyof K;
-				indexedAccess: number[keyof K];
-				conditional: K extends string ? K : false;
-				stringMapping: Uppercase<K>; 
-				templateLiteral: \`Hello, \${K}!\`;
+		  type I<T> = keyof T;
+			type IA<T> = number[keyof T];
+			type C<T> = T extends string ? T : false;
+			type SM<T> = Uppercase<T>; 
+			type TL<G extends string , T extends string> = \`\${G}, \${T}!\`;
+	 		let { ..._ }: {
+			  index: I<K>;
+				indexedAccess: IA<K>;
+				conditional: C<K>;
+				stringMapping: SM<K>;
+				templateLiteral: TL<"Hello", K>;
 			} = $props();
 		</script>
 		`,
@@ -29,10 +34,12 @@ describe("Instantiable types", () => {
 
 	it("documents 'indexedAccess'", ({ expect }) => {
 		const indexedAccess = props.get("indexedAccess");
-		if (!indexedAccess?.type || isTypeRef(indexedAccess?.type)) throw new Error("must be a type");
-		expect(indexedAccess.type?.kind).toBe("indexed-access");
-		expect(indexedAccess.type).toMatchInlineSnapshot(`
+		if (!indexedAccess || !isTypeRef(indexedAccess?.type)) throw new Error("must be a type");
+		const type = types.get(indexedAccess.type)!;
+		expect(type?.kind).toBe("indexed-access");
+		expect(type).toMatchInlineSnapshot(`
 			{
+			  "alias": "IA",
 			  "index": {
 			    "kind": "index",
 			    "type": "K",
@@ -41,19 +48,24 @@ describe("Instantiable types", () => {
 			  "object": {
 			    "kind": "number",
 			  },
+			  "sources": Set {
+			    "type-parameter.svelte",
+			  },
 			}
 		`);
 	});
 
 	it("documents 'conditional'", ({ expect }) => {
 		const conditional = props.get("conditional");
-		if (!conditional?.type || isTypeRef(conditional?.type)) throw new Error("must be a type");
-		expect(conditional?.type.kind).toBe("conditional");
-		const resolvedTrueType = (conditional?.type as Doc.Conditional).truthy!;
-		if (isTypeRef(resolvedTrueType)) throw new Error("must be a type");
-		expect(resolvedTrueType.kind).toBe("substitution");
-		expect(conditional.type).toMatchInlineSnapshot(`
+		if (!conditional || !isTypeRef(conditional?.type)) throw new Error("must be a type");
+		const type = types.get(conditional.type)!;
+		expect(type.kind).toBe("conditional");
+		const truthy = (type as Doc.Conditional).truthy!;
+		if (isTypeRef(truthy)) throw new Error("must be a type");
+		expect(truthy.kind).toBe("substitution");
+		expect(type).toMatchInlineSnapshot(`
 			{
+			  "alias": "C",
 			  "check": "K",
 			  "extends": {
 			    "kind": "string",
@@ -64,6 +76,9 @@ describe("Instantiable types", () => {
 			    "value": false,
 			  },
 			  "kind": "conditional",
+			  "sources": Set {
+			    "type-parameter.svelte",
+			  },
 			  "truthy": {
 			    "base": "K",
 			    "constraint": {
