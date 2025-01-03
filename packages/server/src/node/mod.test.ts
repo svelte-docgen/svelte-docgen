@@ -114,8 +114,8 @@ describe("NodeServer", () => {
 				      "kind": "tuple",
 				    },
 				    "SnippetReturn" => {
-				      "alias": "SnippetReturn",
 				      "kind": "literal",
+				      "name": "SnippetReturn",
 				      "subkind": "symbol",
 				    },
 				  },

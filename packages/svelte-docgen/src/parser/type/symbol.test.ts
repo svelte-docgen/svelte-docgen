@@ -37,8 +37,8 @@ describe("Symbol", () => {
 		expect((type as Doc.Literal).subkind).toBe("symbol");
 		expect(type).toMatchInlineSnapshot(`
 			{
-			  "alias": "sym",
 			  "kind": "literal",
+			  "name": "sym",
 			  "subkind": "symbol",
 			}
 		`);

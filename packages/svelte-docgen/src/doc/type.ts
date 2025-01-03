@@ -51,7 +51,7 @@ export interface WithName {
 	/**
 	 * Where is this type declared?
 	 */
-	sources: Set<string>;
+	sources?: Set<string>;
 }
 
 /**
@@ -94,37 +94,21 @@ export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
 export type Types = Map<TypeRef, (Type & WithAlias) | (Type & WithName)>;
 
-export interface WithAlias {
-	alias?: string;
-	/**
-	 * Where is this type declared?
-	 */
-	sources?: Set<string>;
-}
-
-export interface WithName {
-	name: string;
-	/**
-	 * Where is this type declared?
-	 */
-	sources: Set<string>;
-}
-
 export interface BaseType {
 	/** @see {@link TypeKind} */
 	kind: BaseTypeKind;
 }
 
-export interface ArrayType {
+export interface ArrayType extends WithAlias {
 	kind: "array";
 	isReadonly: boolean;
 	element: TypeOrRef;
 }
 
-export interface Constructible extends WithName {
+export interface Constructible extends WithName, WithAlias {
 	kind: "constructible";
 	name: string;
-	constructors: globalThis.Array<FnParam[]>;
+	constructors: FnParam[][];
 }
 
 export interface OptionalFnParam {
@@ -184,7 +168,7 @@ export interface LiteralString {
 export interface LiteralSymbol {
 	kind: "literal";
 	subkind: "symbol";
-	alias: string;
+	name: string;
 }
 export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralString | LiteralSymbol;
 
@@ -219,7 +203,7 @@ export interface Index {
 	type: TypeOrRef;
 }
 
-export interface IndexedAccess {
+export interface IndexedAccess extends WithAlias {
 	kind: "indexed-access";
 	object: TypeOrRef;
 	index: TypeOrRef;
@@ -229,7 +213,7 @@ export interface IndexedAccess {
 	// simplifiedForWriting?: TypeOrRef;
 }
 
-export interface Conditional {
+export interface Conditional extends WithAlias {
 	kind: "conditional";
 	check: TypeOrRef;
 	extends: TypeOrRef;
