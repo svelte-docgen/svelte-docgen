@@ -37,7 +37,7 @@ interface Props {
 		return highlighter.codeToHtml(code, { lang: "diff", theme: `github-${$mode ?? "light"}` });
 	}
 
-	function get_type_kind(prop: Doc.Prop): Doc.Type['kind'] {
+	function get_type_kind(prop: Doc.Prop): Doc.Type["kind"] {
 		if (typeof prop.type === "string") {
 			const type = types.get(prop.type);
 			if (!type) throw new Error("Unreachable");
@@ -46,7 +46,7 @@ interface Props {
 		return prop.type.kind;
 	}
 
-	function stringify_description(description: NonNullable<Doc.Prop['description']>): string {
+	function stringify_description(description: NonNullable<Doc.Prop["description"]>): string {
 		let output = "";
 		for (const part of description) {
 			if (part.kind === "text") {
@@ -60,11 +60,7 @@ interface Props {
 	}
 </script>
 
-<Accordion.Item
-	{...rest_props}
-	disabled={is_empty}
-	value="props"
->
+<Accordion.Item {...rest_props} disabled={is_empty} value="props">
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
 			<IconBraces /> Props
@@ -87,12 +83,12 @@ interface Props {
 					<Table.Row>
 						<Table.Cell class="font-medium">
 							<div class="flex flex-col items-start gap-1">
-								<span class="inline-flex flex-row gap-1 name-and-icons">
-									<Code class={[!prop.isOptional && "border-2 border-destructive"]}>{name}</Code>
+								<span class="name-and-icons inline-flex flex-row gap-1">
+									<Code class={[!prop.isOptional && "border-destructive border-2"]}>{name}</Code>
 									{#if !prop.isOptional}
 										<Tooltip.Provider>
 											<Tooltip.Root>
-												<Tooltip.Trigger class="text-sm text-destructive">
+												<Tooltip.Trigger class="text-destructive text-sm">
 													<IconAlert />
 												</Tooltip.Trigger>
 
@@ -111,7 +107,9 @@ interface Props {
 												</Tooltip.Trigger>
 
 												<Tooltip.Content>
-													<p>This property was <strong>extended</strong> from other type/interface.</p>
+													<p>
+														This property was <strong>extended</strong> from other type/interface.
+													</p>
 												</Tooltip.Content>
 											</Tooltip.Root>
 										</Tooltip.Provider>
@@ -125,7 +123,9 @@ interface Props {
 												</Tooltip.Trigger>
 
 												<Tooltip.Content>
-													<p>This property was <strong>extended</strong> from Svelte types.</p>
+													<p>
+														This property was <strong>extended</strong> from Svelte types.
+													</p>
 												</Tooltip.Content>
 											</Tooltip.Root>
 										</Tooltip.Provider>
@@ -134,25 +134,19 @@ interface Props {
 
 								{#if prop.isBindable}
 									<a href="https://svelte.dev/docs/svelte/$bindable">
-										<Badge variant="outline">
-											$bindable
-										</Badge>
+										<Badge variant="outline">$bindable</Badge>
 									</a>
 								{/if}
 
 								{#if analysis.isEventHandler}
 									<a href="https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers">
-										<Badge variant="outline">
-											Event handler
-										</Badge>
+										<Badge variant="outline">Event handler</Badge>
 									</a>
 								{/if}
 
 								{#if analysis.isSnippet}
 									<a href="https://svelte.dev/docs/svelte/svelte#Snippet">
-										<Badge variant="outline">
-											Snippet
-										</Badge>
+										<Badge variant="outline">Snippet</Badge>
 									</a>
 								{/if}
 							</div>
@@ -176,12 +170,14 @@ interface Props {
 
 										<Dialog.Content>
 											<Dialog.Header>
-												<Dialog.Title>How to provide a description to component prop?</Dialog.Title>
+												<Dialog.Title
+													>How to provide a description to component prop?</Dialog.Title
+												>
 											</Dialog.Header>
 											<Dialog.Description>
 												<p>
-													Above the component prop type declaration, insert a JSDoc comment with
-													description. Example:
+													Above the component prop type declaration, insert a JSDoc comment
+													with description. Example:
 												</p>
 												<!-- eslint-disable-next-line svelte/no-at-html-tags - Is ok, is sanitized. -->
 												{@html DOMPurify.sanitize(create_dialog_description_code(name, prop))}

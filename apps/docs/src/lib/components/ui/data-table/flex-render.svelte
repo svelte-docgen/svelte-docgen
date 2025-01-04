@@ -5,10 +5,7 @@
 	type TContext = unknown;
 </script>
 
-<script
-	lang="ts"
-	generics="TData, TValue, TContext extends HeaderContext<TData, TValue> | CellContext<TData, TValue>"
->
+<script lang="ts" generics="TData, TValue, TContext extends HeaderContext<TData, TValue> | CellContext<TData, TValue>">
 	import { RenderComponentConfig, RenderSnippetConfig } from "./render-helpers.js";
 
 	type Props = {

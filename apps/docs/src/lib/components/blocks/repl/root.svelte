@@ -11,10 +11,7 @@
 </script>
 
 <div class="panes-container">
-	<Resizable.PaneGroup
-		direction="horizontal"
-		class="panes"
-	>
+	<Resizable.PaneGroup direction="horizontal" class="panes">
 		<Resizable.Pane defaultSize={100}>
 			{@render input()}
 		</Resizable.Pane>
@@ -22,7 +19,7 @@
 		<Resizable.Handle />
 
 		<Resizable.Pane defaultSize={100}>
-			<div class="overflow-auto h-full">
+			<div class="h-full overflow-auto">
 				{@render output()}
 			</div>
 		</Resizable.Pane>
@@ -31,6 +28,6 @@
 
 <style>
 	.panes-container {
-		height: calc(100lvh - theme('height.16'));
+		height: calc(100lvh - theme("height.16"));
 	}
 </style>

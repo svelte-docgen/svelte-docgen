@@ -21,9 +21,7 @@
 	const ss_key = "output-overview-accordion";
 	const stored = globalThis.window !== undefined ? window.sessionStorage.getItem(ss_key) : null;
 	type Items = "description" | "exports" | "tags" | "props";
-	let accordion_state = $state<SvelteSet<Items>>(
-		new SvelteSet(stored ? JSON.parse(stored) as Items[] : [])
-	);
+	let accordion_state = $state<SvelteSet<Items>>(new SvelteSet(stored ? (JSON.parse(stored) as Items[]) : []));
 
 	/** Store in session storage for better UX */
 	$effect(() => {
@@ -34,10 +32,7 @@
 <Tabs.Content value="overview" class="px-4">
 	<Accordion.Root
 		type="multiple"
-		bind:value={
-			() => Iterator.from(accordion_state).toArray(),
-			(v) => accordion_state = new SvelteSet(v)
-		}
+		bind:value={() => Iterator.from(accordion_state).toArray(), (v) => (accordion_state = new SvelteSet(v))}
 	>
 		<OverviewDescription description={data.description} />
 		<OverviewTags tags={data.tags} />

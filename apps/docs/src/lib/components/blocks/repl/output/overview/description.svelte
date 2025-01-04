@@ -14,7 +14,7 @@
 	import { highlighter } from "$lib/md/highlighter.js";
 
 	interface Props extends ComponentProps<typeof Accordion.Item> {
-		description: Doc.Docable['description'];
+		description: Doc.Docable["description"];
 	}
 	let { description, ...rest_props }: Props = $props();
 
@@ -42,10 +42,7 @@
 	}
 </script>
 
-<Accordion.Item
-	value="description"
-	{...rest_props}
->
+<Accordion.Item value="description" {...rest_props}>
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
 			<IconNotepad />
@@ -57,7 +54,9 @@
 		{#if has_description}
 			<pre>{unwrapped}</pre>
 		{:else}
-			<p class="inline-flex flex-row items-center gap-1 whitespace-nowrap italic text-amber-700/70 dark:text-amber-300/70">
+			<p
+				class="inline-flex flex-row items-center gap-1 whitespace-nowrap italic text-amber-700/70 dark:text-amber-300/70"
+			>
 				No description.
 
 				<Dialog.Root>
@@ -72,9 +71,10 @@
 						</Dialog.Header>
 						<Dialog.Description>
 							<p>
-								Create a HTML comment with a <Code>@component</Code> tag at the root of fragment.<br>
-								For readability, <strong>we recommend it to place at the top of the Svelte component file</strong>.
-								 Example:
+								Create a HTML comment with a <Code>@component</Code> tag at the root of fragment.<br />
+								For readability,
+								<strong>we recommend it to place at the top of the Svelte component file</strong>.
+								Example:
 							</p>
 							<!-- eslint-disable-next-line svelte/no-at-html-tags - Is ok, is sanitized. -->
 							{@html DOMPurify.sanitize(create_dialog_description_code())}

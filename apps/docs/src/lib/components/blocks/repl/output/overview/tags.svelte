@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconTags from "lucide-svelte/icons/tags";
-	import {  parse } from "svelte-docgen";
+	import { parse } from "svelte-docgen";
 	import type { ComponentProps } from "svelte";
 	import type * as Doc from "svelte-docgen/doc";
 
@@ -9,14 +9,11 @@
 	import * as Tooltip from "$lib/components/ui/tooltip/index.ts";
 
 	interface Props extends ComponentProps<typeof Accordion.Item>, Pick<ReturnType<typeof parse>, "tags"> {}
-	let {
-		tags,
-		...rest_props
-	}: Props = $props();
+	let { tags, ...rest_props }: Props = $props();
 
 	const is_empty = $derived(!tags || tags.length === 0);
 	let tags_map = $derived.by(() => {
-		let results = new Map<string, NonNullable<Doc.Tag['content']>[]>();
+		let results = new Map<string, NonNullable<Doc.Tag["content"]>[]>();
 		if (!tags) return results;
 		for (const tag of tags) {
 			const current = results.get(tag.name);
@@ -31,11 +28,7 @@
 	});
 </script>
 
-<Accordion.Item
-	disabled={is_empty}
-	value="tags"
-	{...rest_props}
->
+<Accordion.Item disabled={is_empty} value="tags" {...rest_props}>
 	<Accordion.Trigger>
 		<span class="inline-flex items-center gap-2">
 			<IconTags /> Tags
