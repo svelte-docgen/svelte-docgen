@@ -21,13 +21,39 @@ class PropAnalyzer {
 		this.#types = types;
 	}
 
-	/** @returns {boolean} */
-	get isEventHandler() {
-		if (this.#type.kind !== "function") return false;
-		if (!this.#type.sources) return false;
-		const is_type_from_svelte = Iterator.from(this.#type.sources).some((f) => this.#is_source_from_svelte(f));
+	/**
+	 * Checks if the prop is an event handler, under following conditions:
+	 * 1. Type is a function kind
+	 * 2. It uses types from svelte
+	 * 3. Alias contains the pattern `EventHandler`
+	 *
+	 * @param {Type} type
+	 * @returns {boolean}
+	 */
+	#is_event_handler(type) {
+		if (type.kind !== "function") return false;
+		if (!type.sources) return false;
+		const is_type_from_svelte = Iterator.from(type.sources).some((f) => this.#is_source_from_svelte(f));
 		if (!is_type_from_svelte) return false;
-		return Boolean(this.#type.alias?.endsWith("EventHandler"));
+		return Boolean(type.alias?.includes("EventHandler"));
+	}
+
+	/**
+	 * Checks if the prop is an event handler, including a case where it can be a _nullable_ union.
+	 * @returns {boolean}
+	 */
+	get isEventHandler() {
+		if (this.#type.kind === "union") {
+			const type_or_ref = this.#type.nonNullable;
+			if (!type_or_ref) return false;
+			if (isTypeRef(type_or_ref)) {
+				const type = this.#types.get(type_or_ref);
+				if (!type) throw Error("Unreachable");
+				return this.#is_event_handler(type);
+			}
+			return this.#is_event_handler(type_or_ref);
+		}
+		return this.#is_event_handler(this.#type);
 	}
 
 	/** @returns {boolean} */
