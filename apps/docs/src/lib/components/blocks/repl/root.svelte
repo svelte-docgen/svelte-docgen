@@ -10,7 +10,7 @@
 	let { input, output }: Props = $props();
 </script>
 
-<Resizable.PaneGroup class="h-full" direction="horizontal">
+<Resizable.PaneGroup class="relative h-full" direction="horizontal">
 	<Resizable.Pane>
 		{@render input()}
 	</Resizable.Pane>
