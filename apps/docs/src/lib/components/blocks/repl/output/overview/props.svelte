@@ -1,8 +1,8 @@
 <script lang="ts">
 	import IconSvelte from "@icons-pack/svelte-simple-icons/icons/SiSvelte";
 	import DOMPurify from "isomorphic-dompurify";
-	// FIXME: It throws error when trying to optimize import path
-	import { Braces as IconBraces, BadgeInfo as IconBadgeInfo } from "lucide-svelte";
+	import IconBadgeInfo from "lucide-svelte/icons/badge-info";
+	import IconBraces from "lucide-svelte/icons/braces";
 	import IconAlert from "lucide-svelte/icons/circle-alert";
 	import IconExtended from "lucide-svelte/icons/diamond-plus";
 	import { mode } from "mode-watcher";
@@ -22,7 +22,7 @@
 	interface Props extends ComponentProps<typeof Accordion.Item>, Pick<ReturnType<typeof parse>, "props" | "types"> {}
 	let { props, types, ...rest_props }: Props = $props();
 
-	const is_empty = $derived(props.size === 0);
+	let is_empty = $derived(props.size === 0);
 
 	function create_dialog_description_code(name: string, data: Doc.Prop): string {
 		const type = typeof data.type === "string" ? data.type : data.type.kind;
@@ -37,17 +37,27 @@ interface Props {
 		return highlighter.codeToHtml(code, { lang: "diff", theme: `github-${$mode ?? "light"}` });
 	}
 
-	// function stringify_snippet_parameters(prop: ReturnType<typeof analyzeProperty>): string | undefined {
-	// 	if (!prop.isSnippet) throw new Error("Unreachable");
-	// 	const params = prop.getSnippetParameters();
-	// 	if (params.elements.length === 0) return;
-	// 	const stringified = params.elements.map((type_or_alias) => {
-	// 		// TODO: We will need to handle it better... perhaps some function or property to return a stringified type?
-	// 		if (typeof type_or_alias === "string") return type_or_alias;
-	// 		return type_or_alias.kind;
-	// 	});
-	// 	return `<[${stringified.join(", ")}]>`;
-	// }
+	function get_type_kind(prop: Doc.Prop): Doc.Type['kind'] {
+		if (typeof prop.type === "string") {
+			const type = types.get(prop.type);
+			if (!type) throw new Error("Unreachable");
+			return type.kind;
+		}
+		return prop.type.kind;
+	}
+
+	function stringify_description(description: NonNullable<Doc.Prop['description']>): string {
+		let output = "";
+		for (const part of description) {
+			if (part.kind === "text") {
+				output += part.text;
+			} else {
+				// TODO: Will need to handle inlined tags properly
+				output += part.text;
+			}
+		}
+		return output;
+	}
 </script>
 
 <Accordion.Item
@@ -77,7 +87,7 @@ interface Props {
 					<Table.Row>
 						<Table.Cell class="font-medium">
 							<div class="flex flex-col items-start gap-1">
-								<span class="inline-flex flex-row gap-1">
+								<span class="inline-flex flex-row gap-1 name-and-icons">
 									<Code class={[!prop.isOptional && "border-2 border-destructive"]}>{name}</Code>
 									{#if !prop.isOptional}
 										<Tooltip.Provider>
@@ -148,11 +158,11 @@ interface Props {
 							</div>
 						</Table.Cell>
 
-						<Table.Cell>TODO</Table.Cell>
+						<Table.Cell>{get_type_kind(prop)}</Table.Cell>
 
 						<Table.Cell>
 							{#if prop.description}
-								<p>{prop.description}</p>
+								<p>{stringify_description(prop.description)}</p>
 							{:else}
 								<p
 									class="inline-flex flex-row items-center gap-1 whitespace-nowrap italic text-amber-700/70 dark:text-amber-300/70"
@@ -187,3 +197,10 @@ interface Props {
 		</Table.Root>
 	</Accordion.Content>
 </Accordion.Item>
+
+<style>
+	:global(.name-and-icons svg) {
+		width: 1em;
+		height: 1em;
+	}
+</style>
