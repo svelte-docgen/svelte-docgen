@@ -13,6 +13,7 @@ describe("Union", () => {
 				interface Props {
 					color: "primary" | "secondary" | "tertiary";
 					aliased: Aliased;
+					containsBoolean?: boolean | 123;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -52,6 +53,17 @@ describe("Union", () => {
 
 	it("recognizes aliased union", ({ expect }) => {
 		expect(props.get("aliased")!.type).toBe("Aliased");
+	});
+
+	it("does not expand boolean into `true | false`", ({ expect }) => {
+		const containsBoolean = props.get("containsBoolean")!;
+		const type = containsBoolean.type;
+		if (isTypeRef(type)) throw new Error("Expected a type");
+		expect(type.kind).toBe("union");
+		expect((type as Doc.Union).types).toContainEqual({
+			kind: "boolean",
+		});
+		expect((type as Doc.Union).types.length).toBe(3);
 	});
 
 	it("collect aliased types", ({ expect }) => {
