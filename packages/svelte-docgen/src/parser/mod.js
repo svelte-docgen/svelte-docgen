@@ -48,7 +48,7 @@ import {
 	is_const_type_param,
 	is_symbol_optional,
 	is_symbol_readonly,
-	is_tuple_type,
+	is_tuple_type_reference,
 	is_type_reference,
 } from "../shared.js";
 import { isTypeRef } from "../doc/utils.js";
@@ -419,10 +419,7 @@ class Parser {
 	 */
 	#get_tuple_doc(type) {
 		// TODO: Document error
-		if (!is_type_reference(type))
-			throw new Error(`Expected type reference, got ${this.#checker.typeToString(type)}`);
-		// TODO: Document error
-		if (!is_tuple_type(type.target))
+		if (!is_tuple_type_reference(type))
 			throw new Error(`Expected tuple type, got ${this.#checker.typeToString(type)}`);
 		const isReadonly = type.target.readonly;
 		const elements = this.#checker.getTypeArguments(type).map((t) => this.#get_type_doc(t));
@@ -517,6 +514,7 @@ class Parser {
 		if (!(type.flags & ts.TypeFlags.Conditional))
 			throw new Error(`Expected conditional type, got ${this.#checker.typeToString(type)}`);
 		let conditional = /** @type {ts.ConditionalType} */ (type);
+		type.getCallSignatures(); // Note: this is required to get resolved types
 		/** @type {Conditional} */
 		let results = {
 			kind: "conditional",
@@ -637,6 +635,20 @@ class Parser {
 					.filter((t) => t.flags & (ts.TypeFlags.Null | ts.TypeFlags.Undefined | ts.TypeFlags.Void))
 					.map((t) => this.#get_type_doc(t)),
 			);
+		}
+
+		// Merge `true | false` back into boolean as TypeScript eagerly expands it in unions
+		let idx_false = -1;
+		let idx_true = -1;
+		for (let i = 0; i < types.length; i++) {
+			const t = types[i];
+			if (isTypeRef(t)) continue;
+			if (t.kind === "literal" && t.subkind === "boolean" && t.value === false) idx_false = i;
+			if (t.kind === "literal" && t.subkind === "boolean" && t.value === true) idx_true = i;
+		}
+		if (idx_true !== -1 && idx_false !== -1) {
+			types.splice(Math.max(idx_true, idx_false), 1);
+			types.splice(Math.min(idx_true, idx_false), 1, { kind: "boolean" });
 		}
 
 		/** @type {Union} */
