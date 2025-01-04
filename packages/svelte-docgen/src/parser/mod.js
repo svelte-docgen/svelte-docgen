@@ -637,6 +637,20 @@ class Parser {
 			);
 		}
 
+		// Merge true | false back into boolean as TypeScript eagerly expands it
+		let idx_false = -1;
+		let idx_true = -1;
+		for (let i = 0; i < types.length; i++) {
+			const t = types[i];
+			if (isTypeRef(t)) continue;
+			if (t.kind === "literal" && t.subkind === "boolean" && t.value === false) idx_false = i;
+			if (t.kind === "literal" && t.subkind === "boolean" && t.value === true) idx_true = i;
+		}
+		if (idx_true !== -1 && idx_false !== -1) {
+			types.splice(Math.max(idx_true, idx_false), 1);
+			types.splice(Math.min(idx_true, idx_false), 1, { kind: "boolean" });
+		}
+
 		/** @type {Union} */
 		let results = {
 			kind: "union",
