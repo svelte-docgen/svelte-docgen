@@ -18,7 +18,7 @@ const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
  * @returns {type is ts.ObjectType}
  */
 export function is_object_type(type) {
-	return (type.flags & ts.TypeFlags.Object || type.flags & ts.TypeFlags.NonPrimitive) !== 0;
+	return !!(type.flags & ts.TypeFlags.Object);
 }
 
 /**
@@ -27,16 +27,16 @@ export function is_object_type(type) {
  * @returns {type is ts.TypeReference}
  */
 export function is_type_reference(type) {
-	return is_object_type(type) && (type.objectFlags & ts.ObjectFlags.Reference) !== 0;
+	return is_object_type(type) && !!(type.objectFlags & ts.ObjectFlags.Reference);
 }
 
 /**
  * @internal
  * @param {ts.Type} type
- * @returns {type is ts.TupleType}
+ * @returns {type is ts.TupleTypeReference}
  */
-export function is_tuple_type(type) {
-	return is_object_type(type) && (type.objectFlags & ts.ObjectFlags.Tuple) !== 0;
+export function is_tuple_type_reference(type) {
+	return is_type_reference(type) && !!(type.target.objectFlags & ts.ObjectFlags.Tuple);
 }
 
 /**
@@ -66,7 +66,6 @@ export function get_type_symbol(type) {
  * @typedef GetTypeParams
  * @prop {T} type
  * @prop {Extractor} extractor
- * @prop {string} [self]
  */
 
 /**

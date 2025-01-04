@@ -60,6 +60,9 @@ describe("Instantiable types", () => {
 		if (!conditional || !isTypeRef(conditional?.type)) throw new Error("must be a type");
 		const type = types.get(conditional.type)!;
 		expect(type.kind).toBe("conditional");
+		const falsy = (type as Doc.Conditional).falsy!;
+		if (isTypeRef(falsy)) throw new Error("must be a type");
+		expect(falsy.kind).toBe("literal");
 		const truthy = (type as Doc.Conditional).truthy!;
 		if (isTypeRef(truthy)) throw new Error("must be a type");
 		expect(truthy.kind).toBe("substitution");

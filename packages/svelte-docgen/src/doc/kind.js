@@ -2,9 +2,9 @@
  * @import { GetTypeParams, Extractor } from "../shared.js";
  */
 
-import ts from "typescript";
+import ts, { TypeFlags } from "typescript";
 
-import { get_construct_signatures, is_object_type } from "../shared.js";
+import { get_construct_signatures, is_tuple_type_reference, is_type_reference } from "../shared.js";
 
 export const BASE_TYPE_KIND = /** @type {const} */ ([
 	"any",
@@ -55,41 +55,51 @@ export const TYPE_KIND = /** @type {const} */ ([
  */
 export function get_type_kind(params) {
 	const { type, extractor } = params;
-	const { flags } = params.type;
-	// WARN: Order is important for performance - do NOT sort
-	if (flags & ts.TypeFlags.Any) return "any";
-	if (flags & ts.TypeFlags.Never) return "never";
-	if (flags & ts.TypeFlags.Null) return "null";
-	if (flags & ts.TypeFlags.Undefined) return "undefined";
-	if (flags & ts.TypeFlags.Unknown) return "unknown";
-	if (flags & ts.TypeFlags.Void) return "void";
-	if (flags & ts.TypeFlags.Literal) return "literal"; // StringLiteral | NumberLiteral | BigIntLiteral | BooleanLiteral
-	if (flags & ts.TypeFlags.UniqueESSymbol) return "literal";
-	if (flags & ts.TypeFlags.BigInt) return "bigint";
-	if (flags & ts.TypeFlags.Boolean) return "boolean";
-	if (flags & ts.TypeFlags.Number) return "number";
-	if (flags & ts.TypeFlags.String) return "string";
-	if (flags & ts.TypeFlags.ESSymbol) return "symbol";
-	if (extractor.checker.isTupleType(type)) return "tuple";
-	if (type.isIntersection()) return "intersection";
-	if (type.isUnion()) return "union";
-	if (extractor.checker.isArrayType(type)) return "array";
-	if (type.isClass()) return "constructible";
-	if (type.isClassOrInterface()) return is_constructible(type, extractor) ? "constructible" : "interface";
-	if (type.getCallSignatures().length > 0) return "function";
-	if (type.isTypeParameter()) return "type-parameter";
-	if (flags & ts.TypeFlags.Index) return "index";
-	if (flags & ts.TypeFlags.IndexedAccess) return "indexed-access";
-	if (flags & ts.TypeFlags.Conditional) return "conditional";
-	if (flags & ts.TypeFlags.Substitution) return "substitution";
-	if (flags & ts.TypeFlags.TemplateLiteral) return "template-literal";
-	if (flags & ts.TypeFlags.StringMapping) return "string-mapping";
-	// WARN: Must be last
-	if (is_object_type(type)) {
-		// FIXME: Sometimes the constructible type is not recognized with `ts.Type.isClassOrInterface()` - e.g. `Map` - don't know why.
-		if ("symbol" in type && is_constructible(type, extractor)) return "constructible";
-		if (is_type_interface_only(type)) return "interface";
-		return "object";
+	const { flags } = type;
+	// WARN: Order is important - do NOT sort
+	if (flags & TypeFlags.Boolean) return "boolean"; // true | false
+	if (flags & TypeFlags.StructuredOrInstantiable) {
+		if (flags & TypeFlags.StructuredType) {
+			// Union, Intersection or Object
+			if (flags & TypeFlags.Union) return "union";
+			if (flags & TypeFlags.Intersection) return "intersection";
+			// Object
+			if (is_type_reference(type)) {
+				if (is_tuple_type_reference(type)) return "tuple";
+				if (extractor.checker.isArrayType(type)) return "array";
+				if (type.target.getCallSignatures().length) return "function";
+				if (type.target.isClass()) return "constructible";
+				return is_constructible(type.target, extractor) ? "constructible" : "interface";
+			}
+			if (type.getCallSignatures().length) return "function";
+			if (type.isClassOrInterface()) return is_constructible(type, extractor) ? "constructible" : "interface";
+			if (is_type_interface_only(type)) return "interface";
+			return "object";
+		} else {
+			// Instantiable types
+			if (flags & TypeFlags.TypeParameter) return "type-parameter";
+			if (flags & TypeFlags.Index) return "index";
+			if (flags & TypeFlags.IndexedAccess) return "indexed-access";
+			if (flags & TypeFlags.Conditional) return "conditional";
+			if (flags & TypeFlags.Substitution) return "substitution";
+			if (flags & TypeFlags.TemplateLiteral) return "template-literal";
+			if (flags & TypeFlags.StringMapping) return "string-mapping";
+		}
+	} else {
+		// Intrinsic types and literals
+		if (flags & TypeFlags.Any) return "any";
+		if (flags & TypeFlags.Never) return "never";
+		if (flags & TypeFlags.Null) return "null";
+		if (flags & TypeFlags.Undefined) return "undefined";
+		if (flags & TypeFlags.Unknown) return "unknown";
+		if (flags & TypeFlags.Void) return "void";
+		if (flags & TypeFlags.Literal) return "literal"; // StringLiteral | NumberLiteral | BigIntLiteral | BooleanLiteral
+		if (flags & TypeFlags.Number) return "number";
+		if (flags & TypeFlags.String) return "string";
+		if (flags & TypeFlags.BigInt) return "bigint";
+		if (flags & TypeFlags.ESSymbol) return "symbol";
+		if (flags & TypeFlags.NonPrimitive) return "object"; // intrinsic `object` type
+		if (flags & TypeFlags.UniqueESSymbol) return "literal";
 	}
 	// TODO: Document error
 	throw new Error(`Unknown type kind: ${extractor.checker.typeToString(type)}`);
