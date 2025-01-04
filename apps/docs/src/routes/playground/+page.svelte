@@ -27,7 +27,7 @@
 
 	onMount(async () => {
 		if (!editor) throw new Error("Unreachable");
-		manager = new Repl.Manager({ editor, initial: params.input ?? "" });
+		manager = new Repl.Manager({ editor, initial: params.input ?? "", lang: "svelte" });
 		docgen = await Docgen.init();
 		await tick();
 	});

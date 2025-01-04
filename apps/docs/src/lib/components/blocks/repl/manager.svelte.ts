@@ -1,6 +1,7 @@
 import { indentWithTab } from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
-import { Compartment, EditorState, type EditorStateConfig } from "@codemirror/state";
+import { json } from "@codemirror/lang-json";
+import { type EditorStateConfig, Compartment, EditorState } from "@codemirror/state";
 import { type ViewUpdate, keymap, EditorView } from "@codemirror/view";
 import { svelte } from "@replit/codemirror-lang-svelte";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
@@ -26,21 +27,37 @@ export class Manager {
 		// NOTE: Understand this: https://codemirror.net/examples/tab/
 		keymap.of([indentWithTab]),
 		indentUnit.of("\t"),
-		svelte(),
 	] satisfies EditorStateConfig["extensions"];
 
-	constructor(options: { editor: HTMLDivElement; initial: string; debounce_delay?: number }) {
+	constructor(options: {
+		editor: HTMLDivElement;
+		initial: string;
+		debounce_delay?: number;
+		readonly?: boolean;
+		lang: "json" | "svelte";
+	}) {
+		// eslint-disable-next-line prefer-const
+		let extensions = [
+			//
+			...this.#default_extensions,
+			EditorView.updateListener.of((update) => {
+				this.update = update;
+			}),
+		];
+		if (options.lang === "json") {
+			extensions.push(json());
+		}
+		if (options.lang === "svelte") {
+			extensions.push(svelte());
+		}
+		if (options.readonly) {
+			extensions.push(EditorState.readOnly.of(true));
+		}
 		this.view = new EditorView({
 			parent: options.editor,
 			state: EditorState.create({
 				doc: options.initial,
-				extensions: [
-					//
-					...this.#default_extensions,
-					EditorView.updateListener.of((update) => {
-						this.update = update;
-					}),
-				],
+				extensions,
 			}),
 		});
 		this.source = new Debounced(() => {

@@ -7,18 +7,16 @@
 </script>
 
 <script lang="ts">
-	import DOMPurify from "isomorphic-dompurify";
 	import IconDatabase from "lucide-svelte/icons/database";
 	import IconPresentation from "lucide-svelte/icons/presentation";
-	import { mode } from "mode-watcher";
-	import { encode, type parse } from "svelte-docgen";
+	import type { parse } from "svelte-docgen";
 
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.ts";
 	import * as Tabs from "$lib/components/ui/tabs/index.ts";
 	import * as ToggleGroup from "$lib/components/ui/toggle-group/index.ts";
-	import { highlighter } from "$lib/md/highlighter.js";
 
 	import OutputOverview from "./overview/root.svelte";
+	import OutputJSON from "./json.svelte";
 
 	interface Props {
 		data: ReturnType<typeof parse>;
@@ -82,9 +80,7 @@
 				{#if current_output_type === "raw"}
 					<pre>Tree explorer</pre>
 				{:else}
-					{@const code = encode(data, { indent: "\t" })}
-					<!-- eslint-disable-next-line svelte/no-at-html-tags - Is ok, is sanitized. -->
-					{@html DOMPurify.sanitize(highlighter.codeToHtml(code, { lang: "json", theme: `github-${$mode}` }))}
+					<OutputJSON {data} />
 				{/if}
 			</ScrollArea>
 		</Tabs.Content>
