@@ -637,7 +637,7 @@ class Parser {
 			);
 		}
 
-		// Merge true | false back into boolean as TypeScript eagerly expands it
+		// Merge `true | false` back into boolean as TypeScript eagerly expands it in unions
 		let idx_false = -1;
 		let idx_true = -1;
 		for (let i = 0; i < types.length; i++) {
