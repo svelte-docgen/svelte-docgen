@@ -48,7 +48,7 @@ import {
 	is_const_type_param,
 	is_symbol_optional,
 	is_symbol_readonly,
-	is_tuple_type,
+	is_tuple_type_reference,
 	is_type_reference,
 } from "../shared.js";
 import { isTypeRef } from "../doc/utils.js";
@@ -419,10 +419,7 @@ class Parser {
 	 */
 	#get_tuple_doc(type) {
 		// TODO: Document error
-		if (!is_type_reference(type))
-			throw new Error(`Expected type reference, got ${this.#checker.typeToString(type)}`);
-		// TODO: Document error
-		if (!is_tuple_type(type.target))
+		if (!is_tuple_type_reference(type))
 			throw new Error(`Expected tuple type, got ${this.#checker.typeToString(type)}`);
 		const isReadonly = type.target.readonly;
 		const elements = this.#checker.getTypeArguments(type).map((t) => this.#get_type_doc(t));
@@ -517,6 +514,7 @@ class Parser {
 		if (!(type.flags & ts.TypeFlags.Conditional))
 			throw new Error(`Expected conditional type, got ${this.#checker.typeToString(type)}`);
 		let conditional = /** @type {ts.ConditionalType} */ (type);
+		type.getCallSignatures(); // Note: this is required to get resolved types
 		/** @type {Conditional} */
 		let results = {
 			kind: "conditional",
