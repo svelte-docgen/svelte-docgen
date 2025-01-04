@@ -7,7 +7,7 @@
 	let { ref = $bindable() }: Props = $props();
 </script>
 
-<div bind:this={ref} class="size-full"></div>
+<div bind:this={ref} class="overflow-auto h-full"></div>
 
 <style>
 	div {

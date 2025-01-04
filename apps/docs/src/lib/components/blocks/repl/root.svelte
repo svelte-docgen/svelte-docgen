@@ -10,14 +10,27 @@
 	let { input, output }: Props = $props();
 </script>
 
-<Resizable.PaneGroup class="relative h-full" direction="horizontal">
-	<Resizable.Pane>
-		{@render input()}
-	</Resizable.Pane>
+<div class="panes-container">
+	<Resizable.PaneGroup
+		direction="horizontal"
+		class="panes"
+	>
+		<Resizable.Pane defaultSize={100}>
+			{@render input()}
+		</Resizable.Pane>
 
-	<Resizable.Handle />
+		<Resizable.Handle />
 
-	<Resizable.Pane>
-		{@render output()}
-	</Resizable.Pane>
-</Resizable.PaneGroup>
+		<Resizable.Pane defaultSize={100}>
+			<div class="overflow-auto h-full">
+				{@render output()}
+			</div>
+		</Resizable.Pane>
+	</Resizable.PaneGroup>
+</div>
+
+<style>
+	.panes-container {
+		height: calc(100lvh - theme('height.16'));
+	}
+</style>

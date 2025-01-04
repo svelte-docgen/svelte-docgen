@@ -92,8 +92,14 @@
 <Sidebar.Provider>
 	<AppSidebar {...sidebar} />
 
-	<main class="min-h-screen w-screen">
+	<main>
 		<AppHeader {routes} />
 		{@render children?.()}
 	</main>
 </Sidebar.Provider>
+
+<style>
+	main {
+		width: calc(100lvw - var(--sidebar-width));
+	}
+</style>

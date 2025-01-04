@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick } from "svelte";
-	import { encode } from "svelte-docgen";
 	import { queryParameters, ssp } from "sveltekit-search-params";
 
 	import * as Repl from "$lib/components/blocks/repl/index.ts";
