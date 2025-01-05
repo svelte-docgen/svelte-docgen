@@ -1,7 +1,8 @@
 /**
- * @import { Props } from "../doc/type.ts";
  * @import { ParsedComponent } from "../parser/mod.ts";
  */
+
+import { analyzeProps } from "./props.js";
 
 class ComponentAnalyzer {
 	/** @type {ParsedComponent} */
@@ -22,20 +23,20 @@ class ComponentAnalyzer {
 		return this.#component.tags?.find((t) => t.name === "subcategory")?.content?.[0]?.text;
 	}
 
+	/** @type {ReturnType<typeof analyzeProps> | undefined} */
+	#cached_props;
 	/**
-	 * Filters out legacy event handler props if the component is modern.
-	 * Or filters out modern event handler props if the component is legacy.
-	 * @returns {Props}
+	 * @see {@link analyzeProps}
+	 * @returns {ReturnType<typeof analyzeProps>}
 	 */
 	get props() {
-		return new Map(
-			Iterator.from(this.#component.props).filter(([name, _prop]) => {
-				if (this.#component.isLegacy) {
-					return name.startsWith("on:") || (!name.startsWith("on") && name.at(2) !== ":");
-				}
-				return !name.startsWith("on:");
-			}),
-		);
+		if (this.#cached_props) return this.#cached_props;
+		this.#cached_props = analyzeProps({
+			props: this.#component.props,
+			isLegacy: this.#component.isLegacy,
+			types: this.#component.types,
+		});
+		return this.#cached_props;
 	}
 }
 

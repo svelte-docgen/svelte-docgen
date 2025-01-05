@@ -38,48 +38,4 @@ describe(analyzeComponent.name, () => {
 			expect(subcategory).toBe("Native");
 		});
 	});
-
-	describe("getter .props", () => {
-		it("when component is legacy, modern event handlers are omitted", ({ expect }) => {
-			const parsed = parse(
-				`
-				<script lang="ts">
-					import type { HTMLButtonAttributes } from "svelte/elements";
-
-					type $$Props = HTMLButtonAttributes;
-					export let disabled: boolean | null | undefined = undefined;
-				</script>
-
-				<button {disabled}>Click me</button>
-				`,
-				create_options("analyze-component-props-legacy.svelte"),
-			);
-			const analyzer = analyzeComponent(parsed);
-			const { props } = analyzer;
-			expect(props.get("on:click")).toBeDefined();
-			expect(props.get("onclick")).not.toBeDefined();
-			expect(props.get("disabled")).toBeDefined();
-		});
-
-		it("when component is not legacy, legacy event handlers are omitted", ({ expect }) => {
-			const parsed = parse(
-				`
-				<script lang="ts">
-					import type { HTMLButtonAttributes } from "svelte/elements";
-
-					interface Props extends HTMLButtonAttributes {}
-					let { disabled }: Props = $props();
-				</script>
-
-				<button {disabled}>Click me</button>
-				`,
-				create_options("analyze-component-props-modern.svelte"),
-			);
-			const analyzer = analyzeComponent(parsed);
-			const { props } = analyzer;
-			expect(props.get("onclick")).toBeDefined();
-			expect(props.get("on:click")).not.toBeDefined();
-			expect(props.get("disabled")).toBeDefined();
-		});
-	});
 });
