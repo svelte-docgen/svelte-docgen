@@ -56,7 +56,17 @@ class Extractor {
 		const { props } = this.#extracted_from_render_fn;
 		// TODO: Document error
 		if (!props) throw new Error("props not found");
-		return new Map(Iterator.from(props.getProperties()).map((p) => [p.name, p]));
+		return new Map(
+			Iterator.from(props.getProperties()).map((p) => {
+				const regex = /^bind:/;
+				if (regex.test(p.name)) {
+					const name = p.name.replace(regex, "");
+					this.#cached_bindings.add(name);
+					return [name, p];
+				}
+				return [p.name, p];
+			}),
+		);
 	}
 
 	/** @returns {Map<string, ts.BindingElement>} */
@@ -83,24 +93,31 @@ class Extractor {
 		return results;
 	}
 
+	/**
+	 * `svelte2tsx` doesn't check whether props are bindable if the name containts prefix `bind:`.
+	 * Another reason why we need own parser...
+	 */
+	#was_props_called = false;
+	/** @type {Set<string>} */
+	#cached_bindings = new Set();
 	/** @returns {Set<string>} */
 	get bindings() {
-		let results = new Set();
+		if (!this.#was_props_called) {
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			this.props;
+			this.#was_props_called = true;
+		}
 		const { bindings } = this.#extracted_from_render_fn;
 		// TODO: Document error
 		if (!bindings) throw new Error("bindings not found");
 		// If in legacy mode, 'bindings' is a string type
-		if (bindings.flags & ts.TypeFlags.String) {
-			return results;
-		}
+		if (bindings.flags & ts.TypeFlags.String) return this.#cached_bindings;
 		// If there is a single binding
 		if (bindings.isStringLiteral()) {
 			// NOTE: No bindings, is empty
-			if (bindings.value === "") {
-				return results;
-			}
-			results.add(bindings.value);
-			return results;
+			if (bindings.value === "") return this.#cached_bindings;
+			this.#cached_bindings.add(bindings.value);
+			return this.#cached_bindings;
 		}
 		// If there are multiple bindings
 		// TODO: Document error
@@ -108,9 +125,9 @@ class Extractor {
 		for (const type of bindings.types) {
 			// TODO: Document error
 			if (!type.isStringLiteral()) throw new Error("Expected bindings to be a union of string literal types");
-			results.add(type.value);
+			this.#cached_bindings.add(type.value);
 		}
-		return results;
+		return this.#cached_bindings;
 	}
 
 	/**
