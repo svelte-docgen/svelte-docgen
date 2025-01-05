@@ -102,8 +102,11 @@ class Extractor {
 	#cached_bindings = new Set();
 	/** @returns {Set<string>} */
 	get bindings() {
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		if (!this.#was_props_called) this.props;
+		if (!this.#was_props_called) {
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			this.props;
+			this.#was_props_called = true;
+		}
 		const { bindings } = this.#extracted_from_render_fn;
 		// TODO: Document error
 		if (!bindings) throw new Error("bindings not found");
