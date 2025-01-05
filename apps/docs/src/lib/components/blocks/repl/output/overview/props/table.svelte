@@ -15,6 +15,7 @@
 	import * as Tooltip from "$lib/components/ui/tooltip/index.ts";
 
 	import { highlighter } from "$lib/md/highlighter.js";
+	import Type from "./type.svelte";
 
 	interface Props extends ComponentProps<typeof Table.Root> {
 		props: Doc.Props;
@@ -35,15 +36,6 @@ interface Props {
 }
 		`;
 		return highlighter.codeToHtml(code, { lang: "diff", theme: `github-${$mode ?? "light"}` });
-	}
-
-	function get_type_kind(prop: Doc.Prop): Doc.Type["kind"] {
-		if (typeof prop.type === "string") {
-			const type = types.get(prop.type);
-			if (!type) throw new Error("Unreachable");
-			return type.kind;
-		}
-		return prop.type.kind;
 	}
 
 	function stringify_description(description: NonNullable<Doc.Prop["description"]>): string {
@@ -125,7 +117,9 @@ interface Props {
 					</div>
 				</Table.Cell>
 
-				<Table.Cell>{get_type_kind(prop)}</Table.Cell>
+				<Table.Cell>
+					<Type type={prop.type} {types} />
+				</Table.Cell>
 
 				<Table.Cell>
 					{#if prop.description}
