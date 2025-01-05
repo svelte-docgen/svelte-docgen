@@ -7,7 +7,7 @@
 
 	import OverviewDescription from "./description.svelte";
 	import OverviewExports from "./exports.svelte";
-	import OverviewProps from "./props.svelte";
+	import OverviewProps from "./props/root.svelte";
 	import OverviewTags from "./tags.svelte";
 
 	interface Props {
