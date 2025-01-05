@@ -1,6 +1,7 @@
 <script lang="ts">
 	import IconBraces from "lucide-svelte/icons/braces";
-	import { analyzeProperty, parse } from "svelte-docgen";
+	import { analyzeComponent } from "svelte-docgen";
+	import * as Doc from "svelte-docgen/doc";
 	import type { ComponentProps } from "svelte";
 	import { SvelteSet } from "svelte/reactivity";
 
@@ -9,7 +10,10 @@
 
 	import PropsTable from "./table.svelte";
 
-	interface Props extends ComponentProps<typeof Accordion.Item>, Pick<ReturnType<typeof parse>, "props" | "types"> {}
+	interface Props extends ComponentProps<typeof Accordion.Item> {
+		props: ReturnType<typeof analyzeComponent>["props"];
+		types: Doc.Types,
+	}
 	let { props, types, ...rest_props }: Props = $props();
 
 	/** Session storage key */
@@ -17,38 +21,18 @@
 	const stored = globalThis.window !== undefined ? window.sessionStorage.getItem(ss_key) : null;
 	type Items = "snippets" | "event-handlers" | "a11y" | "data" | "other";
 	let accordion_state = $state<SvelteSet<Items>>(new SvelteSet(stored ? (JSON.parse(stored) as Items[]) : []));
-	let is_empty = $derived(props.size === 0);
-	let snippets = $derived.by(() => {
-		return new Map(Iterator.from(props).filter(([_name, prop]) => {
-			return analyzeProperty(prop, types).isSnippet;
-		}));
-	});
-	let event_handlers = $derived.by(() => {
-		return new Map(Iterator.from(props).filter(([_name, prop]) => {
-			return analyzeProperty(prop, types).isEventHandler;
-		}));
-	});
-	let a11y = $derived.by(() => {
-		return new Map(Iterator.from(props).filter(([name, _prop]) => {
-			return name.startsWith("aria-");
-		}));
-	});
-	let data_attr = $derived.by(() => {
-		return new Map(Iterator.from(props).filter(([name, _prop]) => {
-			return name.startsWith("data-");
-		}));
-	});
-	let other = $derived.by(() => {
-		return new Map(Iterator.from(props).filter(([name, _prop]) => {
-			return !(event_handlers.has(name) || a11y.has(name) || data_attr.has(name) || snippets.has(name));
-		}));
-	});
+	let is_empty = $derived(props.all.size === 0);
+	let snippets = $derived(props.snippets);
+	let event_handlers = $derived(props.eventHandlers);
+	let a11y = $derived(props.a11y);
+	let data_attrs = $derived(props.dataAttrs);
+	let other = $derived(props.uncategorized);
 </script>
 
 <Accordion.Item {...rest_props} disabled={is_empty} value="props">
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
-			<IconBraces /> Props {props.size > 0 ? `(${props.size})` : ""}
+			<IconBraces /> Props {props.all.size > 0 ? `(${props.all.size})` : ""}
 		</span>
 	</Accordion.Trigger>
 
@@ -126,12 +110,12 @@
 				</Accordion.Item>
 			{/if}
 
-			{#if data_attr.size > 0}
+			{#if data_attrs.size > 0}
 				<Accordion.Item value="data-attr">
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger class="w-full">
-								<Accordion.Trigger>Data attributes ({data_attr.size})</Accordion.Trigger>
+								<Accordion.Trigger>Data attributes ({data_attrs.size})</Accordion.Trigger>
 							</Tooltip.Trigger>
 
 							<Tooltip.Content>
@@ -144,7 +128,7 @@
 					</Tooltip.Provider>
 
 					<Accordion.Content>
-						<PropsTable props={data_attr} {types} />
+						<PropsTable props={data_attrs} {types} />
 					</Accordion.Content>
 				</Accordion.Item>
 			{/if}
