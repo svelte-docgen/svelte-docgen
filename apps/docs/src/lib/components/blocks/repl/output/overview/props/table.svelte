@@ -122,12 +122,6 @@ interface Props {
 								<Badge variant="outline">$bindable</Badge>
 							</a>
 						{/if}
-
-						{#if analysis.isEventHandler}
-							<a href="https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers">
-								<Badge variant="outline">Event handler</Badge>
-							</a>
-						{/if}
 					</div>
 				</Table.Cell>
 
