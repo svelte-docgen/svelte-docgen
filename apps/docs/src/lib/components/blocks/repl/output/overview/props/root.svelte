@@ -92,13 +92,13 @@
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger class="w-full">
-								<Accordion.Trigger>a11y ({a11y.size})</Accordion.Trigger>
+								<Accordion.Trigger>ARIA ({a11y.size})</Accordion.Trigger>
 							</Tooltip.Trigger>
 
 							<Tooltip.Content>
 								<p>
-									Signals fired inside the browser window that notify of changes in the browser or operating system environment.<br>
-									Read more about them on <a href="https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers" class="underline">MDN documentation</a>.
+									Accessible Rich Internet Applications (ARIA) is a set of roles and attributes that define ways to make web content and web applications (especially those developed with JavaScript) more accessible to people with disabilities.
+									Read more about them on <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA" class="underline">MDN documentation</a>.
 								</p>
 							</Tooltip.Content>
 						</Tooltip.Root>
@@ -120,8 +120,8 @@
 
 							<Tooltip.Content>
 								<p>
-									Signals fired inside the browser window that notify of changes in the browser or operating system environment.<br>
-									Read more about them on <a href="https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers" class="underline">MDN documentation</a>.
+									Custom data attributes, that allow proprietary information to be exchanged between the HTML and its DOM representation by scripts.<br>
+									Read more about them on <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*" class="underline">MDN documentation</a>.
 								</p>
 							</Tooltip.Content>
 						</Tooltip.Root>
@@ -135,20 +135,7 @@
 
 			{#if other.size > 0}
 				<Accordion.Item value="other">
-					<Tooltip.Provider>
-						<Tooltip.Root>
-							<Tooltip.Trigger class="w-full">
-								<Accordion.Trigger>Other ({other.size})</Accordion.Trigger>
-							</Tooltip.Trigger>
-
-							<Tooltip.Content>
-								<p>
-									Signals fired inside the browser window that notify of changes in the browser or operating system environment.<br>
-									Read more about them on <a href="https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers" class="underline">MDN documentation</a>.
-								</p>
-							</Tooltip.Content>
-						</Tooltip.Root>
-					</Tooltip.Provider>
+					<Accordion.Trigger>Other ({other.size})</Accordion.Trigger>
 
 					<Accordion.Content>
 						<PropsTable props={other} {types} />
