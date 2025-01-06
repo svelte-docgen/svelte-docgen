@@ -111,7 +111,13 @@ export function get_type_kind(params) {
  * @returns {boolean}
  */
 export function is_constructible(type, extractor) {
-	return get_construct_signatures(type, extractor).length > 0;
+	const signatures = get_construct_signatures(type, extractor);
+	// Check if the type returned by the constructor is assignable to the original `type`.
+	return signatures.some((signature) => {
+		let return_type = signature.getReturnType();
+		if (is_type_reference(return_type)) return_type = return_type.target;
+		return extractor.checker.isTypeAssignableTo(return_type, type);
+	});
 }
 
 /**
