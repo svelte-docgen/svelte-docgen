@@ -1,11 +1,15 @@
-import { Config } from "tailwindcss";
+/**
+ * @import { Config } from "tailwindcss";
+ */
+
 import { fontFamily } from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
 import containerQueries from "@tailwindcss/container-queries";
 import forms from "@tailwindcss/forms";
 import typography from "@tailwindcss/typography";
 
-const config: Config = {
+/** @satisfies {Config} */
+const config = {
 	darkMode: ["class"],
 	content: ["./src/**/*.{html,js,svelte,ts}"],
 	safelist: ["dark"],
@@ -22,11 +26,11 @@ const config: Config = {
 				border: "hsl(var(--border) / <alpha-value>)",
 				input: "hsl(var(--input) / <alpha-value>)",
 				ring: "hsl(var(--ring) / <alpha-value>)",
-				background: "hsl(var(--background) / <alpha-value>)",
-				foreground: "hsl(var(--foreground) / <alpha-value>)",
+				background: "oklch(var(--background) / <alpha-value>)",
+				foreground: "oklch(var(--foreground) / <alpha-value>)",
 				primary: {
-					DEFAULT: "hsl(var(--primary) / <alpha-value>)",
-					foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
+					DEFAULT: "oklch(var(--primary) / <alpha-value>)",
+					foreground: "oklch(var(--primary-foreground) / <alpha-value>)",
 				},
 				secondary: {
 					DEFAULT: "hsl(var(--secondary) / <alpha-value>)",
