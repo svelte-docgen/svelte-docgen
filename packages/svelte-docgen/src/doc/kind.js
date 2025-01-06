@@ -112,7 +112,7 @@ export function get_type_kind(params) {
  */
 export function is_constructible(type, extractor) {
 	const signatures = get_construct_signatures(type, extractor);
-	// Check if type retuened by constructor is assignable to the type
+	// Check if the type returned by the constructor is assignable to the original `type`.
 	return signatures.some((signature) => {
 		let return_type = signature.getReturnType();
 		if (is_type_reference(return_type)) return_type = return_type.target;

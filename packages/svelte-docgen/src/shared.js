@@ -75,9 +75,10 @@ export function get_type_symbol(type) {
  * @returns {readonly ts.Signature[]}
  */
 export function get_construct_signatures(type, extractor) {
-	const symbol = get_type_symbol(type);
-	if (!symbol.valueDeclaration) return [];
-	const value_type = extractor.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration);
+	// Get the type of a symbol when used in a value context.
+	// For example, `Map` is an interface in a type context but a constructor in a value context.
+	if (!type.symbol?.valueDeclaration) return [];
+	const value_type = extractor.checker.getTypeOfSymbolAtLocation(type.symbol, type.symbol.valueDeclaration);
 	return value_type.getConstructSignatures.bind(value_type)();
 }
 
