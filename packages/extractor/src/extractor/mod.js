@@ -53,6 +53,7 @@ class Extractor {
 
 	/** @returns {Map<string, ts.Symbol>} */
 	get props() {
+		this.#was_props_called = true;
 		const { props } = this.#extracted_from_render_fn;
 		// TODO: Document error
 		if (!props) throw new Error("props not found");
