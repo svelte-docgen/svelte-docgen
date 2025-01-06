@@ -32,7 +32,7 @@
 		{@render children?.()}
 	</div>
 {:else if sidebar.isMobile}
-	<Sheet.Root controlledOpen open={sidebar.openMobile} onOpenChange={sidebar.setOpenMobile} {...restProps}>
+	<Sheet.Root bind:open={() => sidebar.openMobile, (v) => sidebar.setOpenMobile(v)} {...restProps}>
 		<Sheet.Content
 			data-sidebar="sidebar"
 			data-mobile="true"
