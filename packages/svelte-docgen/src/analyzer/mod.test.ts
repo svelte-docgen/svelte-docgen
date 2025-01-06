@@ -20,8 +20,8 @@ describe("analyze", () => {
 			expectTypeOf(analyzed.events).toMatchTypeOf<Events>();
 			expectTypeOf(analyzed.slots).toMatchTypeOf<Slots>();
 		} else {
-			expectTypeOf(analyzed.events).toBeNever();
-			expectTypeOf(analyzed.slots).toBeNever();
+			expectTypeOf<typeof analyzed.events>().toBeNever();
+			expectTypeOf<typeof analyzed.slots>().toBeNever();
 		}
 	});
 
@@ -43,8 +43,8 @@ describe("analyze", () => {
 			expectTypeOf(analyzed.events).toMatchTypeOf<Events>();
 			expectTypeOf(analyzed.slots).toMatchTypeOf<Slots>();
 		} else {
-			expectTypeOf(analyzed.events).toBeNever();
-			expectTypeOf(analyzed.slots).toBeNever();
+			expectTypeOf<typeof analyzed.events>().toBeNever();
+			expectTypeOf<typeof analyzed.slots>().toBeNever();
 		}
 	});
 });
