@@ -1,11 +1,23 @@
-# Svelte Docgen
+<p align="center">
+    <img
+        alt="svelte-docgen logo"
+        src="./assets/brand/logo.svg"
+        width="180"
+    >
+    <br>
+    <img
+        alt="GitHub Actions Workflow Status"
+        src="https://img.shields.io/github/actions/workflow/status/svelte-docgen/svelte-docgen/ci.yml?branch=main&style=for-the-badge&logo=github&label=CI"
+    >
+    <img
+        alt="Codecov icon"
+        src="https://img.shields.io/codecov/c/github/svelte-docgen/svelte-docgen?style=for-the-badge&logo=codecov&link=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fsvelte-docgen%2Fsvelte-docgen"
+    >
+</p>
+
+# `svelte-docgen`
 
 This project is a monorepo for `svelte-docgen` packages.
-
-> [!TIP]
->
-> 📣 **This project is attempting to compete at [SvelteHack 2024](https://hack.sveltesociety.dev/2024)!**
-> See [announcement](https://github.com/svelte-docgen/svelte-docgen/discussions/11).
 
 > [!WARNING]
 > This project is still a work in progress. [See roadmap for `v1`](https://github.com/svelte-docgen/svelte-docgen/issues/5).
@@ -236,9 +248,6 @@ If you don't have time, but you need this project to work, or resolve an existin
 
 - Mateusz "[xeho91](https://github.com/xeho91)" Kadlubowski
 - Taku "[ciscorn](https://github.com/ciscorn)" Fukada
-
-> [!TIP]
-> It can be you too! See [announcement](https://github.com/svelte-docgen/svelte-docgen/discussions/11).
 
 ## License
 

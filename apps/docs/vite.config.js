@@ -3,6 +3,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig((env) => {
 	return {
+		assetsInclude: ["../../assets/**/*"],
+
 		resolve: {
 			alias: {
 				// Because `svelte2tsx` relies on "node:path", we need to polyfill `node:path` with `pathe`.
