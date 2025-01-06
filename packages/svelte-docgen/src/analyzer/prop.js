@@ -49,7 +49,7 @@ export class PropAnalyzer {
 	 *
 	 * NOTE:
 	 * 1. They can be custom defined.
-	 * 2. They can be repetive _(tag with specific name can occur more than once)_.
+	 * 2. They can be repetitive _(tag with specific name can occur more than once)_.
 	 *
 	 * @returns {Tag[]}
 	 */

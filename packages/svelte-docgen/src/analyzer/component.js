@@ -30,7 +30,7 @@ export class ComponentAnalyzer {
 	/**
 	 * Component description from the _first HTML comment_ at the fragment root of the Svelte component file.
 	 * Any content after the `@component` tag is treated as description.
-	 * It can be mutli-line.
+	 * It can be multi-line.
 	 * Until the next line starting with different tag.
 	 *
 	 * @example
@@ -55,7 +55,7 @@ export class ComponentAnalyzer {
 	 *
 	 * NOTE:
 	 * 1. There is no official specification for tags, hence they can be custom defined.
-	 * 2. They can be repetive _(tag with specific name can occur more than once)_.
+	 * 2. They can be repetitive _(tag with specific name can occur more than once)_.
 	 *
 	 * @example
 	 *
