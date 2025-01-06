@@ -1,8 +1,14 @@
+import path from "node:path";
+import url from "node:url";
+
 import adapter from "@sveltejs/adapter-cloudflare";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { mdsvex } from "mdsvex";
 
 import { HIGHLIGHT } from "./src/lib/md/highlighter.js";
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** @satisfies {import("@sveltejs/kit").Config} */
 const config = {
@@ -13,6 +19,10 @@ const config = {
 		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter(),
+
+		alias: {
+			'$assets/*': path.resolve(__dirname, "..", "..", "assets", "*"),
+		},
 
 		prerender: {
 			handleMissingId: "warn",
