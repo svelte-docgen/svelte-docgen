@@ -49,14 +49,17 @@ Thanks to it we're able to recognize actual _(computed)_ types.
 
 #### Recognized type kinds
 
-Currently we recognize and support the following type kinds.
+Currently we recognize and support the following type kinds:
 
 - `any`,
 - `array`,
 - `bigint`,
 - `boolean`,
+- `conditional`,
 - `constructible`,
 - `function`,
+- `index`,
+- `indexed-access`,
 - `interface`,
 - `intersection`,
 - `literal`,
@@ -64,8 +67,11 @@ Currently we recognize and support the following type kinds.
 - `null`,
 - `number`,
 - `object`,
+- `string-mapping`,
 - `string`,
+- `substitution`,
 - `symbol`,
+- `template-literal`,
 - `tuple`,
 - `type-parameter`,
 - `undefined`,
