@@ -11,6 +11,53 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 describe(PropAnalyzer.name, () => {
+	describe("getter .description", () => {
+		it("returns data when JSDoc tag is present above prop", ({ expect }) => {
+			const { props, types, isLegacy } = parse(
+				`
+				<script lang="ts">
+					interface Props {
+						/** Example description. */
+						described: any;
+					}
+					let prop: Props = $props();
+				</script>
+				`,
+				create_options("analyze-property-description-described.svelte"),
+			);
+			const described = props.get("described");
+			expect(described).toBeDefined();
+			if (described) {
+				const { description } = new PropAnalyzer({ data: described, types, isLegacy });
+				expect(description).toBeDefined();
+				if (description) {
+					expect(description.length).toBe(1);
+					expect(description[0].text).toMatchInlineSnapshot(`"Example description."`);
+				}
+			}
+		});
+
+		it("returns undefined when no description found", ({ expect }) => {
+			const { props, types, isLegacy } = parse(
+				`
+				<script lang="ts">
+					interface Props {
+						undescribed: any;
+					}
+					let prop: Props = $props();
+				</script>
+				`,
+				create_options("analyze-property-description-undescribed.svelte"),
+			);
+			const undescribed = props.get("undescribed");
+			expect(undescribed).toBeDefined();
+			if (undescribed) {
+				const { description } = new PropAnalyzer({ data: undescribed, types, isLegacy });
+				expect(description).not.toBeDefined();
+			}
+		});
+	});
+
 	describe("getter .tags", () => {
 		it("returns empty array if no tags found", ({ expect }) => {
 			const { props, types, isLegacy } = parse(
