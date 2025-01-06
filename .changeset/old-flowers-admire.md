@@ -4,8 +4,8 @@
 
 Add new getters for categorized props:
 
-- `snippets`
-- `eventHandlers`
-- `a11y`
-- `dataAttrs`
-- `uncategorized`
+- `props.snippets`
+- `props.events`
+- `props.aria`
+- `props.data`
+- `props.uncategorized`

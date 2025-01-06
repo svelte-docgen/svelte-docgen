@@ -50,7 +50,10 @@ class PropsAnalyzer {
 		this.#cached_all = new Map(
 			Iterator.from(this.#props).filter(([name, _prop]) => {
 				if (this.#is_legacy) {
-					return name.startsWith("on:") || (!name.startsWith("on") && name.at(2) !== ":");
+					return (
+						name.startsWith("on:") ||
+						(!name.startsWith("on") && name.at(2) !== ":")
+					);
 				}
 				return !name.startsWith("on:");
 			}),
@@ -80,39 +83,13 @@ class PropsAnalyzer {
 	}
 
 	/**
-	 * Map of properties which are Svelte snippets.
+	 * Map of properties related to ARIA attributes - `aria-*`.
+	 *
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes}
 	 *
 	 * @returns {Props}
 	 */
-	get snippets() {
-		return new Map(
-			Iterator.from(this.#analyzed)
-				.filter(([_name, data]) => data.analysis.isSnippet)
-				// TODO: Perhaps lets make `PropAnalysis` return also keys of `Prop`?
-				.map(([name, data]) => [name, data.prop]),
-		);
-	}
-
-	/**
-	 * Map of properties related to events handling.
-	 *
-	 * @returns {Props}
-	 */
-	get eventHandlers() {
-		return new Map(
-			Iterator.from(this.#analyzed)
-				.filter(([_name, data]) => data.analysis.isEventHandler)
-				// TODO: Perhaps lets make `PropAnalysis` return also keys of `Prop`?
-				.map(([name, data]) => [name, data.prop]),
-		);
-	}
-
-	/**
-	 * Map of properties related to accessibility.
-	 *
-	 * @returns {Props}
-	 */
-	get a11y() {
+	get aria() {
 		return new Map(
 			Iterator.from(this.#analyzed)
 				.filter(([name, _data]) => name.startsWith("aria-"))
@@ -122,14 +99,48 @@ class PropsAnalyzer {
 	}
 
 	/**
-	 * Map of properties related to data attributes.
+	 * Map of properties related to global `data-*` attributes.
+	 *
+	 * @ee {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*}
 	 *
 	 * @returns {Props}
 	 */
-	get dataAttrs() {
+	get data() {
 		return new Map(
 			Iterator.from(this.#analyzed)
 				.filter(([name, _data]) => name.startsWith("data-"))
+				// TODO: Perhaps lets make `PropAnalysis` return also keys of `Prop`?
+				.map(([name, data]) => [name, data.prop]),
+		);
+	}
+
+	/**
+	 * Map of properties related to events handling.
+	 *
+	 * @ee {@link https://developer.mozilla.org/en-US/docs/Web/Events}
+	 *
+	 * @returns {Props}
+	 */
+	get events() {
+		return new Map(
+			Iterator.from(this.#analyzed)
+				.filter(([_name, data]) => data.analysis.isEventHandler)
+				// TODO: Perhaps lets make `PropAnalysis` return also keys of `Prop`?
+				.map(([name, data]) => [name, data.prop]),
+		);
+	}
+
+	/**
+	 * Map of properties which are Svelte snippets.
+	 *
+	 * @see {@link https://svelte.dev/docs/svelte/snippet}
+	 *
+	 * @returns {Props}
+	 */
+	get snippets() {
+		return new Map(
+			Iterator.from(this.#analyzed)
+				.filter(([_name, data]) => data.analysis.isSnippet)
 				// TODO: Perhaps lets make `PropAnalysis` return also keys of `Prop`?
 				.map(([name, data]) => [name, data.prop]),
 		);
@@ -148,9 +159,9 @@ class PropsAnalyzer {
 						// NOTE: Negation
 						!(
 							this.snippets.has(name) ||
-							this.eventHandlers.has(name) ||
-							this.a11y.has(name) ||
-							this.dataAttrs.has(name)
+							this.events.has(name) ||
+							this.aria.has(name) ||
+							this.data.has(name)
 						),
 				)
 				// TODO: Perhaps lets make `PropAnalysis` return also keys of `Prop`?
