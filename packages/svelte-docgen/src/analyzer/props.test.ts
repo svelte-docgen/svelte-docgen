@@ -7,24 +7,24 @@ import { analyzeProps } from "./props.js";
 
 const parsed_modern = parse(
 	`
-				<script lang="ts">
-					import type { HTMLButtonAttributes } from "svelte/elements";
+	<script lang="ts">
+		import type { HTMLButtonAttributes } from "svelte/elements";
 
-					interface Props extends HTMLButtonAttributes {}
-					let props: Props = $props();
-				</script>
-				`,
+		interface Props extends HTMLButtonAttributes {}
+		let props: Props = $props();
+	</script>
+	`,
 	create_options("analyze-component-props-modern.svelte"),
 );
 const parsed_legacy = parse(
 	`
-			<script lang="ts">
-				import type { HTMLButtonAttributes } from "svelte/elements";
+	<script lang="ts">
+		import type { HTMLButtonAttributes } from "svelte/elements";
 
-				type $$Props = HTMLButtonAttributes;
-				export let disabled: boolean | null | undefined = undefined;
-			</script>
-			`,
+		type $$Props = HTMLButtonAttributes;
+		export let disabled: boolean | null | undefined = undefined;
+	</script>
+	`,
 	create_options("analyze-component-props.svelte"),
 );
 
@@ -47,39 +47,39 @@ describe(analyzeProps.name, () => {
 		});
 	});
 
+	describe("getter .aria", () => {
+		it("returns filtered props map which are ARIA related only", ({ expect }) => {
+			const analyzer = analyzeProps(parsed_modern);
+			const { aria } = analyzer;
+			expect(aria.size).toBe(48);
+			expect(aria.get("aria-label")).toBeDefined();
+		});
+	});
+
+	describe("getter .data", () => {
+		it("returns filtered props map which are data attributes only", ({ expect }) => {
+			const analyzer = analyzeProps(parsed_modern);
+			const { data } = analyzer;
+			expect(data.size).toBe(6);
+			expect(data.get("data-sveltekit-preload-data")).toBeDefined();
+		});
+	});
+
+	describe("getter .events", () => {
+		it("returns filtered props map which are event handlers only", ({ expect }) => {
+			const analyzer = analyzeProps(parsed_modern);
+			const { events } = analyzer;
+			expect(events.size).toBe(214);
+			expect(events.get("onchange")).toBeDefined();
+		});
+	});
+
 	describe("getter .snippets", () => {
 		it("returns filtered props map which are snippets only", ({ expect }) => {
 			const analyzer = analyzeProps(parsed_modern);
 			const { snippets } = analyzer;
 			expect(snippets.size).toBe(1);
 			expect(snippets.get("children")).toBeDefined();
-		});
-	});
-
-	describe("getter .eventHandlers", () => {
-		it("returns filtered props map which are event handlers only", ({ expect }) => {
-			const analyzer = analyzeProps(parsed_modern);
-			const { eventHandlers } = analyzer;
-			expect(eventHandlers.size).toBe(214);
-			expect(eventHandlers.get("onchange")).toBeDefined();
-		});
-	});
-
-	describe("getter .a11y", () => {
-		it("returns filtered props map which are ARIA related only", ({ expect }) => {
-			const analyzer = analyzeProps(parsed_modern);
-			const { a11y } = analyzer;
-			expect(a11y.size).toBe(48);
-			expect(a11y.get("aria-label")).toBeDefined();
-		});
-	});
-
-	describe("getter .dataAttrs", () => {
-		it("returns filtered props map which are data attributes only", ({ expect }) => {
-			const analyzer = analyzeProps(parsed_modern);
-			const { dataAttrs } = analyzer;
-			expect(dataAttrs.size).toBe(6);
-			expect(dataAttrs.get("data-sveltekit-preload-data")).toBeDefined();
 		});
 	});
 
