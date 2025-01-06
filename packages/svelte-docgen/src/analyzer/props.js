@@ -50,10 +50,7 @@ class PropsAnalyzer {
 		this.#cached_all = new Map(
 			Iterator.from(this.#props).filter(([name, _prop]) => {
 				if (this.#is_legacy) {
-					return (
-						name.startsWith("on:") ||
-						(!name.startsWith("on") && name.at(2) !== ":")
-					);
+					return name.startsWith("on:") || (!name.startsWith("on") && name.at(2) !== ":");
 				}
 				return !name.startsWith("on:");
 			}),

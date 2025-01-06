@@ -30,9 +30,7 @@ const parsed_legacy = parse(
 
 describe(analyzeProps.name, () => {
 	describe("getter .all", () => {
-		it("when component is legacy, modern event handlers are omitted", ({
-			expect,
-		}) => {
+		it("when component is legacy, modern event handlers are omitted", ({ expect }) => {
 			const analyzer = analyzeProps(parsed_legacy);
 			const { all } = analyzer;
 			expect(all.get("on:click")).toBeDefined();
@@ -40,9 +38,7 @@ describe(analyzeProps.name, () => {
 			expect(all.get("disabled")).toBeDefined();
 		});
 
-		it("when component is not legacy (modern), legacy event handlers are omitted", ({
-			expect,
-		}) => {
+		it("when component is not legacy (modern), legacy event handlers are omitted", ({ expect }) => {
 			const analyzer = analyzeProps(parsed_modern);
 			const { all } = analyzer;
 			expect(all.get("onclick")).toBeDefined();
@@ -52,9 +48,7 @@ describe(analyzeProps.name, () => {
 	});
 
 	describe("getter .aria", () => {
-		it("returns filtered props map which are ARIA related only", ({
-			expect,
-		}) => {
+		it("returns filtered props map which are ARIA related only", ({ expect }) => {
 			const analyzer = analyzeProps(parsed_modern);
 			const { aria } = analyzer;
 			expect(aria.size).toBe(48);
@@ -63,9 +57,7 @@ describe(analyzeProps.name, () => {
 	});
 
 	describe("getter .data", () => {
-		it("returns filtered props map which are data attributes only", ({
-			expect,
-		}) => {
+		it("returns filtered props map which are data attributes only", ({ expect }) => {
 			const analyzer = analyzeProps(parsed_modern);
 			const { data } = analyzer;
 			expect(data.size).toBe(6);
@@ -74,9 +66,7 @@ describe(analyzeProps.name, () => {
 	});
 
 	describe("getter .events", () => {
-		it("returns filtered props map which are event handlers only", ({
-			expect,
-		}) => {
+		it("returns filtered props map which are event handlers only", ({ expect }) => {
 			const analyzer = analyzeProps(parsed_modern);
 			const { events } = analyzer;
 			expect(events.size).toBe(214);
@@ -94,9 +84,7 @@ describe(analyzeProps.name, () => {
 	});
 
 	describe("getter .uncategorized", () => {
-		it("returns filtered props map which doesn't belong to any common category", ({
-			expect,
-		}) => {
+		it("returns filtered props map which doesn't belong to any common category", ({ expect }) => {
 			const analyzer = analyzeProps(parsed_modern);
 			const { uncategorized } = analyzer;
 			expect(uncategorized.size).toBe(65);
