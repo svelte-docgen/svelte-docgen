@@ -58,4 +58,36 @@ describe("bindings", () => {
 		expect(bindings).toContain("value");
 		expect(bindings).toContain("borderBoxSize");
 	});
+
+	it("bindable props from extended one with prefix 'bind:*' are included, and the prefix is removed", ({
+		expect,
+	}) => {
+		const source = `
+			<script lang="ts">
+				import type { HTMLInputAttributes } from "svelte/elements";
+				interface Props extends HTMLInputAttributes {}
+				let props: Props = $props();
+			</script>
+		`;
+		const { bindings } = extract(source, create_options("extended-bindings.svelte"));
+		expect(bindings.size).toBeGreaterThan(0);
+		expect(bindings).toMatchInlineSnapshot(`
+			Set {
+			  "checked",
+			  "value",
+			  "group",
+			  "files",
+			  "indeterminate",
+			  "innerHTML",
+			  "textContent",
+			  "innerText",
+			  "contentRect",
+			  "contentBoxSize",
+			  "borderBoxSize",
+			  "devicePixelContentBoxSize",
+			}
+		`);
+		expect(bindings).toContain("innerHTML");
+		expect(bindings).not.toContain("bind:innerHTML");
+	});
 });
