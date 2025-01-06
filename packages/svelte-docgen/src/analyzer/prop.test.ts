@@ -81,6 +81,271 @@ describe(PropAnalyzer.name, () => {
 		});
 	});
 
+	describe("getter .isBindable", () => {
+		const { props, types, isLegacy } = parse(
+			`
+			<script lang="ts">
+				interface Props {
+					value?: number;
+					disabled?: boolean;
+				}
+				let { value = $bindable(0), disabled = false }: Props = $props();
+			</script>
+			`,
+			create_options("analyze-property-is-bindable.svelte"),
+		);
+		it("returns true when prop is bindable", ({ expect }) => {
+			const value = props.get("value");
+			expect(value).toBeDefined();
+			if (value) {
+				const analyzer = new PropAnalyzer({ data: value, types, isLegacy });
+				expect(analyzer.isBindable).toBe(true);
+			}
+		});
+
+		it("returns false when prop is not bindable (modern)", ({ expect }) => {
+			const disabled = props.get("disabled");
+			expect(disabled).toBeDefined();
+			if (disabled) {
+				const analyzer = new PropAnalyzer({ data: disabled, types, isLegacy });
+				expect(analyzer.isBindable).toBe(false);
+			}
+		});
+	});
+
+	describe("getter .isOptional", () => {
+		const { props, types, isLegacy } = parse(
+			`
+			<script lang="ts">
+				interface Props {
+					optional?: any;
+					required: unknown;
+				}
+				let props: Props = $props();
+			</script>
+			`,
+			create_options("analyze-property-is-optional.svelte"),
+		);
+		it("returns true when prop is optional", ({ expect }) => {
+			const optional = props.get("optional");
+			expect(optional).toBeDefined();
+			if (optional) {
+				const analyzer = new PropAnalyzer({ data: optional, types, isLegacy });
+				expect(analyzer.isOptional).toBe(true);
+			}
+		});
+
+		it("returns false when prop is required", ({ expect }) => {
+			const required = props.get("required");
+			expect(required).toBeDefined();
+			if (required) {
+				const analyzer = new PropAnalyzer({ data: required, types, isLegacy });
+				expect(analyzer.isBindable).toBe(false);
+			}
+		});
+	});
+
+	describe("getter .default", () => {
+		const { props, types, isLegacy } = parse(
+			`
+			<script lang="ts">
+				interface Props {
+					defaultized?: Date;
+					optional?: any;
+					required: unknown;
+				}
+				let { defaultized = new Date() }: Props = $props();
+			</script>
+			`,
+			create_options("analyze-property-default.svelte"),
+		);
+		it("it returns type (without reference) when it has default", ({ expect }) => {
+			const defaultized = props.get("defaultized");
+			expect(defaultized).toBeDefined();
+			if (defaultized) {
+				const analyzer = new PropAnalyzer({ data: defaultized, types, isLegacy });
+				expect(analyzer.isOptional).toBe(true);
+				expect(analyzer.default).toBeDefined();
+				expect(analyzer.default).not.toBeTypeOf("string");
+				expect(analyzer.default).toMatchInlineSnapshot(`
+					{
+					  "constructors": [
+					    [],
+					    [
+					      {
+					        "isOptional": false,
+					        "name": "value",
+					        "type": {
+					          "kind": "union",
+					          "types": [
+					            {
+					              "kind": "string",
+					            },
+					            {
+					              "kind": "number",
+					            },
+					          ],
+					        },
+					      },
+					    ],
+					    [
+					      {
+					        "isOptional": false,
+					        "name": "year",
+					        "type": {
+					          "kind": "number",
+					        },
+					      },
+					      {
+					        "isOptional": false,
+					        "name": "monthIndex",
+					        "type": {
+					          "kind": "number",
+					        },
+					      },
+					      {
+					        "isOptional": true,
+					        "name": "date",
+					        "type": {
+					          "kind": "union",
+					          "nonNullable": {
+					            "kind": "number",
+					          },
+					          "types": [
+					            {
+					              "kind": "number",
+					            },
+					            {
+					              "kind": "undefined",
+					            },
+					          ],
+					        },
+					      },
+					      {
+					        "isOptional": true,
+					        "name": "hours",
+					        "type": {
+					          "kind": "union",
+					          "nonNullable": {
+					            "kind": "number",
+					          },
+					          "types": [
+					            {
+					              "kind": "number",
+					            },
+					            {
+					              "kind": "undefined",
+					            },
+					          ],
+					        },
+					      },
+					      {
+					        "isOptional": true,
+					        "name": "minutes",
+					        "type": {
+					          "kind": "union",
+					          "nonNullable": {
+					            "kind": "number",
+					          },
+					          "types": [
+					            {
+					              "kind": "number",
+					            },
+					            {
+					              "kind": "undefined",
+					            },
+					          ],
+					        },
+					      },
+					      {
+					        "isOptional": true,
+					        "name": "seconds",
+					        "type": {
+					          "kind": "union",
+					          "nonNullable": {
+					            "kind": "number",
+					          },
+					          "types": [
+					            {
+					              "kind": "number",
+					            },
+					            {
+					              "kind": "undefined",
+					            },
+					          ],
+					        },
+					      },
+					      {
+					        "isOptional": true,
+					        "name": "ms",
+					        "type": {
+					          "kind": "union",
+					          "nonNullable": {
+					            "kind": "number",
+					          },
+					          "types": [
+					            {
+					              "kind": "number",
+					            },
+					            {
+					              "kind": "undefined",
+					            },
+					          ],
+					        },
+					      },
+					    ],
+					    [
+					      {
+					        "isOptional": false,
+					        "name": "value",
+					        "type": {
+					          "kind": "union",
+					          "types": [
+					            {
+					              "kind": "string",
+					            },
+					            {
+					              "kind": "number",
+					            },
+					            "Date",
+					          ],
+					        },
+					      },
+					    ],
+					  ],
+					  "kind": "constructible",
+					  "name": "Date",
+					  "sources": Set {
+					    node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts,
+					    node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts,
+					    node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2020.date.d.ts,
+					  },
+					}
+				`);
+			}
+		});
+
+		it("returns undefined when optional prop doesn't have a default value", ({ expect }) => {
+			const optional = props.get("optional");
+			expect(optional).toBeDefined();
+			if (optional) {
+				const analyzer = new PropAnalyzer({ data: optional, types, isLegacy });
+				expect(analyzer.isOptional).toBe(true);
+				expect(analyzer.default).not.toBeDefined();
+			}
+		});
+
+		it("throws error when attempting to access default value in required prop", ({ expect }) => {
+			const required = props.get("required");
+			expect(required).toBeDefined();
+			if (required) {
+				const analyzer = new PropAnalyzer({ data: required, types, isLegacy });
+				expect(analyzer.isOptional).toBe(false);
+				expect(() => analyzer.default).toThrowErrorMatchingInlineSnapshot(`[Error: Not optional!]`);
+			}
+		});
+	});
+
 	describe("getter .isEventHandler", () => {
 		const { props, types, isLegacy } = parse(
 			`
@@ -318,6 +583,70 @@ describe(PropAnalyzer.name, () => {
 			if (whatever) {
 				const analyzer = new PropAnalyzer({ data: whatever, types, isLegacy });
 				expect(analyzer.isSnippet).toBe(false);
+			}
+		});
+	});
+
+	describe("getter .type", () => {
+		const { props, types, isLegacy } = parse(
+			`
+			<script lang="ts">
+				import type { Snippet } from "svelte";
+				interface Props {
+					children: Snippet;
+				}
+				let prop: Props = $props();
+			</script>
+			`,
+			create_options("analyze-property-type.svelte"),
+		);
+
+		it("returns type (without reference) to the prop type", ({ expect }) => {
+			const children = props.get("children");
+			expect(children).toBeDefined();
+			if (children) {
+				const analyzer = new PropAnalyzer({ data: children, types, isLegacy });
+				expect(analyzer.type).not.toBeTypeOf("string");
+				expect(analyzer.type).toMatchInlineSnapshot(`
+					{
+					  "alias": ""svelte".Snippet",
+					  "calls": [
+					    {
+					      "parameters": [
+					        {
+					          "isOptional": false,
+					          "name": "args",
+					          "type": "[]",
+					        },
+					      ],
+					      "returns": {
+					        "kind": "intersection",
+					        "types": [
+					          {
+					            "kind": "interface",
+					            "members": Map {
+					              "{@render ...} must be called with a Snippet" => {
+					                "isOptional": false,
+					                "isReadonly": false,
+					                "type": {
+					                  "kind": "literal",
+					                  "subkind": "string",
+					                  "value": "import type { Snippet } from 'svelte'",
+					                },
+					              },
+					            },
+					          },
+					          "SnippetReturn",
+					        ],
+					      },
+					    },
+					  ],
+					  "kind": "function",
+					  "sources": Set {
+					    node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
+					  },
+					}
+				`);
 			}
 		});
 	});
