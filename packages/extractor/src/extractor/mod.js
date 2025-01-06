@@ -59,9 +59,10 @@ class Extractor {
 		if (!props) throw new Error("props not found");
 		return new Map(
 			Iterator.from(props.getProperties()).map((p) => {
-				const regex = /^bind:/;
-				if (regex.test(p.name)) {
-					const name = p.name.replace(regex, "");
+				// Handle the `bind:` prefix, used in type declarations to indicate that props are bindable
+				const prefix = "bind:";
+				if (p.name.startsWith(prefix)) {
+					const name = p.name.slice(prefix.length);
 					this.#cached_bindings.add(name);
 					return [name, p];
 				}
