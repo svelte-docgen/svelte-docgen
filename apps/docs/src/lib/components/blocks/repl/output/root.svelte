@@ -13,7 +13,6 @@
 
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.ts";
 	import * as Tabs from "$lib/components/ui/tabs/index.ts";
-	import * as ToggleGroup from "$lib/components/ui/toggle-group/index.ts";
 
 	import OutputOverview from "./overview/root.svelte";
 	import OutputJSON from "./json.svelte";
@@ -25,22 +24,14 @@
 
 	// Session storage keys
 	const ss_tab = "output-tab";
-	const ss_type = "output-type";
 
 	let current_tab = $state<Tab>((window.sessionStorage.getItem(ss_tab) as Tab) ?? "docgen");
-	let current_output_type = $state<Type>((window.sessionStorage.getItem(ss_type) as Type) ?? "raw");
 
 	/**
 	 * Store in session storage the current tab, because it loses output on editor update
 	 */
 	$effect(() => {
 		window.sessionStorage.setItem(ss_tab, current_tab);
-	});
-	/**
-	 * Store in session storage the output type, because it loses output on editor update
-	 */
-	$effect(() => {
-		window.sessionStorage.setItem(ss_type, current_output_type);
 	});
 </script>
 
@@ -61,27 +52,8 @@
 		</Tabs.Content>
 
 		<Tabs.Content value="docgen" class="h-full">
-			<ToggleGroup.Root
-				bind:value={current_output_type}
-				type="single"
-				class={"absolute right-4 top-12 z-40"}
-				variant="outline"
-			>
-				<ToggleGroup.Item value="raw" aria-label="Switch to raw output">
-					{"Raw"}
-				</ToggleGroup.Item>
-
-				<ToggleGroup.Item value="json" aria-label="Switch to JSON-encoded output">
-					{"JSON"}
-				</ToggleGroup.Item>
-			</ToggleGroup.Root>
-
 			<ScrollArea class="h-full">
-				{#if current_output_type === "raw"}
-					<pre>Tree explorer</pre>
-				{:else}
-					<OutputJSON {data} />
-				{/if}
+				<OutputJSON {data} />
 			</ScrollArea>
 		</Tabs.Content>
 	</Tabs.Root>

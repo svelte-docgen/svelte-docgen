@@ -53,8 +53,10 @@
 
 							<Tooltip.Content>
 								<ul class={[content.length > 1 && "list-disc pl-2"]}>
-									{#each content as line}
-										<li>{line}</li>
+									{#each content as parts}
+										<li>{#each parts as part}
+												{part.text}
+										{/each}</li>
 									{/each}
 								</ul>
 							</Tooltip.Content>
