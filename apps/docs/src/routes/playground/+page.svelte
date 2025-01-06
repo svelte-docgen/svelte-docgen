@@ -47,14 +47,14 @@
 	{/snippet}
 
 	{#snippet output()}
-			{#if parsed_component}
-				{#await parsed_component}
-					<p>{"Generating..."}</p>
-				{:then data}
-					<pre>{encode(data, { indent: "\t"})}</pre>
-				{:catch error}
-					<pre class="text-red-700">{error}</pre>
-				{/await}
-			{/if}
+		{#if parsed_component}
+			{#await parsed_component}
+				<p>{"Generating..."}</p>
+			{:then data}
+				<pre>{encode(data, { indent: "\t" })}</pre>
+			{:catch error}
+				<pre class="text-red-700">{error}</pre>
+			{/await}
+		{/if}
 	{/snippet}
 </Repl.Root>
