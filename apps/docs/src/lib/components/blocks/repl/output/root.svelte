@@ -36,19 +36,21 @@
 </script>
 
 <ScrollArea class="h-full">
-	<Tabs.Root bind:value={current_tab} class="h-full">
-		<Tabs.List class="sticky top-0 z-10 grid grid-cols-2 rounded-none px-2">
-			<Tabs.Trigger value="overview" class="rounded-b-none">
+	<Tabs.Root bind:value={current_tab} class="h-auto">
+		<Tabs.List class="sticky top-0 z-10 grid grid-cols-2 rounded-none px-2 !h-auto pb-0">
+			<Tabs.Trigger value="overview" class="rounded-b-none !shadow-none">
 				<IconPresentation class="me-2" /> Overview
 			</Tabs.Trigger>
 
-			<Tabs.Trigger value="docgen" class="rounded-b-none">
+			<Tabs.Trigger value="docgen" class="rounded-b-none !shadow-none">
 				<IconDatabase class="me-2" /> Docgen
 			</Tabs.Trigger>
 		</Tabs.List>
 
 		<Tabs.Content value="overview" class="px-4">
-			<OutputOverview {data} />
+			<div class="container">
+				<OutputOverview {data} />
+			</div>
 		</Tabs.Content>
 
 		<Tabs.Content value="docgen" class="h-full">
