@@ -52,7 +52,7 @@ This project is still a work in progress. <a href="https://github.com/svelte-doc
 <a id="features" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Features<a href="#features" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><a id="computed-types" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Computed types<a href="#computed-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>This project relies on <a href="https://www.typescriptlang.org/docs/handbook/compiler-api.html" target="_blank" class="external">TypeScript Compiler API</a>.
 Thanks to it we're able to recognize actual <em>(computed)</em> types.</p>
 <div class="tsd-alert tsd-alert-warning"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertWarning"></use></svg><span>Warning</span></div><p></p>
-<p>Be mindful that starting <strong>tsc</strong> <em>(TypeScript Compiler)</em> is slow at start, but after that is doing quite well.
+<p>Be mindful that starting <strong>tsc</strong> <em>(TypeScript Compiler)</em> is slow at the start, but after that is doing quite well.
 Hence why <strong>we provide an ability to create a custom cache storage</strong>,
 so there's no need to start a new program for parsing of every Svelte component file.</p>
 </div>
@@ -92,7 +92,7 @@ It can be described anywhere, and the first one found will be used.</p>
 <a href="media/description.svelte">Example</a>.</p>
 <a id="tags" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Tags<a href="#tags" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Like in JSDoc, tags are supported too!
 Every line starting with <code>@&lt;tag-name&gt;</code> will be extracted as separate tag.
-It's content can be empty, multi-line or with markdown. Just like <a href="#description">description</a>!
+Its content can be empty, multi-line or with markdown. Just like <a href="#description">description</a>!
 <a href="media/tags.svelte">Example</a>.</p>
 <div class="tsd-alert tsd-alert-important"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertImportant"></use></svg><span>Important</span></div><p>
 The root comment with tags needs to have <code>@component</code> tag too!</p>
@@ -160,11 +160,11 @@ This is determined whether the prop was typed with <a href="https://svelte.dev/d
 
 <p>Our parser provides this information via <code>isSnippet</code> boolean flag.</p>
 <div class="tsd-alert tsd-alert-tip"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertTip"></use></svg><span>Tip</span></div><p>
-And also, we provide a function helpet to make an easier access to get snippet parameters types with <code>getSnippetParameters()</code>.</p>
+And also, we provide a helper function to make an easier access to get snippet parameters types with <code>getSnippetParameters()</code>.</p>
 </div>
 <a id="legacy-support-for-svelte-v4" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Legacy support for Svelte <code>v4</code><a href="#legacy-support-for-svelte-v4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
 <li>
-<p><code>events</code> - custom even handlers created with deprecated <a href="https://svelte.dev/docs/svelte/svelte#createEventDispatcher" target="_blank" class="external"><code>createEventDispatcher()</code></a>,</p>
+<p><code>events</code> - custom event handlers created with deprecated <a href="https://svelte.dev/docs/svelte/svelte#createEventDispatcher" target="_blank" class="external"><code>createEventDispatcher()</code></a>,</p>
 </li>
 <li>
 <p><code>exports</code> - exported constant variables inside the <strong>instance</strong> script tag, example:</p>
@@ -182,7 +182,7 @@ And also, we provide a function helpet to make an easier access to get snippet p
 </li>
 </ul>
 <div class="tsd-alert tsd-alert-caution"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertCaution"></use></svg><span>Caution</span></div><p>
-Currently we don't recognize yet whether slots are optional or not. <a href="https://github.com/svelte-docgen/svelte-docgen/issues/10" target="_blank" class="external">Tracking issue</a>.</p>
+Currently we're not yet capable of recognizing whether slots are optional or not. <a href="https://github.com/svelte-docgen/svelte-docgen/issues/10" target="_blank" class="external">Tracking issue</a>.</p>
 </div>
 <a id="other" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Other<a href="#other" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><div class="tsd-alert tsd-alert-tip"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertTip"></use></svg><span>Tip</span></div><p></p>
 <p>You haven't found a feature you're looking for?
@@ -190,7 +190,7 @@ Take a look at <a href="https://github.com/svelte-docgen/svelte-docgen/discussio
 If it still not there, then <a href="https://github.com/svelte-docgen/svelte-docgen/discussions/new?category=ideas" target="_blank" class="external">please 🙏 share with us!</a></p>
 </div>
 <hr>
-<a id="contributing" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Contributing<a href="#contributing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Take a look at <a href="media/CONTRIBUTING.md">contributing guide</a>.</p>
+<a id="contributing" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Contributing<a href="#contributing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Take a look at the <a href="media/CONTRIBUTING.md">contributing guide</a>.</p>
 <p>This project follows the <a href="https://github.com/all-contributors/all-contributors" target="_blank" class="external">all-contributors</a> specification.
 <strong>Contributions of any kind are welcome!</strong></p>
 <p>💌 to these people (<a href="https://allcontributors.org/docs/en/emoji-key" target="_blank" class="external">emoji key</a>):</p>
