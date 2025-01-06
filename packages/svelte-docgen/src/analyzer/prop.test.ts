@@ -135,6 +135,73 @@ describe(PropAnalyzer.name, () => {
 		});
 	});
 
+	describe("getters .isExtended & .sources", () => {
+		const { props, types, isLegacy } = parse(
+			`
+			<script lang="ts">
+				import type { HTMLButtonAttributes } from "svelte/elements";
+				import type { CustomProps } from "${path.join(__dirname, "..", "..", "tests", "custom-extended.ts")}";
+				interface Props extends HTMLButtonAttributes, CustomProps {}
+				let prop: Props = $props();
+			</script>
+			`,
+			create_options("analyze-property-is-extended-and-sources.svelte"),
+		);
+
+		it("recognizes prop extended by Svelte types", ({ expect }) => {
+			const aria_hidden = props.get("aria-hidden");
+			expect(aria_hidden).toBeDefined();
+			if (aria_hidden) {
+				const analyzer = new PropAnalyzer({ data: aria_hidden, types, isLegacy });
+				expect(analyzer.isExtended).toBe(true);
+				expect(analyzer.sources).toBeDefined();
+				expect(analyzer.sources).toMatchInlineSnapshot(`
+					Set {
+					  node_modules/.pnpm/svelte@<semver>/node_modules/svelte/elements.d.ts,
+					}
+				`);
+			}
+		});
+
+		it("recognizes not extended by Svelte prop", ({ expect }) => {
+			const custom = props.get("exported");
+			expect(custom).toBeDefined();
+			expect(custom?.isExtended).toBe(true);
+			if (custom) {
+				const analyzer = new PropAnalyzer({ data: custom, types, isLegacy });
+				expect(analyzer.isExtended).toBe(true);
+				expect(analyzer.sources).toMatchInlineSnapshot(`
+					Set {
+					  "packages/svelte-docgen/tests/custom-extended.ts",
+					}
+				`);
+			}
+		});
+	});
+
+	describe("getter .sources", () => {
+		it("recognizes prop extended by Svelte types", ({ expect }) => {
+			const { props, types, isLegacy } = parse(
+				`
+				<script lang="ts">
+					interface Props {
+						local: any;
+					}
+					let prop: Props = $props();
+				</script>
+				`,
+				create_options("analyze-property-sources-none.svelte"),
+			);
+			const local = props.get("local");
+			expect(local).toBeDefined();
+			if (local) {
+				const analyzer = new PropAnalyzer({ data: local, types, isLegacy });
+				expect(analyzer.isExtended).toBe(false);
+				expect(() => analyzer.sources).toThrowErrorMatchingInlineSnapshot(`[Error: Not extended!]`);
+			}
+		});
+	});
+
 	describe("getter .isExtendedBySvelte", () => {
 		const { props, types, isLegacy } = parse(
 			`

@@ -111,7 +111,7 @@ export class PropAnalyzer {
 	 * @returns {boolean}
 	 */
 	get isExtended() {
-		return this.#data.isExtended;
+		return Boolean(this.#data.isExtended);
 	}
 
 	/**
