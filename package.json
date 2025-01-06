@@ -39,7 +39,7 @@
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.46.1",
 		"globals": "^15.14.0",
-		"pathe": "^1.1.2",
+		"pathe": "^2.0.0",
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.2",
 		"prettier-plugin-tailwindcss": "^0.6.9",
@@ -59,9 +59,6 @@
 		"overrides": {
 			"vite": "^6.0.5",
 			"@sveltejs/vite-plugin-svelte": "^5.0.0"
-		},
-		"patchedDependencies": {
-			"pathe": "patches/pathe.patch"
 		}
 	}
 }
