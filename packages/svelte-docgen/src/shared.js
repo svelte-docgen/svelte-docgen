@@ -76,8 +76,9 @@ export function get_type_symbol(type) {
  */
 export function get_construct_signatures(type, extractor) {
 	const symbol = get_type_symbol(type);
-	const symbol_type = extractor.checker.getTypeOfSymbol(symbol);
-	return extractor.checker.getSignaturesOfType(symbol_type, ts.SignatureKind.Construct);
+	if (!symbol.valueDeclaration) return [];
+	const value_type = extractor.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration);
+	return value_type.getConstructSignatures.bind(value_type)();
 }
 
 /**
