@@ -96,7 +96,7 @@ class Extractor {
 	}
 
 	/**
-	 * `svelte2tsx` doesn't check whether props are bindable if the name containts prefix `bind:`.
+	 * `svelte2tsx` doesn't check whether props are bindable if the name contains prefix `bind:`.
 	 * Another reason why we need own parser...
 	 */
 	#was_props_called = false;

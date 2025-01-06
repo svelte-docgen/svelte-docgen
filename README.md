@@ -43,20 +43,23 @@ Thanks to it we're able to recognize actual _(computed)_ types.
 
 > [!WARNING]
 >
-> Be mindful that starting **tsc** _(TypeScript Compiler)_ is slow at start, but after that is doing quite well.
-> Hence why **we provide an ability to create a custom cache storage**,
+> Be mindful that starting **tsc** _(TypeScript Compiler)_ can be slow initially, but after that performs quite well.
+> Hence why **we provide the ability to create a custom cache storage**,
 > so there's no need to start a new program for parsing of every Svelte component file.
 
 #### Recognized type kinds
 
-Currently we recognize and support the following type kinds.
+Currently we recognize and support the following type kinds:
 
 - `any`,
 - `array`,
 - `bigint`,
 - `boolean`,
+- `conditional`,
 - `constructible`,
 - `function`,
+- `index`,
+- `indexed-access`,
 - `interface`,
 - `intersection`,
 - `literal`,
@@ -64,8 +67,11 @@ Currently we recognize and support the following type kinds.
 - `null`,
 - `number`,
 - `object`,
+- `string-mapping`,
 - `string`,
+- `substitution`,
 - `symbol`,
+- `template-literal`,
 - `tuple`,
 - `type-parameter`,
 - `undefined`,
@@ -87,7 +93,7 @@ It extracts the description right after the `@component` tag.
 
 Like in JSDoc, tags are supported too!
 Every line starting with `@<tag-name>` will be extracted as separate tag.
-It's content can be empty, multi-line or with markdown. Just like [description](#description)!
+Its content can be empty, multi-line or with markdown. Just like [description](#description)!
 [Example](./examples/component-documentation/tags.svelte).
 
 > [!IMPORTANT]
@@ -180,11 +186,11 @@ This is determined whether the prop was typed with [`Snippet`](https://svelte.de
 Our parser provides this information via `isSnippet` boolean flag.
 
 > [!TIP]
-> And also, we provide a function helpet to make an easier access to get snippet parameters types with `getSnippetParameters()`.
+> And also, we provide a helper function to make an easier access to get snippet parameters types with `getSnippetParameters()`.
 
 ### Legacy support for Svelte `v4`
 
-- `events` - custom even handlers created with deprecated [`createEventDispatcher()`](https://svelte.dev/docs/svelte/svelte#createEventDispatcher),
+- `events` - custom event handlers created with deprecated [`createEventDispatcher()`](https://svelte.dev/docs/svelte/svelte#createEventDispatcher),
 - `exports` - exported constant variables inside the **instance** script tag, example:
 
   ```svelte
@@ -197,7 +203,7 @@ Our parser provides this information via `isSnippet` boolean flag.
 - `slots` - legacy props and their props are supported as well.
 
 > [!CAUTION]
-> Currently we don't recognize yet whether slots are optional or not. [Tracking issue](https://github.com/svelte-docgen/svelte-docgen/issues/10).
+> Currently, we're unable to recognize whether slots are optional or not. [Tracking issue](https://github.com/svelte-docgen/svelte-docgen/issues/10).
 
 ### Other
 
@@ -211,7 +217,7 @@ Our parser provides this information via `isSnippet` boolean flag.
 
 ## Contributing
 
-Take a look at [contributing guide](./.github/CONTRIBUTING.md).
+Take a look at the [contributing guide](./.github/CONTRIBUTING.md).
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 **Contributions of any kind are welcome!**
