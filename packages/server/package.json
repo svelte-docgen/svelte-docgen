@@ -3,7 +3,7 @@
 	"name": "@svelte-docgen/server",
 	"version": "0.0.0",
 	"type": "module",
-	"description": "Allows creating virtual modules with docgen data for targetted Svelte component(s) - on demand.",
+	"description": "Allows creating virtual modules with docgen data for targeted Svelte component(s) - on demand.",
 	"keywords": [
 		"svelte",
 		"documentation",

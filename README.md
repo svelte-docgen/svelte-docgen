@@ -43,8 +43,8 @@ Thanks to it we're able to recognize actual _(computed)_ types.
 
 > [!WARNING]
 >
-> Be mindful that starting **tsc** _(TypeScript Compiler)_ is slow at the start, but after that is doing quite well.
-> Hence why **we provide an ability to create a custom cache storage**,
+> Be mindful that starting **tsc** _(TypeScript Compiler)_ can be slow initially, but after that performs quite well.
+> Hence why **we provide the ability to create a custom cache storage**,
 > so there's no need to start a new program for parsing of every Svelte component file.
 
 #### Recognized type kinds
@@ -203,7 +203,7 @@ Our parser provides this information via `isSnippet` boolean flag.
 - `slots` - legacy props and their props are supported as well.
 
 > [!CAUTION]
-> Currently we're not yet capable of recognizing whether slots are optional or not. [Tracking issue](https://github.com/svelte-docgen/svelte-docgen/issues/10).
+> Currently, we're unable to recognize whether slots are optional or not. [Tracking issue](https://github.com/svelte-docgen/svelte-docgen/issues/10).
 
 ### Other
 
