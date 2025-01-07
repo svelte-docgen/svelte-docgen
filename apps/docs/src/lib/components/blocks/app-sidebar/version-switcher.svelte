@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Check from "lucide-svelte/icons/check";
 	import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-	import GalleryVerticalEnd from "lucide-svelte/icons/gallery-vertical-end";
 
+	import logoURL from "$assets/brand/logo.svg";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.ts";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 
@@ -26,9 +26,9 @@
 						{...props}
 					>
 						<div
-							class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
+							class="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center border border-sidebar-primary rounded-lg"
 						>
-							<GalleryVerticalEnd class="size-4" />
+							<img alt="svelte-docgen logo" src={logoURL} class="size-auto">
 						</div>
 						<div class="flex flex-col gap-0.5 leading-none">
 							<span class="font-semibold">{"svelte-docgen"}</span>
