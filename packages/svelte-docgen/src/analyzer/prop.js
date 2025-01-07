@@ -136,6 +136,7 @@ export class PropAnalyzer {
 	 */
 	get aliasSource() {
 		// TODO: Document error
+		if (!this.isExtended) throw new Error("Not extended!");
 		return this.#data.aliasSource;
 	}
 
