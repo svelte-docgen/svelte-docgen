@@ -28,7 +28,7 @@ describe("Array", () => {
 		expect(letters?.type).toBe("Array<Letter>");
 		const type = types.get("Array<Letter>");
 		expect(type?.kind).toBe("array");
-		expect((type as Doc.ArrayType).isReadonly).toBe(false);
+		expect((type as Doc.Array).isReadonly).toBe(false);
 	});
 
 	it("recognizes 'readonly'", ({ expect }) => {
@@ -37,7 +37,7 @@ describe("Array", () => {
 		expect(numbers?.type).toBe("ReadonlyArray<Num>");
 		const type = types.get("ReadonlyArray<Num>");
 		expect(type?.kind).toBe("array");
-		expect((type as Doc.ArrayType).isReadonly).toBe(true);
+		expect((type as Doc.Array).isReadonly).toBe(true);
 	});
 
 	it("types", ({ expect }) => {

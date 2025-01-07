@@ -31,13 +31,13 @@ export const ADVANCED_TYPE_KIND = /** @type {const} */ ([
 	"union",
 ]);
 export const INSTANTIABLE_TYPE_KIND = /** @type {const} */ ([
-	"type-parameter",
+	"conditional",
 	"index",
 	"indexed-access",
-	"conditional",
+	"string-mapping",
 	"substitution",
 	"template-literal",
-	"string-mapping",
+	"type-parameter",
 ]);
 export const TYPE_KIND = /** @type {const} */ ([
 	//

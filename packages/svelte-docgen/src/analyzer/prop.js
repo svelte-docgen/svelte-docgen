@@ -4,7 +4,7 @@
 
 import path from "pathe";
 
-import { isTypeRef } from "../doc/utils.js";
+import { isTypeRef } from "../kind/guard.js";
 
 export class PropAnalyzer {
 	/**

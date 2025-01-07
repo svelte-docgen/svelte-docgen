@@ -1,6 +1,6 @@
 import type { extract } from "@svelte-docgen/extractor";
 
-import type { BaseTypeKind } from "./kind.js";
+import type { BaseTypeKind } from "../kind/core.js";
 
 /**
  * Type reference as key in the map {@link Types}.
@@ -14,7 +14,7 @@ export type TypeRef = string;
  */
 export type Type =
 	| BaseType
-	| ArrayType
+	| Array
 	| Constructible
 	| Fn
 	| Interface
@@ -99,7 +99,7 @@ export interface BaseType {
 	kind: BaseTypeKind;
 }
 
-export interface ArrayType extends WithAlias {
+export interface Array extends WithAlias {
 	kind: "array";
 	isReadonly: boolean;
 	element: TypeOrRef;
@@ -190,6 +190,8 @@ export interface Union extends WithAlias {
 	nonNullable?: TypeOrRef;
 }
 
+export type AdvancedType = Array | Constructible | Fn | Interface | Intersection | Literal | Tuple | Union;
+
 export interface TypeParam {
 	kind: "type-parameter";
 	name: string;
@@ -238,3 +240,12 @@ export interface StringMapping {
 	type: TypeOrRef;
 	name: string;
 }
+
+export type InstantiableType =
+	| Conditional
+	| Index
+	| IndexedAccess
+	| StringMapping
+	| Substitution
+	| TemplateLiteral
+	| TypeParam;
