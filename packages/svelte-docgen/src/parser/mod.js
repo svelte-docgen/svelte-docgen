@@ -14,7 +14,7 @@
  *	 Type,
  *	 TypeOrRef,
  *	 TypeParam,
- * 	 ArrayType,
+ * 	 Array,
  * 	 Constructible,
  * 	 Intersection,
  * 	 Literal,
@@ -38,7 +38,7 @@
 import { extract } from "@svelte-docgen/extractor";
 import ts from "typescript";
 
-import { get_type_kind } from "../doc/kind.js";
+import { get_type_kind } from "../kind/core.js";
 import { Options } from "../options.js";
 import {
 	get_construct_signatures,
@@ -51,7 +51,7 @@ import {
 	is_tuple_type_reference,
 	is_type_reference,
 } from "../shared.js";
-import { isTypeRef } from "../doc/utils.js";
+import { isTypeRef } from "../kind/guard.js";
 
 const AnonTypeLiteralSymbolName = ts.InternalSymbolName.Type;
 
@@ -176,14 +176,14 @@ class Parser {
 	}
 	/**
 	 * @param {ts.Type} type
-	 * @returns {ArrayType}
+	 * @returns {Array}
 	 */
 	#get_array_doc(type) {
 		const index_info = this.#checker.getIndexInfoOfType(type, ts.IndexKind.Number);
 		// TODO: Document error
 		if (!index_info) throw new Error(`Could not get index info of type ${this.#checker.typeToString(type)}`);
 		const { isReadonly } = index_info;
-		/** @type {ArrayType} */
+		/** @type {Array} */
 		let results = {
 			kind: "array",
 			isReadonly,
