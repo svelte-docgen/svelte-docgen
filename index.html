@@ -16,7 +16,7 @@
 </p>
 <a id="svelte-docgen-1" class="tsd-anchor"></a><h1 class="tsd-anchor-link"><code>svelte-docgen</code><a href="#svelte-docgen-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1><p>This project is a monorepo for <code>svelte-docgen</code> packages.</p>
 <div class="tsd-alert tsd-alert-warning"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertWarning"></use></svg><span>Warning</span></div><p>
-This project is still a work in progress. <a href="https://github.com/svelte-docgen/svelte-docgen/issues/5" target="_blank" class="external">See roadmap for <code>v1</code></a>.</p>
+This project is still a work in progress. <a href="https://github.com/svelte-docgen/svelte-docgen/issues/5">See roadmap for <code>v1</code></a>.</p>
 </div>
 <a id="packages" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Packages<a href="#packages" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><table>
 <thead>
@@ -31,7 +31,7 @@ This project is still a work in progress. <a href="https://github.com/svelte-doc
 <td>Core package</td>
 </tr>
 <tr>
-<td><code>@svelte-docgen/cli</code> <a href="https://github.com/svelte-docgen/svelte-docgen/issues/9" target="_blank" class="external">🚧 Tracking</a></td>
+<td><code>@svelte-docgen/cli</code> <a href="https://github.com/svelte-docgen/svelte-docgen/issues/9">🚧 Tracking</a></td>
 <td>Standalone CLI</td>
 </tr>
 <tr>
@@ -39,17 +39,17 @@ This project is still a work in progress. <a href="https://github.com/svelte-doc
 <td>Extracting types from <code>*.svelte</code> files to write your own</td>
 </tr>
 <tr>
-<td><code>@svelte-docgen/server</code> <a href="https://github.com/svelte-docgen/svelte-docgen/issues/6" target="_blank" class="external">🚧 Tracking</a></td>
+<td><code>@svelte-docgen/server</code> <a href="https://github.com/svelte-docgen/svelte-docgen/issues/6">🚧 Tracking</a></td>
 <td>Run a server which allows fetching docs on demand</td>
 </tr>
 <tr>
 <td><a href="./packages/vite-plugin-svelte-docgen"><code>vite-plugin-svelte-docgen</code></a></td>
-<td><a href="https://github.com/vitejs/vite" target="_blank" class="external">Vite</a> plugin which creates virtual files for your stories on demand.</td>
+<td><a href="https://github.com/vitejs/vite">Vite</a> plugin which creates virtual files for your stories on demand.</td>
 </tr>
 </tbody>
 </table>
 <hr>
-<a id="features" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Features<a href="#features" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><a id="computed-types" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Computed types<a href="#computed-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>This project relies on <a href="https://www.typescriptlang.org/docs/handbook/compiler-api.html" target="_blank" class="external">TypeScript Compiler API</a>.
+<a id="features" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Features<a href="#features" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><a id="computed-types" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Computed types<a href="#computed-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>This project relies on <a href="https://www.typescriptlang.org/docs/handbook/compiler-api.html">TypeScript Compiler API</a>.
 Thanks to it we're able to recognize actual <em>(computed)</em> types.</p>
 <div class="tsd-alert tsd-alert-warning"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertWarning"></use></svg><span>Warning</span></div><p></p>
 <p>Be mindful that starting <strong>tsc</strong> <em>(TypeScript Compiler)</em> can be slow initially, but after that performs quite well.
@@ -107,7 +107,7 @@ Tags can be repetitive, e.g. <code>@example</code>.</p>
 </ol>
 <p>This information is provided via <code>isLegacy</code> boolean flag.</p>
 <a id="props" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Props<a href="#props" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>It extracts props from the <code>$props()</code> rune as map, since each one of them is unique.</p>
-<a id="bindable" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Bindable<a href="#bindable" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Properties which are <a href="https://svelte.dev/docs/svelte/$bindable" target="_blank" class="external"><code>bindable()</code></a> via rune,
+<a id="bindable" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Bindable<a href="#bindable" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Properties which are <a href="https://svelte.dev/docs/svelte/$bindable"><code>bindable()</code></a> via rune,
 and including the native ones are recognized as well!
 Whether the prop is bindable, this information is provided via <code>isBindable</code> boolean flag.</p>
 <pre><code class="svelte"><script lang="ts">
@@ -147,8 +147,8 @@ And more than that. <strong>It also recognizes if the prop was extended by provi
 </script>
 </code><button type="button">Copy</button></pre>
 
-<a id="snippets" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Snippets<a href="#snippets" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>We provide an analyzer to see if the provided component property is a <a href="https://svelte.dev/docs/svelte/snippet" target="_blank" class="external">snippet</a>.
-This is determined whether the prop was typed with <a href="https://svelte.dev/docs/svelte/snippet#Typing-snippets" target="_blank" class="external"><code>Snippet</code></a> type helper.</p>
+<a id="snippets" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Snippets<a href="#snippets" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>We provide an analyzer to see if the provided component property is a <a href="https://svelte.dev/docs/svelte/snippet">snippet</a>.
+This is determined whether the prop was typed with <a href="https://svelte.dev/docs/svelte/snippet#Typing-snippets"><code>Snippet</code></a> type helper.</p>
 <pre><code class="svelte"><script lang="ts">
   import type { Snippet } from "svelte";
   interface Props {
@@ -164,7 +164,7 @@ And also, we provide a helper function to make an easier access to get snippet p
 </div>
 <a id="legacy-support-for-svelte-v4" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Legacy support for Svelte <code>v4</code><a href="#legacy-support-for-svelte-v4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
 <li>
-<p><code>events</code> - custom event handlers created with deprecated <a href="https://svelte.dev/docs/svelte/svelte#createEventDispatcher" target="_blank" class="external"><code>createEventDispatcher()</code></a>,</p>
+<p><code>events</code> - custom event handlers created with deprecated <a href="https://svelte.dev/docs/svelte/svelte#createEventDispatcher"><code>createEventDispatcher()</code></a>,</p>
 </li>
 <li>
 <p><code>exports</code> - exported constant variables inside the <strong>instance</strong> script tag, example:</p>
@@ -182,18 +182,18 @@ And also, we provide a helper function to make an easier access to get snippet p
 </li>
 </ul>
 <div class="tsd-alert tsd-alert-caution"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertCaution"></use></svg><span>Caution</span></div><p>
-Currently, we're unable to recognize whether slots are optional or not. <a href="https://github.com/svelte-docgen/svelte-docgen/issues/10" target="_blank" class="external">Tracking issue</a>.</p>
+Currently, we're unable to recognize whether slots are optional or not. <a href="https://github.com/svelte-docgen/svelte-docgen/issues/10">Tracking issue</a>.</p>
 </div>
 <a id="other" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Other<a href="#other" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><div class="tsd-alert tsd-alert-tip"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertTip"></use></svg><span>Tip</span></div><p></p>
 <p>You haven't found a feature you're looking for?
-Take a look at <a href="https://github.com/svelte-docgen/svelte-docgen/discussions/categories/ideas" target="_blank" class="external">💡Ideas discussions</a>.
-If it still not there, then <a href="https://github.com/svelte-docgen/svelte-docgen/discussions/new?category=ideas" target="_blank" class="external">please 🙏 share with us!</a></p>
+Take a look at <a href="https://github.com/svelte-docgen/svelte-docgen/discussions/categories/ideas">💡Ideas discussions</a>.
+If it still not there, then <a href="https://github.com/svelte-docgen/svelte-docgen/discussions/new?category=ideas">please 🙏 share with us!</a></p>
 </div>
 <hr>
 <a id="contributing" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Contributing<a href="#contributing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Take a look at the <a href="media/CONTRIBUTING.md">contributing guide</a>.</p>
-<p>This project follows the <a href="https://github.com/all-contributors/all-contributors" target="_blank" class="external">all-contributors</a> specification.
+<p>This project follows the <a href="https://github.com/all-contributors/all-contributors">all-contributors</a> specification.
 <strong>Contributions of any kind are welcome!</strong></p>
-<p>💌 to these people (<a href="https://allcontributors.org/docs/en/emoji-key" target="_blank" class="external">emoji key</a>):</p>
+<p>💌 to these people (<a href="https://allcontributors.org/docs/en/emoji-key">emoji key</a>):</p>
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -209,13 +209,13 @@ If it still not there, then <a href="https://github.com/svelte-docgen/svelte-doc
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 <div class="tsd-alert tsd-alert-note"><div class="tsd-alert-title"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><use href="assets/icons.svg#icon-alertNote"></use></svg><span>Note</span></div><p>
-We put a lot of effort to make this project <a href="https://e18e.dev/" target="_blank" class="external">e18e</a>-friendly.</p>
+We put a lot of effort to make this project <a href="https://e18e.dev/">e18e</a>-friendly.</p>
 </div>
-<a id="support" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Support<a href="#support" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>If you don't have time, but you need this project to work, or resolve an existing issue, consider <a href="https://github.com/sponsors/svelte-docgen" target="_blank" class="external">sponsorship</a>.</p>
+<a id="support" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Support<a href="#support" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>If you don't have time, but you need this project to work, or resolve an existing issue, consider <a href="https://github.com/sponsors/svelte-docgen">sponsorship</a>.</p>
 <hr>
 <a id="authors" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Authors<a href="#authors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
-<li>Mateusz &quot;<a href="https://github.com/xeho91" target="_blank" class="external">xeho91</a>&quot; Kadlubowski</li>
-<li>Taku &quot;<a href="https://github.com/ciscorn" target="_blank" class="external">ciscorn</a>&quot; Fukada</li>
+<li>Mateusz &quot;<a href="https://github.com/xeho91">xeho91</a>&quot; Kadlubowski</li>
+<li>Taku &quot;<a href="https://github.com/ciscorn">ciscorn</a>&quot; Fukada</li>
 </ul>
 <a id="license" class="tsd-anchor"></a><h2 class="tsd-anchor-link">License<a href="#license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p><img src="https://img.shields.io/github/license/svelte-docgen/svelte-docgen?style=for-the-badge" alt="Project License"></p>
 <p>This project is licensed under the <a href="media/LICENSE.md">MIT License</a>.</p>
