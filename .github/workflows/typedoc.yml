@@ -68,7 +68,7 @@ jobs:
 
       # https://github.com/rossjrw/pr-preview-action
       - name: Create PR preview on the GitHub Pages
-        uses: rossjrw/pr-preview-action@v1.4.7
+        uses: rossjrw/pr-preview-action@v1.4.8
         if: ${{ inputs.type == 'pr-preview' }}
         with:
           preview-branch: ${{ env.BRANCH }}
