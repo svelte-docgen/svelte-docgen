@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconFileUp from "lucide-svelte/icons/file-up";
-	import { parse } from "svelte-docgen";
+	import type { analyze } from "svelte-docgen";
 	import type { ComponentProps } from "svelte";
 	import type * as Doc from "svelte-docgen/doc";
 
@@ -8,10 +8,15 @@
 	import { Code } from "$lib/components/ui/code/index.ts";
 	import * as Table from "$lib/components/ui/table/index.ts";
 
-	interface Props
-		extends ComponentProps<typeof Accordion.Item>,
-			Pick<ReturnType<typeof parse>, "exports" | "types"> {}
-	let { exports, types, ...rest_props }: Props = $props();
+	interface Props extends ComponentProps<typeof Accordion.Item> {
+		exports: ReturnType<typeof analyze>["exports"];
+		types: ReturnType<typeof analyze>["types"];
+	}
+	let {
+		exports,
+		types,
+		...rest_props
+	}: Props = $props();
 
 	let is_empty = $derived(exports.size === 0);
 
@@ -25,7 +30,11 @@
 	}
 </script>
 
-<Accordion.Item {...rest_props} disabled={is_empty} value="exports">
+<Accordion.Item
+	{...rest_props}
+	disabled={is_empty}
+	value="exports"
+>
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
 			<IconFileUp /> Exports

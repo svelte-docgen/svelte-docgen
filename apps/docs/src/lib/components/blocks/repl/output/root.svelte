@@ -9,7 +9,7 @@
 <script lang="ts">
 	import IconDatabase from "lucide-svelte/icons/database";
 	import IconPresentation from "lucide-svelte/icons/presentation";
-	import type { parse } from "svelte-docgen";
+	import { type parse, analyze } from "svelte-docgen";
 
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.ts";
 	import * as Tabs from "$lib/components/ui/tabs/index.ts";
@@ -21,6 +21,8 @@
 		data: ReturnType<typeof parse>;
 	}
 	let { data }: Props = $props();
+
+	let analyzed = $derived(analyze(data));
 
 	// Session storage keys
 	const ss_tab = "output-tab";
@@ -49,7 +51,7 @@
 
 		<Tabs.Content value="overview" class="px-4">
 			<div class="container">
-				<OutputOverview {data} />
+				<OutputOverview data={analyzed} />
 			</div>
 		</Tabs.Content>
 

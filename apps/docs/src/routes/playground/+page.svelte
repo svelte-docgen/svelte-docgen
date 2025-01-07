@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { onDestroy, onMount, tick } from "svelte";
+	import { onMount, tick } from "svelte";
 	import { queryParameters, ssp } from "sveltekit-search-params";
 
+	import type { Context as EditorContext } from "$lib/components/blocks/editor/index.ts";
 	import * as Repl from "$lib/components/blocks/repl/index.ts";
 
-	import { Docgen } from "./docgen.svelte.ts";
+	import { Context } from "./context.svelte.ts";
 
 	const params = queryParameters({
 		input: {
@@ -17,37 +18,31 @@
 		},
 	});
 
-	let docgen = $state<Docgen>();
-	let editor = $state<HTMLDivElement>();
-	let manager = $state<Repl.Manager>();
-	let parsed_component = $derived.by(() => {
-		if (!manager || !docgen) return;
-		return docgen.generate(manager.source.current);
+	let ctx = $state<Context>();
+	let ctx_editor = $state<EditorContext>();
+	let docgen = $derived.by(() => {
+		if (!ctx_editor || !ctx) return;
+		return ctx.generate(ctx_editor.source.current);
 	});
 
 	onMount(async () => {
-		if (!editor) throw new Error("Unreachable");
-		manager = new Repl.Manager({ editor, initial: params.input ?? "", lang: "svelte" });
-		docgen = await Docgen.init();
+		ctx = await Context.init();
 		await tick();
-	});
-	onDestroy(() => {
-		manager?.destroy();
 	});
 
 	$effect(() => {
-		params.input = manager?.source.current ?? null;
+		params.input = ctx_editor?.source.current ?? null;
 	});
 </script>
 
 <Repl.Root>
 	{#snippet input()}
-		<Repl.Editor bind:ref={editor} />
+		<Repl.Input bind:context={ctx_editor} />
 	{/snippet}
 
 	{#snippet output()}
-		{#if parsed_component}
-			{#await parsed_component}
+		{#if docgen}
+			{#await docgen}
 				<p>{"Generating..."}</p>
 			{:then data}
 				<Repl.Output {data} />

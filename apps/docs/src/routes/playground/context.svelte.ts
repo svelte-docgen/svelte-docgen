@@ -7,7 +7,7 @@ import * as tsvfs from "@typescript/vfs";
 // TODO: This can be removed once we migrate away from using `svelte2tsx`
 import shim from "svelte2tsx/svelte-shims-v4.d.ts?raw";
 
-export class Docgen {
+export class Context {
 	#cache: ReturnType<typeof createCacheStorage>;
 
 	static #compiler_options = {
@@ -22,7 +22,7 @@ export class Docgen {
 
 	#sys: ts.System;
 
-	static async init(): Promise<Docgen> {
+	static async init(): Promise<Context> {
 		const map = new SvelteMap(
 			await tsvfs.createDefaultMapFromCDN(this.#compiler_options, ts.version, true, ts, {
 				// @ts-expect-error value can be undefined
@@ -41,7 +41,7 @@ export class Docgen {
 		)) {
 			map.set(k, v as string);
 		}
-		return new Docgen(map);
+		return new Context(map);
 	}
 
 	private constructor(fsmap: SvelteMap<string, string>) {
@@ -66,8 +66,8 @@ export class Docgen {
 				cache: this.#cache,
 				filepath: "/src/Demo.svelte",
 				sys: this.#sys,
-				host: tsvfs.createVirtualCompilerHost(this.#sys, Docgen.#compiler_options, ts).compilerHost,
-				ts_options: Docgen.#compiler_options,
+				host: tsvfs.createVirtualCompilerHost(this.#sys, Context.#compiler_options, ts).compilerHost,
+				ts_options: Context.#compiler_options,
 			});
 			return Promise.resolve(parsed);
 		} catch (error) {

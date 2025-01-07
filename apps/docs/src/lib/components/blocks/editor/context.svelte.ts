@@ -11,7 +11,10 @@ import { Debounced } from "runed";
 
 const theme_config = new Compartment();
 
-export class Manager {
+export const SUPPORTED_LANGS = new Set(["json", "svelte"] as const);
+export type Lang = typeof SUPPORTED_LANGS extends Set<infer T> ? T : never;
+
+export class Context {
 	source: Debounced<string>;
 	view: EditorView;
 	update = $state<ViewUpdate>();
@@ -30,11 +33,11 @@ export class Manager {
 	] satisfies EditorStateConfig["extensions"];
 
 	constructor(options: {
-		editor: HTMLDivElement;
-		initial: string;
 		debounce_delay?: number;
+		container: HTMLDivElement;
+		initial?: string;
+		lang: Lang;
 		readonly?: boolean;
-		lang: "json" | "svelte";
 	}) {
 		// eslint-disable-next-line prefer-const
 		let extensions = [
@@ -54,7 +57,7 @@ export class Manager {
 			extensions.push(EditorState.readOnly.of(true));
 		}
 		this.view = new EditorView({
-			parent: options.editor,
+			parent: options.container,
 			state: EditorState.create({
 				doc: options.initial,
 				extensions,

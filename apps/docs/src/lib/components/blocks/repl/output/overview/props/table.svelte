@@ -5,8 +5,7 @@
 	import IconExtended from "lucide-svelte/icons/diamond-plus";
 	import { mode } from "mode-watcher";
 	import type { ComponentProps } from "svelte";
-	import { analyzeProperty } from "svelte-docgen";
-	import type * as Doc from "svelte-docgen/doc";
+	import type { analyze } from "svelte-docgen";
 
 	import { Badge } from "$lib/components/ui/badge/index.ts";
 	import { Code } from "$lib/components/ui/code/index.ts";
@@ -15,17 +14,19 @@
 	import * as Tooltip from "$lib/components/ui/tooltip/index.ts";
 
 	import { highlighter } from "$lib/md/highlighter.js";
+
 	import Type from "./type.svelte";
 
 	interface Props extends ComponentProps<typeof Table.Root> {
-		props: Doc.Props;
-		types: Doc.Types;
+		props: ReturnType<typeof analyze>["props"]["all"];
+		types: ReturnType<typeof analyze>["types"];
 	}
 
 	let { props, types, ...rest_props }: Props = $props();
 
+	type AnalyzedProp = typeof props extends Map<string, infer T> ? T : never;
 
-	function create_dialog_description_code(name: string, data: Doc.Prop): string {
+	function create_dialog_description_code(name: string, data: AnalyzedProp): string {
 		const type = typeof data.type === "string" ? data.type : data.type.kind;
 		const code = `
 interface Props {
@@ -38,7 +39,7 @@ interface Props {
 		return highlighter.codeToHtml(code, { lang: "diff", theme: `github-${$mode ?? "light"}` });
 	}
 
-	function stringify_description(description: NonNullable<Doc.Prop["description"]>): string {
+	function stringify_description(description: NonNullable<AnalyzedProp["description"]>): string {
 		let output = "";
 		for (const part of description) {
 			if (part.kind === "text") {
@@ -64,7 +65,6 @@ interface Props {
 
 	<Table.Body>
 		{#each props as [name, prop]}
-			{@const analysis = analyzeProperty(prop, types)}
 			<Table.Row>
 				<Table.Cell class="font-medium">
 					<div class="flex flex-col items-start gap-1">
@@ -92,7 +92,7 @@ interface Props {
 								</Tooltip.Provider>
 							{/if}
 
-							{#if analysis.isExtendedBySvelte}
+							{#if prop.isExtendedBySvelte}
 								<Tooltip.Provider>
 									<Tooltip.Root>
 										<Tooltip.Trigger>

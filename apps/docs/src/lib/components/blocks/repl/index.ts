@@ -1,6 +1,5 @@
 import Root from "./root.svelte";
-import Editor from "./editor.svelte";
-import { Manager } from "./manager.svelte.ts";
+import Input from "./input.svelte"
 import Output from "./output/root.svelte";
 
-export { Root, Editor, Manager, Output };
+export { Root, Input, Output };

@@ -1,11 +1,10 @@
 <script lang="ts">
 	import DOMPurify from "isomorphic-dompurify";
-	// FIXME: It throws error when trying to optimize import path
-	import { BadgeInfo as IconBadgeInfo } from "lucide-svelte";
+	import IconBadgeInfo from "lucide-svelte/icons/badge-info";
 	import IconNotepad from "lucide-svelte/icons/notepad-text";
 	import { mode } from "mode-watcher";
 	import type { ComponentProps } from "svelte";
-	import * as Doc from "svelte-docgen/doc";
+	import type { analyze } from "svelte-docgen";
 
 	import * as Accordion from "$lib/components/ui/accordion/index.ts";
 	import { Code } from "$lib/components/ui/code/index.ts";
@@ -14,7 +13,7 @@
 	import { highlighter } from "$lib/md/highlighter.js";
 
 	interface Props extends ComponentProps<typeof Accordion.Item> {
-		description: Doc.Docable["description"];
+		description: ReturnType<typeof analyze>["description"];
 	}
 	let { description, ...rest_props }: Props = $props();
 
@@ -42,7 +41,10 @@
 	}
 </script>
 
-<Accordion.Item value="description" {...rest_props}>
+<Accordion.Item
+	{...rest_props}
+	value="description"
+>
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
 			<IconNotepad />

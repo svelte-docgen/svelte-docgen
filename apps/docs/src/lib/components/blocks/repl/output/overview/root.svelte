@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SvelteSet } from "svelte/reactivity";
-	import { analyzeComponent, type parse } from "svelte-docgen";
+	import type { analyze } from "svelte-docgen";
 
 	import * as Accordion from "$lib/components/ui/accordion/index.ts";
 	import * as Tabs from "$lib/components/ui/tabs/index.ts";
@@ -11,11 +11,9 @@
 	import OverviewTags from "./tags.svelte";
 
 	interface Props {
-		data: ReturnType<typeof parse>;
+		data: ReturnType<typeof analyze>;
 	}
 	let { data }: Props = $props();
-
-	let analyzed = $derived(analyzeComponent(data));
 
 	/** Session storage key */
 	const ss_key = "output-overview-accordion";
@@ -37,7 +35,7 @@
 		<OverviewDescription description={data.description} />
 		<OverviewTags tags={data.tags} />
 		<OverviewExports exports={data.exports} types={data.types} />
-		<OverviewProps props={analyzed.props} types={data.types} />
+		<OverviewProps props={data.props} types={data.types} />
 	</Accordion.Root>
 </Tabs.Content>
 

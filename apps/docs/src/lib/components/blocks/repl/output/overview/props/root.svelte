@@ -1,7 +1,6 @@
 <script lang="ts">
 	import IconBraces from "lucide-svelte/icons/braces";
-	import { analyzeComponent } from "svelte-docgen";
-	import * as Doc from "svelte-docgen/doc";
+	import type { analyze } from "svelte-docgen";
 	import type { ComponentProps } from "svelte";
 	import { SvelteSet } from "svelte/reactivity";
 
@@ -11,10 +10,14 @@
 	import PropsTable from "./table.svelte";
 
 	interface Props extends ComponentProps<typeof Accordion.Item> {
-		props: ReturnType<typeof analyzeComponent>["props"];
-		types: Doc.Types,
+		props: ReturnType<typeof analyze>["props"];
+		types: ReturnType<typeof analyze>["types"];
 	}
-	let { props, types, ...rest_props }: Props = $props();
+	let {
+		props,
+		types,
+		...rest_props
+	}: Props = $props();
 
 	/** Session storage key */
 	const ss_key = "output-overview-accordion-props";
@@ -23,13 +26,17 @@
 	let accordion_state = $state<SvelteSet<Items>>(new SvelteSet(stored ? (JSON.parse(stored) as Items[]) : []));
 	let is_empty = $derived(props.all.size === 0);
 	let snippets = $derived(props.snippets);
-	let event_handlers = $derived(props.eventHandlers);
-	let a11y = $derived(props.a11y);
-	let data_attrs = $derived(props.dataAttrs);
+	let events = $derived(props.events);
+	let aria = $derived(props.aria);
+	let data = $derived(props.data);
 	let other = $derived(props.uncategorized);
 </script>
 
-<Accordion.Item {...rest_props} disabled={is_empty} value="props">
+<Accordion.Item
+	{...rest_props}
+	disabled={is_empty}
+	value="props"
+>
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
 			<IconBraces /> Props {props.all.size > 0 ? `(${props.all.size})` : ""}
@@ -64,12 +71,12 @@
 					</Accordion.Item>
 			{/if}
 
-			{#if event_handlers.size > 0}
+			{#if events.size > 0}
 				<Accordion.Item value="event-handlers">
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger class="w-full">
-								<Accordion.Trigger>Event handlers ({event_handlers.size})</Accordion.Trigger>
+								<Accordion.Trigger>Event handlers ({events.size})</Accordion.Trigger>
 							</Tooltip.Trigger>
 
 							<Tooltip.Content>
@@ -82,17 +89,17 @@
 					</Tooltip.Provider>
 
 					<Accordion.Content>
-						<PropsTable props={event_handlers} {types} />
+						<PropsTable props={events} {types} />
 					</Accordion.Content>
 				</Accordion.Item>
 			{/if}
 
-			{#if event_handlers.size > 0}
+			{#if events.size > 0}
 				<Accordion.Item value="a11y">
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger class="w-full">
-								<Accordion.Trigger>ARIA ({a11y.size})</Accordion.Trigger>
+								<Accordion.Trigger>ARIA ({aria.size})</Accordion.Trigger>
 							</Tooltip.Trigger>
 
 							<Tooltip.Content>
@@ -105,17 +112,17 @@
 					</Tooltip.Provider>
 
 					<Accordion.Content>
-						<PropsTable props={a11y} {types} />
+						<PropsTable props={aria} {types} />
 					</Accordion.Content>
 				</Accordion.Item>
 			{/if}
 
-			{#if data_attrs.size > 0}
+			{#if data.size > 0}
 				<Accordion.Item value="data-attr">
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger class="w-full">
-								<Accordion.Trigger>Data attributes ({data_attrs.size})</Accordion.Trigger>
+								<Accordion.Trigger>Data attributes ({data.size})</Accordion.Trigger>
 							</Tooltip.Trigger>
 
 							<Tooltip.Content>
@@ -128,7 +135,7 @@
 					</Tooltip.Provider>
 
 					<Accordion.Content>
-						<PropsTable props={data_attrs} {types} />
+						<PropsTable props={data} {types} />
 					</Accordion.Content>
 				</Accordion.Item>
 			{/if}
