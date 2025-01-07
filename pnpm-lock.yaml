@@ -16,7 +16,7 @@ catalogs:
       specifier: ^5.7.0
       version: 5.7.2
     valibot:
-      specifier: 1.0.0-beta.10
+      specifier: ^1.0.0-beta.9
       version: 1.0.0-beta.10
     vite:
       specifier: ^6.0.5
