@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
 import { parse } from "../mod.js";
-import { isTypeRef } from "../../doc/utils.js";
+import { isTypeRef } from "../../kind/guard.js";
 import type * as Doc from "../../doc/type.js";
 
 describe("Instantiable types", () => {
@@ -12,7 +12,7 @@ describe("Instantiable types", () => {
 		  type I<T> = keyof T;
 			type IA<T> = number[keyof T];
 			type C<T> = T extends string ? T : false;
-			type SM<T> = Uppercase<T>; 
+			type SM<T> = Uppercase<T>;
 			type TL<G extends string , T extends string> = \`\${G}, \${T}!\`;
 	 		let { ..._ }: {
 			  index: I<K>;
