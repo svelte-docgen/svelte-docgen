@@ -127,6 +127,18 @@ export class PropAnalyzer {
 		return this.#data.sources ?? new Set();
 	}
 
+	/**
+	 * Was this prop extended from other interface than the core one for props?
+	 * It could be defined in other file.
+	 *
+	 * @returns {string | undefined}
+	 * @throws {Error} when attempting to access in non-extended prop
+	 */
+	get aliasSource() {
+		// TODO: Document error
+		return this.#data.aliasSource;
+	}
+
 	/** @type {Type | undefined} */
 	#cached_type;
 	/**
@@ -159,10 +171,15 @@ export class PropAnalyzer {
 	 */
 	#is_event_handler(type) {
 		if (type.kind !== "function") return false;
-		if (!type.sources) return false;
-		const is_type_from_svelte = Iterator.from(type.sources).some((f) => this.#is_source_from_svelte(f));
-		if (!is_type_from_svelte) return false;
-		return Boolean(type.alias?.includes("EventHandler"));
+		if (type.aliasSource) {
+			const is_type_from_svelte = this.#is_source_from_svelte(type.aliasSource);
+			if (is_type_from_svelte) return Boolean(type.alias?.includes("EventHandler"));
+		}
+		if (type.name && type.sources) {
+			const is_type_from_svelte = Iterator.from(type.sources).some((f) => this.#is_source_from_svelte(f));
+			if (is_type_from_svelte) return Boolean(type.name?.includes("EventHandler"));
+		}
+		return false;
 	}
 
 	/**
@@ -171,17 +188,17 @@ export class PropAnalyzer {
 	 * @returns {boolean}
 	 */
 	get isEventHandler() {
-		if (this.#type.kind === "union") {
-			const type_or_ref = this.#type.nonNullable;
-			if (!type_or_ref) return false;
-			if (isTypeRef(type_or_ref)) {
-				const type = this.#types.get(type_or_ref);
-				if (!type) throw Error("Unreachable");
-				return this.#is_event_handler(type);
-			}
-			return this.#is_event_handler(type_or_ref);
+		if (this.#type.kind !== "union") {
+			return this.#is_event_handler(this.#type);
 		}
-		return this.#is_event_handler(this.#type);
+		const type_or_ref = this.#type.nonNullable;
+		if (!type_or_ref) return false;
+		if (isTypeRef(type_or_ref)) {
+			const type = this.#types.get(type_or_ref);
+			if (!type) throw Error("Unreachable");
+			return this.#is_event_handler(type);
+		}
+		return this.#is_event_handler(type_or_ref);
 	}
 
 	/**
@@ -261,7 +278,7 @@ export class PropAnalyzer {
 	 * @returns {boolean}
 	 */
 	#is_snippet(type) {
-		if (type.kind !== "function" || !type.alias?.startsWith('"svelte".Snippet')) return false;
+		if (type.kind !== "function" || !type.name?.startsWith('"svelte".Snippet')) return false;
 		if (!type.sources) return false;
 		return Iterator.from(type.sources).some((f) => this.#is_source_from_svelte(f));
 	}

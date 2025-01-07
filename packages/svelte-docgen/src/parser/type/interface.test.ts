@@ -91,6 +91,7 @@ describe("Interface", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "A",
+			  "aliasSource": "interface.svelte",
 			  "kind": "interface",
 			  "members": Map {
 			    "name" => {
@@ -134,9 +135,6 @@ describe("Interface", () => {
 			      },
 			    },
 			  },
-			  "sources": Set {
-			    "interface.svelte",
-			  },
 			}
 		`);
 	});
@@ -150,6 +148,7 @@ describe("Interface", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "B",
+			  "aliasSource": "interface.svelte",
 			  "kind": "interface",
 			  "members": Map {
 			    "x" => {
@@ -166,9 +165,6 @@ describe("Interface", () => {
 			        "kind": "number",
 			      },
 			    },
-			  },
-			  "sources": Set {
-			    "interface.svelte",
 			  },
 			}
 		`);
@@ -207,6 +203,7 @@ describe("Interface", () => {
 			Map {
 			  "A" => {
 			    "alias": "A",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "name" => {
@@ -250,12 +247,10 @@ describe("Interface", () => {
 			        },
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "B" => {
 			    "alias": "B",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "x" => {
@@ -273,12 +268,10 @@ describe("Interface", () => {
 			        },
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "AsType" => {
 			    "alias": "AsType",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "ugly" => {
@@ -291,28 +284,22 @@ describe("Interface", () => {
 			        },
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "Empty" => {
 			    "alias": "Empty",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {},
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "EmptyType" => {
 			    "alias": "EmptyType",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {},
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "Recursive" => {
 			    "alias": "Recursive",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "recursive" => {
@@ -321,12 +308,10 @@ describe("Interface", () => {
 			        "type": "Recursive",
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "CircularA" => {
 			    "alias": "CircularA",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "b" => {
@@ -344,12 +329,10 @@ describe("Interface", () => {
 			        },
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "CircularB" => {
 			    "alias": "CircularB",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "a" => {
@@ -366,9 +349,6 @@ describe("Interface", () => {
 			          ],
 			        },
 			      },
-			    },
-			    "sources": Set {
-			      "interface.svelte",
 			    },
 			  },
 			}

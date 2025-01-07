@@ -44,10 +44,8 @@ describe("Array", () => {
 		expect(types.get("Letter")).toMatchInlineSnapshot(`
 			{
 			  "alias": "Letter",
+			  "aliasSource": "array.svelte",
 			  "kind": "union",
-			  "sources": Set {
-			    "array.svelte",
-			  },
 			  "types": [
 			    {
 			      "kind": "literal",
@@ -70,10 +68,8 @@ describe("Array", () => {
 		expect(types.get("Num")).toMatchInlineSnapshot(`
 			{
 			  "alias": "Num",
+			  "aliasSource": "array.svelte",
 			  "kind": "union",
-			  "sources": Set {
-			    "array.svelte",
-			  },
 			  "types": [
 			    {
 			      "kind": "literal",
@@ -101,6 +97,12 @@ describe("Array", () => {
 			  },
 			  "isReadonly": false,
 			  "kind": "array",
+			  "name": "Array",
+			  "typeArgs": [
+			    {
+			      "kind": "number",
+			    },
+			  ],
 			}
 		`);
 	});

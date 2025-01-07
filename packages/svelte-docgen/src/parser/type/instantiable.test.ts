@@ -40,6 +40,10 @@ describe("Instantiable types", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "IA",
+			  "aliasSource": "type-parameter.svelte",
+			  "aliasTypeArgs": [
+			    "K",
+			  ],
 			  "index": {
 			    "kind": "index",
 			    "type": "K",
@@ -47,9 +51,6 @@ describe("Instantiable types", () => {
 			  "kind": "indexed-access",
 			  "object": {
 			    "kind": "number",
-			  },
-			  "sources": Set {
-			    "type-parameter.svelte",
 			  },
 			}
 		`);
@@ -69,6 +70,10 @@ describe("Instantiable types", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "C",
+			  "aliasSource": "type-parameter.svelte",
+			  "aliasTypeArgs": [
+			    "K",
+			  ],
 			  "check": "K",
 			  "extends": {
 			    "kind": "string",
@@ -79,9 +84,6 @@ describe("Instantiable types", () => {
 			    "value": false,
 			  },
 			  "kind": "conditional",
-			  "sources": Set {
-			    "type-parameter.svelte",
-			  },
 			  "truthy": {
 			    "base": "K",
 			    "constraint": {

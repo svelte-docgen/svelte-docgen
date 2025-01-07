@@ -90,6 +90,7 @@ describe("Constructible", () => {
 			  "sources": Set {
 			    "constructible.svelte",
 			  },
+			  "typeArgs": [],
 			}
 		`);
 	});
@@ -102,6 +103,7 @@ describe("Constructible", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "Aliased",
+			  "aliasSource": "constructible.svelte",
 			  "constructors": [
 			    [],
 			  ],
@@ -110,6 +112,11 @@ describe("Constructible", () => {
 			  "sources": Set {
 			    "constructible.svelte",
 			  },
+			  "typeArgs": [
+			    {
+			      "kind": "string",
+			    },
+			  ],
 			}
 		`);
 	});
@@ -334,6 +341,14 @@ describe("Constructible", () => {
 			    node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.iterable.d.ts,
 			    node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts,
 			  },
+			  "typeArgs": [
+			    {
+			      "kind": "string",
+			    },
+			    {
+			      "kind": "number",
+			    },
+			  ],
 			}
 		`);
 	});
@@ -394,6 +409,11 @@ describe("Constructible", () => {
 			    node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts,
 			    node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.esnext.collection.d.ts,
 			  },
+			  "typeArgs": [
+			    {
+			      "kind": "string",
+			    },
+			  ],
 			}
 		`);
 	});

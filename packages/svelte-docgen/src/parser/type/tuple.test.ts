@@ -39,6 +39,10 @@ describe("Tuple", () => {
 			  ],
 			  "isReadonly": false,
 			  "kind": "tuple",
+			  "typeArgs": [
+			    "Letter",
+			    "Num",
+			  ],
 			}
 		`);
 		expect(type?.kind).toBe("tuple");
@@ -58,6 +62,10 @@ describe("Tuple", () => {
 			  ],
 			  "isReadonly": true,
 			  "kind": "tuple",
+			  "typeArgs": [
+			    "Letter",
+			    "Num",
+			  ],
 			}
 		`);
 		expect(type?.kind).toBe("tuple");
@@ -74,6 +82,7 @@ describe("Tuple", () => {
 			  "elements": [],
 			  "isReadonly": false,
 			  "kind": "tuple",
+			  "typeArgs": [],
 			}
 		`);
 		expect(type?.kind).toBe("tuple");
@@ -90,6 +99,7 @@ describe("Tuple", () => {
 			  "elements": [],
 			  "isReadonly": true,
 			  "kind": "tuple",
+			  "typeArgs": [],
 			}
 		`);
 		expect(type?.kind).toBe("tuple");
@@ -125,13 +135,15 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
+			    "typeArgs": [
+			      "Letter",
+			      "Num",
+			    ],
 			  },
 			  "Letter" => {
 			    "alias": "Letter",
+			    "aliasSource": "tuple.svelte",
 			    "kind": "union",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
 			    "types": [
 			      {
 			        "kind": "literal",
@@ -152,10 +164,8 @@ describe("Tuple", () => {
 			  },
 			  "Num" => {
 			    "alias": "Num",
+			    "aliasSource": "tuple.svelte",
 			    "kind": "union",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
 			    "types": [
 			      {
 			        "kind": "literal",
@@ -181,19 +191,26 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": true,
 			    "kind": "tuple",
+			    "typeArgs": [
+			      "Letter",
+			      "Num",
+			    ],
 			  },
 			  "[]" => {
 			    "elements": [],
 			    "isReadonly": false,
 			    "kind": "tuple",
+			    "typeArgs": [],
 			  },
 			  "readonly []" => {
 			    "elements": [],
 			    "isReadonly": true,
 			    "kind": "tuple",
+			    "typeArgs": [],
 			  },
 			  "Aliased" => {
 			    "alias": "Aliased",
+			    "aliasSource": "tuple.svelte",
 			    "elements": [
 			      {
 			        "kind": "string",
@@ -204,16 +221,19 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
+			    "typeArgs": [
+			      {
+			        "kind": "string",
+			      },
+			      {
+			        "kind": "boolean",
+			      },
+			    ],
 			  },
 			  "Recursive" => {
 			    "alias": "Recursive",
+			    "aliasSource": "tuple.svelte",
 			    "kind": "union",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
 			    "types": [
 			      {
 			        "kind": "number",
@@ -238,6 +258,20 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
+			    "typeArgs": [
+			      {
+			        "kind": "union",
+			        "types": [
+			          {
+			            "kind": "string",
+			          },
+			          {
+			            "kind": "number",
+			          },
+			          "[<anon:8>]",
+			        ],
+			      },
+			    ],
 			  },
 			  "<anon:8>" => {
 			    "kind": "union",

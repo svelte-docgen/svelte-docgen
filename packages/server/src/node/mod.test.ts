@@ -71,7 +71,6 @@ describe("NodeServer", () => {
 				  },
 				  "types": Map {
 				    ""svelte".Snippet<[]>" => {
-				      "alias": ""svelte".Snippet",
 				      "calls": [
 				        {
 				          "parameters": [
@@ -104,14 +103,19 @@ describe("NodeServer", () => {
 				        },
 				      ],
 				      "kind": "function",
+				      "name": ""svelte".Snippet",
 				      "sources": Set {
 				        node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
 				      },
+				      "typeArgs": [
+				        "[]",
+				      ],
 				    },
 				    "[]" => {
 				      "elements": [],
 				      "isReadonly": false,
 				      "kind": "tuple",
+				      "typeArgs": [],
 				    },
 				    "SnippetReturn" => {
 				      "kind": "literal",

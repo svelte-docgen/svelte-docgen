@@ -609,7 +609,6 @@ describe(PropAnalyzer.name, () => {
 				expect(analyzer.type).not.toBeTypeOf("string");
 				expect(analyzer.type).toMatchInlineSnapshot(`
 					{
-					  "alias": ""svelte".Snippet",
 					  "calls": [
 					    {
 					      "parameters": [
@@ -642,9 +641,13 @@ describe(PropAnalyzer.name, () => {
 					    },
 					  ],
 					  "kind": "function",
+					  "name": ""svelte".Snippet",
 					  "sources": Set {
 					    node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
 					  },
+					  "typeArgs": [
+					    "[]",
+					  ],
 					}
 				`);
 			}
