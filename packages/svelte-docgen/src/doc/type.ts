@@ -14,7 +14,7 @@ export type TypeRef = string;
  */
 export type Type =
 	| BaseType
-	| ArrayType
+	| Array
 	| Constructible
 	| Fn
 	| Interface
@@ -99,7 +99,7 @@ export interface BaseType {
 	kind: BaseTypeKind;
 }
 
-export interface ArrayType extends WithAlias {
+export interface Array extends WithAlias {
 	kind: "array";
 	isReadonly: boolean;
 	element: TypeOrRef;
