@@ -43,6 +43,7 @@ describe("Interface", () => {
 					aliased: Aliased;
 					recursive: Recursive;
 					circular: CircularA;
+					record: Record<string, number>;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -200,6 +201,14 @@ describe("Interface", () => {
 	it("understands type which is an alias to interface only", ({ expect }) => {
 		const aliased = props.get("aliased");
 		expect(aliased?.type).toBe("A");
+	});
+
+	it("recognizes Record", ({ expect }) => {
+		const record = props.get("record");
+		expect(record?.type).toBe("Record<string, number>");
+		const type = types.get("Record<string, number>") as Doc.Interface;
+		expect(type.kind).toBe("interface");
+		expect(type.aliasTypeArgs).toEqual([{ kind: "string" }, { kind: "number" }]);
 	});
 
 	it("collects aliased types", ({ expect }) => {
@@ -369,6 +378,22 @@ describe("Interface", () => {
 			    },
 			    "sources": Set {
 			      "interface.svelte",
+			    },
+			  },
+			  "Record<string, number>" => {
+			    "alias": "Record",
+			    "aliasTypeArgs": [
+			      {
+			        "kind": "string",
+			      },
+			      {
+			        "kind": "number",
+			      },
+			    ],
+			    "kind": "interface",
+			    "members": Map {},
+			    "sources": Set {
+			      node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts,
 			    },
 			  },
 			}

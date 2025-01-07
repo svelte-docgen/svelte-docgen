@@ -37,6 +37,8 @@ export type TypeOrRef = Type | TypeRef;
  */
 export interface WithAlias {
 	alias?: string;
+	/** Alias type arguments */
+	aliasTypeArgs?: TypeOrRef[];
 	/**
 	 * Where is this type declared?
 	 */
