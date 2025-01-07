@@ -2,4 +2,4 @@
 "svelte-docgen": minor
 ---
 
-Rename `ArrayType` to `Type`
+Rename `ArrayType` to `Array`
