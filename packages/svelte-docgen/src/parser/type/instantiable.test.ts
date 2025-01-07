@@ -40,6 +40,9 @@ describe("Instantiable types", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "IA",
+			  "aliasTypeArgs": [
+			    "K",
+			  ],
 			  "index": {
 			    "kind": "index",
 			    "type": "K",
@@ -69,6 +72,9 @@ describe("Instantiable types", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "C",
+			  "aliasTypeArgs": [
+			    "K",
+			  ],
 			  "check": "K",
 			  "extends": {
 			    "kind": "string",
