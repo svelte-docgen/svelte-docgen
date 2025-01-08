@@ -192,7 +192,8 @@ export interface Union extends WithAlias {
 	nonNullable?: TypeOrRef;
 }
 
-export type AdvancedType = Array | Constructible | Fn | Interface | Intersection | Literal | Tuple | Union;
+/** Union, Intersection or Object */
+export type StructuredType = Array | Constructible | Fn | Interface | Intersection | Literal | Tuple | Union;
 
 export interface TypeParam {
 	kind: "type-parameter";

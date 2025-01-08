@@ -6,5 +6,5 @@ Add new type guards:
 
 - `isTypeRef`
 - `isBaseType`
-- `isAdvancedType`
+- `isStructuredType`
 - `isInstantiableType`

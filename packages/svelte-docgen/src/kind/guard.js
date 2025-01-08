@@ -4,10 +4,10 @@
  */
 
 /**
- * @import { AdvancedType, BaseType, InstantiableType, Type, TypeRef, TypeOrRef, Types } from "../doc/type.ts";
+ * @import { StructuredType, BaseType, InstantiableType, Type, TypeRef, TypeOrRef, Types } from "../doc/type.ts";
  */
 
-import { ADVANCED_TYPE_KIND, BASE_TYPE_KIND, INSTANTIABLE_TYPE_KIND } from "./core.js";
+import { STRUCTURED_TYPE_KINDS, BASE_TYPE_KINDS, INSTANTIABLE_TYPE_KINDS } from "./core.js";
 
 /**
  * A type-guard to check if the type is a _reference_ to an aliased {@link WithAlias} or named {@link WithName} type stored in {@link Types}.
@@ -63,39 +63,39 @@ export function isBaseType(type_or_ref, types) {
 	// TODO: Document error
 	if (!type) throw new Error("Unreachable");
 	// @ts-expect-error `includes()` typing is too strict
-	return BASE_TYPE_KIND.includes(type.kind);
+	return BASE_TYPE_KINDS.includes(type.kind);
 }
 
 /**
- * Type guard: Is the type reference a {@link AdvancedType}?
+ * Type guard: Is the type reference a {@link StructuredType}?
  * **You must provide an map of types if you prodive a type reference!**
  *
  * @overload
  * @param {TypeRef} type_or_ref
  * @param {Types} types
- * @returns {type_or_ref is AdvancedType}
+ * @returns {type_or_ref is StructuredType}
  */
 /**
- * Type guard: Is the type a {@link AdvancedType}?
+ * Type guard: Is the type a {@link StructuredType}?
  *
  * @overload
  * @param {Type} type_or_ref
  * @param {never} [types]
- * @returns {type_or_ref is AdvancedType}
+ * @returns {type_or_ref is StructuredType}
  */
 /**
- * Type guard: Is the type or its reference a {@link AdvancedType}?
+ * Type guard: Is the type or its reference a {@link StructuredType}?
  *
  * @param {TypeOrRef} type_or_ref
  * @param {Types} [types]
- * @returns {type_or_ref is AdvancedType}
+ * @returns {type_or_ref is StructuredType}
  */
-export function isAdvancedType(type_or_ref, types) {
+export function isStructuredType(type_or_ref, types) {
 	const type = isTypeRef(type_or_ref) ? types?.get(type_or_ref) : type_or_ref;
 	// TODO: Document error
 	if (!type) throw new Error("Unreachable");
 	// @ts-expect-error `includes()` typing is too strict
-	return ADVANCED_TYPE_KIND.includes(type.kind);
+	return STRUCTURED_TYPE_KINDS.includes(type.kind);
 }
 
 /**
@@ -127,5 +127,5 @@ export function isInstantiableType(type_or_ref, types) {
 	// TODO: Document error
 	if (!type) throw new Error("Unreachable");
 	// @ts-expect-error `includes()` typing is too strict
-	return INSTANTIABLE_TYPE_KIND.includes(type.kind);
+	return INSTANTIABLE_TYPE_KINDS.includes(type.kind);
 }
