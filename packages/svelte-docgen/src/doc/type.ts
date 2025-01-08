@@ -141,7 +141,7 @@ export interface FnCall {
 	parameters: FnParam[];
 	returns: TypeOrRef;
 }
-export interface Fn extends WithName, WithAlias {
+export interface Fn extends WithName, WithAlias, WithTypeArgs {
 	kind: "function";
 	calls: FnCall[];
 }
