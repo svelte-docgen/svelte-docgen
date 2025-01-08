@@ -40,7 +40,7 @@ describe("Intersection", () => {
 			if (anonymous.type.kind === "intersection") {
 				expect(anonymous?.type.alias).not.toBeDefined();
 				expect(anonymous?.type.types.length).toBeGreaterThan(0);
-				expect(anonymous?.type.sources).not.toBeDefined();
+				expect(anonymous?.type.aliasSource).not.toBeDefined();
 			}
 		}
 	});
@@ -54,10 +54,8 @@ describe("Intersection", () => {
 			Map {
 			  "Aliased" => {
 			    "alias": "Aliased",
+			    "aliasSource": "intersection.svelte",
 			    "kind": "intersection",
-			    "sources": Set {
-			      "intersection.svelte",
-			    },
 			    "types": [
 			      {
 			        "kind": "number",
@@ -70,7 +68,7 @@ describe("Intersection", () => {
 			}
 		`);
 		const aliased = types.get("Aliased") as Doc.Intersection;
-		expect(aliased.sources).toBeDefined();
+		expect(aliased.aliasSource).toBeDefined();
 		expect(aliased.types.length).greaterThan(0);
 	});
 });

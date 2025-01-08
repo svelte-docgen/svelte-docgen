@@ -33,12 +33,23 @@ export type Type =
 export type TypeOrRef = Type | TypeRef;
 
 /**
- * Type where `alias` is _optional_.
+ * Type that can optionally have an `alias`
  */
 export interface WithAlias {
 	alias?: string;
 	/** Alias type arguments */
 	aliasTypeArgs?: TypeOrRef[];
+	/**
+	 * Where is this type alias declared?
+	 */
+	aliasSource?: string;
+}
+
+/**
+ * Type that can optionally have an `name`
+ */
+export interface WithName {
+	name?: string;
 	/**
 	 * Where is this type declared?
 	 */
@@ -46,14 +57,10 @@ export interface WithAlias {
 }
 
 /**
- * Type where `name` is **required**.
+ * Type that can optionally have `typeArgs`
  */
-export interface WithName {
-	name: string;
-	/**
-	 * Where is this type declared?
-	 */
-	sources?: Set<string>;
+export interface WithTypeArgs {
+	typeArgs?: TypeOrRef[];
 }
 
 /**
@@ -78,11 +85,13 @@ export interface RequiredProp {
 export interface LocalProp {
 	isExtended: false;
 	sources?: never;
+	aliasSource?: never;
 }
 export interface ExtendedProp {
 	isExtended: true;
 	/** Where is this extended prop declared? */
 	sources?: Set<string>;
+	aliasSource?: string;
 }
 export type Prop = Docable & {
 	isBindable: boolean;
@@ -94,7 +103,7 @@ export type Events = Map<string, TypeOrRef>;
 export type Exports = Map<string, TypeOrRef>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
-export type Types = Map<TypeRef, (Type & WithAlias) | (Type & WithName)>;
+export type Types = Map<TypeRef, Type>;
 
 export interface BaseType {
 	/** @see {@link TypeKind} */
@@ -107,7 +116,7 @@ export interface Array extends WithAlias {
 	element: TypeOrRef;
 }
 
-export interface Constructible extends WithName, WithAlias {
+export interface Constructible extends WithName, WithAlias, WithTypeArgs {
 	kind: "constructible";
 	name: string;
 	constructors: FnParam[][];
@@ -132,12 +141,12 @@ export interface FnCall {
 	parameters: FnParam[];
 	returns: TypeOrRef;
 }
-export interface Fn extends WithAlias {
+export interface Fn extends WithName, WithAlias {
 	kind: "function";
 	calls: FnCall[];
 }
 
-export interface Interface extends WithAlias {
+export interface Interface extends WithName, WithAlias, WithTypeArgs {
 	kind: "interface";
 	members: Map<string, Member>;
 }

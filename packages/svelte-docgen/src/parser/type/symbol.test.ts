@@ -22,10 +22,10 @@ describe("Symbol", () => {
 		const sym = props.get("s");
 		expect(sym).toBeDefined();
 		expect(sym?.type).toMatchInlineSnapshot(`
-				{
-				  "kind": "symbol",
-				}
-			`);
+			{
+			  "kind": "symbol",
+			}
+		`);
 	});
 
 	it("recognizes unique symbol", ({ expect }) => {

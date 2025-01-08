@@ -31,6 +31,7 @@
  *   Union,
  *   WithAlias,
  *   WithName,
+ *   WithTypeArgs,
  * } from "../doc/type.ts";
  * @import { UserOptions } from "../options.js";
  */
@@ -189,11 +190,7 @@ class Parser {
 			isReadonly,
 			element: this.#get_type_doc(index_info.type),
 		};
-		if (type.aliasSymbol) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-		}
+		this.#extract_names_and_arguments(type, results, { skip_sources: true, skip_type_args: true });
 		return results;
 	}
 
@@ -206,9 +203,6 @@ class Parser {
 	#get_constructible_doc(type) {
 		const symbol = get_type_symbol(type);
 		const name = this.#get_fully_qualified_name(symbol);
-		const sources = this.#get_type_sources(type);
-		// TODO: Document error
-		if (!sources) throw new Error();
 		/** @type {Constructible['constructors']} */
 		const constructors = get_construct_signatures(type, this.#extractor).map((s) =>
 			s.getParameters().map((p) => this.#get_fn_param_doc(p)),
@@ -218,16 +212,39 @@ class Parser {
 			kind: "constructible",
 			name,
 			constructors,
-			sources,
 		};
-		if (type.aliasSymbol) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
+		this.#extract_names_and_arguments(type, results);
 		return results;
+	}
+
+	/**
+	 * Extract name, alias and (alias) type arguments
+	 *
+	 * @param {ts.Type} type
+	 * @param {Type} results
+	 * @param {{ skip_sources?: boolean, skip_type_args?: boolean }} [options]
+	 */
+	#extract_names_and_arguments(type, results, options = {}) {
+		if (!options.skip_type_args && is_type_reference(type) && type.typeArguments)
+			/** @type {WithTypeArgs} */ (results).typeArgs = type.typeArguments.map((t) => this.#get_type_doc(t));
+		if (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName) {
+			/** @type {WithName} */ (results).name = this.#get_fully_qualified_name(type.symbol);
+			if (!options.skip_sources) {
+				const sources = this.#get_type_sources(type);
+				if (sources) /** @type {WithName} */ (results).sources = sources;
+			}
+		}
+		if (type.aliasSymbol) {
+			/** @type {WithAlias} */ (results).alias = this.#get_fully_qualified_name(type.aliasSymbol);
+			if (!options.skip_type_args && type.aliasTypeArguments)
+				/** @type {WithAlias} */ (results).aliasTypeArgs = type.aliasTypeArguments.map((t) =>
+					this.#get_type_doc(t),
+				);
+			if (!options.skip_sources) {
+				const aliasSource = this.#get_type_alias_source(type);
+				if (aliasSource) /** @type {WithAlias} */ (results).aliasSource = aliasSource;
+			}
+		}
 	}
 
 	/**
@@ -272,13 +289,7 @@ class Parser {
 			kind: "function",
 			calls,
 		};
-		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol || type.symbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
+		this.#extract_names_and_arguments(type, results);
 		return results;
 	}
 
@@ -296,13 +307,9 @@ class Parser {
 			kind: "interface",
 			members,
 		};
-		if (type.aliasSymbol || (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName)) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol || type.symbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
+		if (is_type_reference(type) && type.typeArguments)
+			results.typeArgs = type.typeArguments.map((t) => this.#get_type_doc(t));
+		this.#extract_names_and_arguments(type, results);
 		return results;
 	}
 
@@ -319,13 +326,7 @@ class Parser {
 		const types = type.types.map((t) => this.#get_type_doc(t));
 		/** @type {Intersection} */
 		let results = { kind: "intersection", types };
-		if (type.aliasSymbol) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
+		this.#extract_names_and_arguments(type, results);
 		return results;
 	}
 
@@ -439,13 +440,7 @@ class Parser {
 			isReadonly,
 			elements,
 		};
-		if (type.aliasSymbol) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
+		this.#extract_names_and_arguments(type, results, { skip_type_args: true });
 		return results;
 	}
 
@@ -509,13 +504,7 @@ class Parser {
 		// if (ia_type.simplifiedForWriting && ia_type.simplifiedForWriting !== type)
 		// 	results.simplifiedForReading = this.#get_type_doc(ia_type.simplifiedForWriting);
 
-		if (type.aliasSymbol) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
+		this.#extract_names_and_arguments(type, results);
 		return results;
 	}
 
@@ -538,13 +527,7 @@ class Parser {
 		if (conditional.resolvedTrueType) results.truthy = this.#get_type_doc(conditional.resolvedTrueType);
 		if (conditional.resolvedFalseType) results.falsy = this.#get_type_doc(conditional.resolvedFalseType);
 
-		if (type.aliasSymbol) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
+		this.#extract_names_and_arguments(type, results);
 		return results;
 	}
 
@@ -605,17 +588,34 @@ class Parser {
 
 	/**
 	 * @param {ts.Type} type
-	 * @returns {WithAlias['sources'] | WithName["sources"]}
+	 * @returns {WithName["sources"]}
 	 */
 	#get_type_sources(type) {
 		/** @type {ts.Symbol | undefined} */
 		let symbol = type.getSymbol();
-		if (!symbol || symbol.name === AnonTypeLiteralSymbolName) symbol = type.aliasSymbol;
-		if (symbol) {
-			const declared_type = this.#checker.getDeclaredTypeOfSymbol(symbol);
+		if (!symbol || symbol.name === AnonTypeLiteralSymbolName) return;
+		const declared_type = this.#checker.getDeclaredTypeOfSymbol(symbol);
+		const declared_type_symbol = declared_type.getSymbol() || declared_type.aliasSymbol;
+		if (declared_type_symbol) return get_sources(declared_type_symbol.getDeclarations() ?? [], this.#root_path_url);
+	}
+
+	/**
+	 * @param {ts.Type} type
+	 * @returns {WithAlias['aliasSource']}
+	 */
+	#get_type_alias_source(type) {
+		/** @type {ts.Symbol | undefined} */
+		if (type.aliasSymbol) {
+			const declared_type = this.#checker.getDeclaredTypeOfSymbol(type.aliasSymbol);
 			const declared_type_symbol = declared_type.getSymbol() || declared_type.aliasSymbol;
-			if (declared_type_symbol)
-				return get_sources(declared_type_symbol.getDeclarations() ?? [], this.#root_path_url);
+			if (declared_type_symbol) {
+				const sources = get_sources(declared_type_symbol.getDeclarations() ?? [], this.#root_path_url);
+				// TODO: Document error
+				if (sources.size > 1) throw new Error("An alias must have at most one source.");
+				for (const source of sources) {
+					return source;
+				}
+			}
 		}
 	}
 
@@ -674,14 +674,8 @@ class Parser {
 			kind: "union",
 			types,
 		};
-		if (type.aliasSymbol) {
-			results.alias = this.#get_fully_qualified_name(type.aliasSymbol);
-			if (type.aliasTypeArguments)
-				results.aliasTypeArgs = type.aliasTypeArguments.map((t) => this.#get_type_doc(t));
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
 		if (non_nullable !== type) results.nonNullable = this.#get_type_doc(non_nullable);
+		this.#extract_names_and_arguments(type, results);
 
 		return results;
 	}

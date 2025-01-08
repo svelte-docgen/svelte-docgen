@@ -48,7 +48,7 @@ describe("Union", () => {
 		`);
 		expect(anonymous.type.kind).toBe("union");
 		expect((anonymous.type as Doc.Union)?.alias).not.toBeDefined();
-		expect((anonymous.type as Doc.Union)?.sources).not.toBeDefined();
+		expect((anonymous.type as Doc.Union)?.aliasSource).not.toBeDefined();
 	});
 
 	it("recognizes aliased union", ({ expect }) => {
@@ -70,10 +70,8 @@ describe("Union", () => {
 		expect(types.get("Aliased")).toMatchInlineSnapshot(`
 			{
 			  "alias": "Aliased",
+			  "aliasSource": "union.svelte",
 			  "kind": "union",
-			  "sources": Set {
-			    "union.svelte",
-			  },
 			  "types": [
 			    {
 			      "kind": "literal",
@@ -94,6 +92,6 @@ describe("Union", () => {
 			}
 		`);
 		expect(types.get("Aliased")?.kind).toBe("union");
-		expect((types.get("Aliased") as Doc.Union)?.sources).toBeDefined();
+		expect((types.get("Aliased") as Doc.Union)?.aliasSource).toBeDefined();
 	});
 });
