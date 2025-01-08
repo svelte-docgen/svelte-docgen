@@ -33,7 +33,7 @@ export type Type =
 export type TypeOrRef = Type | TypeRef;
 
 /**
- * A type that can optionally have an `alias`
+ * Type that can optionally have an `alias`
  */
 export interface WithAlias {
 	alias?: string;
@@ -42,11 +42,11 @@ export interface WithAlias {
 	/**
 	 * Where is this type alias declared?
 	 */
-	aliasSource?: string; // FIXME: single string ?
+	aliasSource?: string;
 }
 
 /**
- * A type that can optionally have an `name`
+ * Type that can optionally have an `name`
  */
 export interface WithName {
 	name?: string;
@@ -57,7 +57,7 @@ export interface WithName {
 }
 
 /**
- * A type that can optionally have `typeArgs`
+ * Type that can optionally have `typeArgs`
  */
 export interface WithTypeArgs {
 	typeArgs?: TypeOrRef[];
@@ -103,7 +103,7 @@ export type Events = Map<string, TypeOrRef>;
 export type Exports = Map<string, TypeOrRef>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
-export type Types = Map<TypeRef, (Type & WithAlias) | (Type & WithName)>;
+export type Types = Map<TypeRef, Type>;
 
 export interface BaseType {
 	/** @see {@link TypeKind} */
