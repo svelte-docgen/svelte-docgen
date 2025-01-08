@@ -6,24 +6,20 @@ import ts, { TypeFlags } from "typescript";
 
 import { get_construct_signatures, is_tuple_type_reference, is_type_reference } from "../shared.js";
 
-const PRIMITIVE_TYPE_KINDS = /** @type {const} */ ([
+// TODO: Does BaseType have practical meaning?
+export const BASE_TYPE_KINDS = /** @type {const} */ ([
+	"any",
 	"bigint",
 	"boolean",
-	"literal",
+	"never",
 	"null",
 	"number",
 	"object",
 	"string",
 	"symbol",
 	"undefined",
-	"void",
-]);
-export const BASE_TYPE_KINDS = /** @type {const} */ ([
-	//
-	...PRIMITIVE_TYPE_KINDS,
-	"any",
 	"unknown",
-	"never",
+	"void",
 ]);
 export const STRUCTURED_TYPE_KINDS = /** @type {const} */ ([
 	"intersection",
@@ -44,7 +40,7 @@ export const INSTANTIABLE_TYPE_KINDS = /** @type {const} */ ([
 	"type-parameter",
 ]);
 export const TYPE_KINDS = /** @type {const} */ ([
-	//
+	"literal",
 	...BASE_TYPE_KINDS,
 	...STRUCTURED_TYPE_KINDS,
 	...INSTANTIABLE_TYPE_KINDS,
