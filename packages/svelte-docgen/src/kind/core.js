@@ -6,31 +6,35 @@ import ts, { TypeFlags } from "typescript";
 
 import { get_construct_signatures, is_tuple_type_reference, is_type_reference } from "../shared.js";
 
-export const BASE_TYPE_KIND = /** @type {const} */ ([
-	"any",
+const PRIMITIVE_TYPE_KINDS = /** @type {const} */ ([
 	"bigint",
 	"boolean",
-	"never",
+	"literal",
 	"null",
 	"number",
 	"object",
 	"string",
 	"symbol",
 	"undefined",
-	"unknown",
 	"void",
 ]);
-export const ADVANCED_TYPE_KIND = /** @type {const} */ ([
+export const BASE_TYPE_KINDS = /** @type {const} */ ([
+	//
+	...PRIMITIVE_TYPE_KINDS,
+	"any",
+	"unknown",
+	"never",
+]);
+export const STRUCTURED_TYPE_KINDS = /** @type {const} */ ([
+	"intersection",
+	"union",
 	"array",
 	"constructible",
 	"function",
 	"interface",
-	"intersection",
-	"literal",
 	"tuple",
-	"union",
 ]);
-export const INSTANTIABLE_TYPE_KIND = /** @type {const} */ ([
+export const INSTANTIABLE_TYPE_KINDS = /** @type {const} */ ([
 	"conditional",
 	"index",
 	"indexed-access",
@@ -39,15 +43,15 @@ export const INSTANTIABLE_TYPE_KIND = /** @type {const} */ ([
 	"template-literal",
 	"type-parameter",
 ]);
-export const TYPE_KIND = /** @type {const} */ ([
+export const TYPE_KINDS = /** @type {const} */ ([
 	//
-	...BASE_TYPE_KIND,
-	...ADVANCED_TYPE_KIND,
-	...INSTANTIABLE_TYPE_KIND,
+	...BASE_TYPE_KINDS,
+	...STRUCTURED_TYPE_KINDS,
+	...INSTANTIABLE_TYPE_KINDS,
 ]);
 
-/** @typedef {typeof TYPE_KIND[number]} TypeKind */
-/** @typedef {typeof BASE_TYPE_KIND[number]} BaseTypeKind */
+/** @typedef {typeof TYPE_KINDS[number]} TypeKind */
+/** @typedef {typeof BASE_TYPE_KINDS[number]} BaseTypeKind */
 
 /**
  * @param {GetTypeParams} params

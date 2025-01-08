@@ -3,11 +3,11 @@
  * @module
  */
 
-import { isTypeRef, isAdvancedType, isBaseType, isInstantiableType } from "./guard.js";
+import { isTypeRef, isStructuredType, isBaseType, isInstantiableType } from "./guard.js";
 
 export {
 	isTypeRef as typeRef,
-	isAdvancedType as advancedType,
+	isStructuredType as structuredType,
 	isBaseType as baseType,
 	isInstantiableType as instantiableType,
 };

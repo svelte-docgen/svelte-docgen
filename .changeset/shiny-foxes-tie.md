@@ -4,5 +4,5 @@
 
 Add types:
 
-- `AdvancedType`
+- `StructuredType`
 - `InstantiableType`
