@@ -127,19 +127,6 @@ export class PropAnalyzer {
 		return this.#data.sources ?? new Set();
 	}
 
-	/**
-	 * Was this prop extended from other interface than the core one for props?
-	 * It could be defined in other file.
-	 *
-	 * @returns {string | undefined}
-	 * @throws {Error} when attempting to access in non-extended prop
-	 */
-	get aliasSource() {
-		// TODO: Document error
-		if (!this.isExtended) throw new Error("Not extended!");
-		return this.#data.aliasSource;
-	}
-
 	/** @type {Type | undefined} */
 	#cached_type;
 	/**

@@ -614,6 +614,8 @@ class Parser {
 			const declared_type_symbol = declared_type.getSymbol() || declared_type.aliasSymbol;
 			if (declared_type_symbol) {
 				const sources = get_sources(declared_type_symbol.getDeclarations() ?? [], this.#root_path_url);
+				// TODO: Document error
+				if (sources.size > 1) throw new Error("An alias must have at most one source.");
 				for (const source of sources) {
 					return source;
 				}
