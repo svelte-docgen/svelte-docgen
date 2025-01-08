@@ -39,10 +39,6 @@ describe("Tuple", () => {
 			  ],
 			  "isReadonly": false,
 			  "kind": "tuple",
-			  "typeArgs": [
-			    "Letter",
-			    "Num",
-			  ],
 			}
 		`);
 		expect(type?.kind).toBe("tuple");
@@ -62,10 +58,6 @@ describe("Tuple", () => {
 			  ],
 			  "isReadonly": true,
 			  "kind": "tuple",
-			  "typeArgs": [
-			    "Letter",
-			    "Num",
-			  ],
 			}
 		`);
 		expect(type?.kind).toBe("tuple");
@@ -82,7 +74,6 @@ describe("Tuple", () => {
 			  "elements": [],
 			  "isReadonly": false,
 			  "kind": "tuple",
-			  "typeArgs": [],
 			}
 		`);
 		expect(type?.kind).toBe("tuple");
@@ -99,7 +90,6 @@ describe("Tuple", () => {
 			  "elements": [],
 			  "isReadonly": true,
 			  "kind": "tuple",
-			  "typeArgs": [],
 			}
 		`);
 		expect(type?.kind).toBe("tuple");
@@ -135,10 +125,6 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
-			    "typeArgs": [
-			      "Letter",
-			      "Num",
-			    ],
 			  },
 			  "Letter" => {
 			    "alias": "Letter",
@@ -191,22 +177,16 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": true,
 			    "kind": "tuple",
-			    "typeArgs": [
-			      "Letter",
-			      "Num",
-			    ],
 			  },
 			  "[]" => {
 			    "elements": [],
 			    "isReadonly": false,
 			    "kind": "tuple",
-			    "typeArgs": [],
 			  },
 			  "readonly []" => {
 			    "elements": [],
 			    "isReadonly": true,
 			    "kind": "tuple",
-			    "typeArgs": [],
 			  },
 			  "Aliased" => {
 			    "alias": "Aliased",
@@ -221,14 +201,6 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
-			    "typeArgs": [
-			      {
-			        "kind": "string",
-			      },
-			      {
-			        "kind": "boolean",
-			      },
-			    ],
 			  },
 			  "Recursive" => {
 			    "alias": "Recursive",
@@ -258,20 +230,6 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
-			    "typeArgs": [
-			      {
-			        "kind": "union",
-			        "types": [
-			          {
-			            "kind": "string",
-			          },
-			          {
-			            "kind": "number",
-			          },
-			          "[<anon:8>]",
-			        ],
-			      },
-			    ],
 			  },
 			  "<anon:8>" => {
 			    "kind": "union",

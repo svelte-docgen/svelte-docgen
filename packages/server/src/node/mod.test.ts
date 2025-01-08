@@ -115,7 +115,6 @@ describe("NodeServer", () => {
 				      "elements": [],
 				      "isReadonly": false,
 				      "kind": "tuple",
-				      "typeArgs": [],
 				    },
 				    "SnippetReturn" => {
 				      "kind": "literal",

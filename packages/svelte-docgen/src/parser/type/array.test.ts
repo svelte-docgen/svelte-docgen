@@ -98,11 +98,6 @@ describe("Array", () => {
 			  "isReadonly": false,
 			  "kind": "array",
 			  "name": "Array",
-			  "typeArgs": [
-			    {
-			      "kind": "number",
-			    },
-			  ],
 			}
 		`);
 	});

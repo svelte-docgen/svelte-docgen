@@ -190,7 +190,7 @@ class Parser {
 			isReadonly,
 			element: this.#get_type_doc(index_info.type),
 		};
-		this.#extract_names_and_arguments(type, results, { skip_sources: true });
+		this.#extract_names_and_arguments(type, results, { skip_sources: true, skip_type_args: true });
 		return results;
 	}
 
@@ -229,7 +229,7 @@ class Parser {
 	 * @param {{ skip_sources?: boolean, skip_type_args?: boolean }} [options]
 	 */
 	#extract_names_and_arguments(type, results, options = {}) {
-		if (is_type_reference(type) && type.typeArguments)
+		if (!options.skip_type_args && is_type_reference(type) && type.typeArguments)
 			/** @type {WithTypeArgs} */ (results).typeArgs = type.typeArguments.map((t) => this.#get_type_doc(t));
 		if (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName) {
 			/** @type {WithName} */ (results).name = this.#get_fully_qualified_name(type.symbol);
@@ -240,7 +240,7 @@ class Parser {
 		}
 		if (type.aliasSymbol) {
 			/** @type {WithAlias} */ (results).alias = this.#get_fully_qualified_name(type.aliasSymbol);
-			if (type.aliasTypeArguments)
+			if (!options.skip_type_args && type.aliasTypeArguments)
 				/** @type {WithAlias} */ (results).aliasTypeArgs = type.aliasTypeArguments.map((t) =>
 					this.#get_type_doc(t),
 				);
@@ -313,11 +313,6 @@ class Parser {
 		};
 		if (is_type_reference(type) && type.typeArguments)
 			results.typeArgs = type.typeArguments.map((t) => this.#get_type_doc(t));
-		if (type.symbol && type.symbol.name !== AnonTypeLiteralSymbolName) {
-			results.name = this.#get_fully_qualified_name(type.symbol);
-			const sources = this.#get_type_sources(type);
-			if (sources) results.sources = sources;
-		}
 		this.#extract_names_and_arguments(type, results);
 		return results;
 	}
