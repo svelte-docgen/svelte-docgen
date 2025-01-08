@@ -31,7 +31,7 @@
  *   Union,
  *   WithAlias,
  *   WithName,
- WithTypeArgs,
+ *   WithTypeArgs,
  * } from "../doc/type.ts";
  * @import { UserOptions } from "../options.js";
  */
@@ -203,9 +203,6 @@ class Parser {
 	#get_constructible_doc(type) {
 		const symbol = get_type_symbol(type);
 		const name = this.#get_fully_qualified_name(symbol);
-		const sources = this.#get_type_sources(type);
-		// TODO: Document error
-		if (!sources) throw new Error();
 		/** @type {Constructible['constructors']} */
 		const constructors = get_construct_signatures(type, this.#extractor).map((s) =>
 			s.getParameters().map((p) => this.#get_fn_param_doc(p)),
@@ -215,14 +212,13 @@ class Parser {
 			kind: "constructible",
 			name,
 			constructors,
-			sources,
 		};
 		this.#extract_names_and_arguments(type, results);
 		return results;
 	}
 
 	/**
-	 * Extract common properties
+	 * Extract name, alias and (alias) type arguments
 	 *
 	 * @param {ts.Type} type
 	 * @param {Type} results
