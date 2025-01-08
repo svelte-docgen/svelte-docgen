@@ -9,10 +9,11 @@ describe("Interface", () => {
 	const { props, types } = parse(
 		`
 			<script lang="ts">
-				interface A {
+				interface A<T> {
 					name: string;
 					age?: number;
 					moo: () => void;
+					t: T;
 				}
 				interface B {
 					readonly x: number;
@@ -23,7 +24,7 @@ describe("Interface", () => {
 				};
 				interface Empty {}
 				type EmptyType = {};
-				type Aliased = A;
+				type Aliased = A<number>;
 				interface Recursive {
 					recursive: Recursive;
 				}
@@ -35,7 +36,7 @@ describe("Interface", () => {
 				}
 				interface Props {
 					anonymous: { name: "Guy"; surname: "Fawkes" };
-					a: A;
+					a: A<string>;
 					b: B;
 					"as-type": AsType;
 					"empty-aliased": Empty;
@@ -85,14 +86,19 @@ describe("Interface", () => {
 
 	it("recognizes aliased interface", ({ expect }) => {
 		const a = props.get("a");
-		expect(a?.type).toBe("A");
-		const type = types.get("A") as Doc.Interface;
+		expect(a?.type).toBe("A<string>");
+		const type = types.get("A<string>") as Doc.Interface;
 		expect(type.kind).toBe("interface");
 		expect((type as Doc.Interface)?.alias).toBe("A");
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "A",
 			  "aliasSource": "interface.svelte",
+			  "aliasTypeArgs": [
+			    {
+			      "kind": "string",
+			    },
+			  ],
 			  "kind": "interface",
 			  "members": Map {
 			    "name" => {
@@ -133,6 +139,13 @@ describe("Interface", () => {
 			          },
 			        ],
 			        "kind": "function",
+			      },
+			    },
+			    "t" => {
+			      "isOptional": false,
+			      "isReadonly": false,
+			      "type": {
+			        "kind": "string",
 			      },
 			    },
 			  },
@@ -196,7 +209,7 @@ describe("Interface", () => {
 
 	it("understands type which is an alias to interface only", ({ expect }) => {
 		const aliased = props.get("aliased");
-		expect(aliased?.type).toBe("A");
+		expect(aliased?.type).toBe("Aliased");
 	});
 
 	it("recognizes Record", ({ expect }) => {
@@ -210,9 +223,14 @@ describe("Interface", () => {
 	it("collects aliased types", ({ expect }) => {
 		expect(types).toMatchInlineSnapshot(`
 			Map {
-			  "A" => {
+			  "A<string>" => {
 			    "alias": "A",
 			    "aliasSource": "interface.svelte",
+			    "aliasTypeArgs": [
+			      {
+			        "kind": "string",
+			      },
+			    ],
 			    "kind": "interface",
 			    "members": Map {
 			      "name" => {
@@ -253,6 +271,13 @@ describe("Interface", () => {
 			            },
 			          ],
 			          "kind": "function",
+			        },
+			      },
+			      "t" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "string",
 			        },
 			      },
 			    },
@@ -305,6 +330,60 @@ describe("Interface", () => {
 			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {},
+			  },
+			  "Aliased" => {
+			    "alias": "Aliased",
+			    "aliasSource": "interface.svelte",
+			    "kind": "interface",
+			    "members": Map {
+			      "name" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "string",
+			        },
+			      },
+			      "age" => {
+			        "isOptional": true,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "union",
+			          "nonNullable": {
+			            "kind": "number",
+			          },
+			          "types": [
+			            {
+			              "kind": "number",
+			            },
+			            {
+			              "kind": "undefined",
+			            },
+			          ],
+			        },
+			      },
+			      "moo" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "calls": [
+			            {
+			              "parameters": [],
+			              "returns": {
+			                "kind": "void",
+			              },
+			            },
+			          ],
+			          "kind": "function",
+			        },
+			      },
+			      "t" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "number",
+			        },
+			      },
+			    },
 			  },
 			  "Recursive" => {
 			    "alias": "Recursive",
