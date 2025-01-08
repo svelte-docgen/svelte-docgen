@@ -192,6 +192,7 @@ export interface Union extends WithAlias {
 	nonNullable?: TypeOrRef;
 }
 
+/** Union, Intersection or Object */
 export type StructuredType = Array | Constructible | Fn | Interface | Intersection | Literal | Tuple | Union;
 
 export interface TypeParam {
