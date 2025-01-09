@@ -11,7 +11,7 @@
     >
     <img
         alt="Package license"
-        src="https://img.shields.io/npm/v/svelte-docgen?style=for-the-badge&logo=npm"
+        src="https://img.shields.io/github/license/svelte-docgen/svelte-docgen?style=for-the-badge&label=%E2%9A%96%EF%B8%8F%20LICENSE"
     >
     <img
         alt="Required Svelte version"
