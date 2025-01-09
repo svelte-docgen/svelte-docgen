@@ -100,7 +100,7 @@ Not to be confused with primitives!</p>
 <li><code>unknown</code></li>
 <li><code>void</code></li>
 </ul>
-<p>We provide a set of types via <code>BASIC_TYPE_KIND</code> and a type-guard function <code>isBaseType</code>.</p>
+<p>We provide a set of types via <code>BASIC_TYPE_KINDS</code> and a type-guard function <code>isBaseType</code>.</p>
 <a id="structured-types" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Structured types<a href="#structured-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>They're more advanced than <em>base</em> types. Because they provide more data in their structure:</p>
 <ul>
 <li><code>array</code></li>
@@ -112,7 +112,7 @@ Not to be confused with primitives!</p>
 <li><code>tuple</code></li>
 <li><code>union</code></li>
 </ul>
-<p>We provide a set of types via <code>STRUCTURE_TYPE_KIND</code> and a type-guard function <code>isStructuredType</code>.</p>
+<p>We provide a set of types via <code>STRUCTURE_TYPE_KINDS</code> and a type-guard function <code>isStructuredType</code>.</p>
 <a id="instantiable-types" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Instantiable types<a href="#instantiable-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Well, like in TypeScript... sometimes we need to go deeper, to make types more smarter, because can be <em>instantiantable</em>.
 In other words, they're related to subject of using generics or generic type parameters.</p>
 <p>They have most advanced structure, so use them with caution:</p>
@@ -125,15 +125,15 @@ In other words, they're related to subject of using generics or generic type par
 <li><code>template-literal</code></li>
 <li><code>type-parameter</code></li>
 </ul>
-<p>We provide a set of types via <code>INSTANTIABLE_TYPE_KIND</code> and a type-guard function <code>isInsstantiableType</code>.</p>
+<p>We provide a set of types via <code>INSTANTIABLE_TYPE_KINDS</code> and a type-guard function <code>isInsstantiableType</code>.</p>
 <hr>
 <a id="legacy-support" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Legacy support<a href="#legacy-support" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>We try to adapt to <a href="https://svelte.dev">Svelte</a> maintainers principle of library being backwards compatible with one major previous version - of <code>svelte</code> library.</p>
 <p>Our library is capable to recognize when the component uses a <em>legacy syntax</em>.
 Based on this, we provide extra information, that is related to the documentation or usage of this component.</p>
-<p>Currently previous major version of Svelte is <code>v4</code>, thus we extract data related to:</p>
+<p>Previous major version of Svelte is <code>v4</code>, thus we extract data related to:</p>
 <ul>
-<li><a href="">slots</a></li>
-<li><a href="">custom event handlers</a></li>
+<li><a href="https://svelte.dev/docs/svelte/legacy-slots#Named-slots">slots</a></li>
+<li><a href="https://svelte.dev/docs/svelte/legacy-on#Component-events">component events</a></li>
 </ul>
 <div class="tsd-alert tsd-alert-caution"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="../assets/icons.svg#icon-alertCaution"></use></svg><span>Caution</span></div><p>
 Currently, we're unable to recognize whether slots are <em>optional</em> or not. <a href="https://github.com/svelte-docgen/svelte-docgen/issues/10">Tracking issue</a>.</p>
@@ -142,7 +142,7 @@ Currently, we're unable to recognize whether slots are <em>optional</em> or not.
 <a id="exports" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Exports<a href="#exports" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Svelte allows us to define exports inside the <code>*.svelte</code> file. Those data are important to be included in documentation.</p>
 <a id="modern" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Modern<a href="#modern" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>In the modern version of Svelte, they can be defined inside the <code>&lt;script module&gt;</code> tag.</p>
 <div class="tsd-alert tsd-alert-caution"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="../assets/icons.svg#icon-alertCaution"></use></svg><span>Caution</span></div><p>
-🚧 This feature is a Work in Progress. <a href="">Tracking issue</a>.</p>
+🚧 This feature is a Work in Progress. <a href="https://github.com/svelte-docgen/svelte-docgen/issues/4">Tracking issue</a>.</p>
 </div>
 <a id="legacy" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Legacy<a href="#legacy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>In legacy version of Svelte, prior to <code>v4</code> it was possible to define the <code>&lt;script&gt;</code> <em>(instance)</em> tag.</p>
 <hr>
@@ -188,12 +188,13 @@ it can have <em>optionally!</em> a <strong>default value</strong>. We also provi
 <script>
 </code><button type="button">Copy</button></pre>
 
-<div class="tsd-alert tsd-alert-caution"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="../assets/icons.svg#icon-alertCaution"></use></svg><span>Caution</span></div><p> &gt; <a href=""><strong>In Svelte prior to <code>v4</code> every component is bindable</strong></a>!</p>
+<div class="tsd-alert tsd-alert-caution"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16"><use href="../assets/icons.svg#icon-alertCaution"></use></svg><span>Caution</span></div><p></p>
+<p><a href="https://svelte.dev/docs/svelte/v5-migration-guide#Breaking-changes-in-runes-mode-Bindings-need-to-be-explicitly-defined-using-$bindable()"><strong>In Svelte prior to <code>v4</code> every component is bindable</strong></a>!</p>
 </div>
 <a id="event-handlers" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Event handlers<a href="#event-handlers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>We believe that they should be properly typed using <code>&quot;svelte/elements&quot;</code>, as part of <em>standardization</em>.
 Whether you're interested only in those, you can extract a map of them.</p>
-<a id="aria" class="tsd-anchor"></a><h4 class="tsd-anchor-link">ARIA<a href="#aria" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Same as above, but only for [<code>aria-*</code>] attributes. You can extract a map of props with those.</p>
-<a id="data-attributes" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Data attributes<a href="#data-attributes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Same as above, but only for [<code>data-*</code>] attributes. You can extract a map of props with those.</p>
+<a id="aria" class="tsd-anchor"></a><h4 class="tsd-anchor-link">ARIA<a href="#aria" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Same as above, but only for <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes"><code>aria-*</code></a> attributes. You can extract a map of props with those.</p>
+<a id="data-attributes" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Data attributes<a href="#data-attributes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Same as above, but only for <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*"><code>data-*</code></a> attributes. You can extract a map of props with those.</p>
 <a id="extended" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Extended<a href="#extended" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Some props are not <em>directly</em> defined inside the <code>*.svelte</code> component. They could be <strong>extended</strong>.
 Our library is capable to recognize <em>where</em> is the prop located.</p>
 <p>Example:</p>
@@ -265,7 +266,7 @@ Whether is it browser, Bun, Deno, Node.js or any Edge-runtime.</p>
 We want to make your thought process to be simple.</p>
 <ol>
 <li>You <a href="#parse"><code>parse()</code></a> first,</li>
-<li>Then you [<code>analyze()</code>]#analyze) the docgen data.</li>
+<li>Then you <a href="#analyze"><code>analyze()</code></a> the docgen data.</li>
 </ol>
 <a id="parse" class="tsd-anchor"></a><h3 class="tsd-anchor-link">parse<a href="#parse" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>This function accepts the <em>stringified source code</em>, and then it will generate a <em>raw</em> <a href="#terminology">docgen</a> data.</p>
 <p>Example:</p>
@@ -299,8 +300,8 @@ Internally it uses JavaScript getters and internal caching to optimize the memor
 <li><code>exports</code></li>
 <li><code>props</code></li>
 <li><code>types</code></li>
-<li><code>events</code> <em>(available only when <code>legacy: true</code>)</em></li>
-<li><code>slots</code> <em>(available only when <code>legacy: true</code>)</em></li>
+<li><code>events</code> <em>(available only when <code>isLegacy: true</code>)</em></li>
+<li><code>slots</code> <em>(available only when <code>isLegacy: true</code>)</em></li>
 </ul>
 <a id="props" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Props<a href="#props" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><ul>
 <li><code>all</code></li>
