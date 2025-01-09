@@ -1,7 +1,7 @@
 <p align="center">
     <img
         alt="svelte-docgen logo"
-        src="../../assets/brand/logo.svg"
+        src="https://raw.githubusercontent.com/svelte-docgen/svelte-docgen/refs/heads/main/assets/brand/logo.svg"
         width="180"
     >
     <br>
