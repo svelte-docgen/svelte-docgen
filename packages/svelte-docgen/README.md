@@ -181,10 +181,10 @@ We try to adapt to [Svelte] maintainers principle of library being backwards com
 Our library is capable to recognize when the component uses a _legacy syntax_.
 Based on this, we provide extra information, that is related to the documentation or usage of this component.
 
-Currently previous major version of Svelte is `v4`, thus we extract data related to:
+Previous major version of Svelte is `v4`, thus we extract data related to:
 
-- [slots]()
-- [custom event handlers]()
+- [slots](https://svelte.dev/docs/svelte/legacy-slots#Named-slots)
+- [component events](https://svelte.dev/docs/svelte/legacy-on#Component-events)
 
 > [!CAUTION]
 > Currently, we're unable to recognize whether slots are _optional_ or not. [Tracking issue](https://github.com/svelte-docgen/svelte-docgen/issues/10).
@@ -200,7 +200,7 @@ Svelte allows us to define exports inside the `*.svelte` file. Those data are im
 In the modern version of Svelte, they can be defined inside the `<script module>` tag.
 
 > [!CAUTION]
-> 🚧 This feature is a Work in Progress. [Tracking issue]().
+> 🚧 This feature is a Work in Progress. [Tracking issue](https://github.com/svelte-docgen/svelte-docgen/issues/4).
 
 #### Legacy
 
@@ -270,7 +270,9 @@ Example:
 <script>
 ```
 
-> [!CAUTION] > [**In Svelte prior to `v4` every component is bindable**]()!
+> [!CAUTION]
+
+> [**In Svelte prior to `v4` every component is bindable**](<https://svelte.dev/docs/svelte/v5-migration-guide#Breaking-changes-in-runes-mode-Bindings-need-to-be-explicitly-defined-using-$bindable()>)!
 
 #### Event handlers
 
@@ -279,11 +281,11 @@ Whether you're interested only in those, you can extract a map of them.
 
 #### ARIA
 
-Same as above, but only for [`aria-*`] attributes. You can extract a map of props with those.
+Same as above, but only for [`aria-*`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes) attributes. You can extract a map of props with those.
 
 #### Data attributes
 
-Same as above, but only for [`data-*`] attributes. You can extract a map of props with those.
+Same as above, but only for [`data-*`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*) attributes. You can extract a map of props with those.
 
 #### Extended
 
@@ -418,7 +420,7 @@ The following sections should help yourself attained with using this library.
 We want to make your thought process to be simple.
 
 1. You [`parse()`](#parse) first,
-2. Then you [`analyze()`]#analyze) the docgen data.
+2. Then you [`analyze()`](#analyze) the docgen data.
 
 ### parse
 
@@ -478,8 +480,8 @@ const analyzed = analyze(docgen);
 - `exports`
 - `props`
 - `types`
-- `events` _(available only when `legacy: true`)_
-- `slots` _(available only when `legacy: true`)_
+- `events` _(available only when `isLegacy: true`)_
+- `slots` _(available only when `isLegacy: true`)_
 
 #### Props
 
