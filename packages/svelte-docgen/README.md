@@ -9,6 +9,15 @@
         alt="Latest package version on NPM registry"
         src="https://img.shields.io/npm/v/svelte-docgen?style=for-the-badge&logo=npm"
     >
+    <img
+        alt="Package license"
+        src="https://img.shields.io/npm/v/svelte-docgen?style=for-the-badge&logo=npm"
+    >
+    <img
+        alt="Required Svelte version"
+        src="https://img.shields.io/npm/dependency-version/svelte-docgen/peer/svelte?style=for-the-badge&logo=svelte"
+    >
+
 </p>
 
 # `svelte-docgen`
@@ -72,7 +81,7 @@ Our extractor handles:
 #### Tags
 
 If you're familiar with JSDoc, then you already know what tags are.
-Every line starting with a `@<tag-name>` will be extracted. They can be repetive, multi-line, contain inlined tag, etc.
+Every line starting with a `@<tag-name>` will be extracted. They can be repetitive, multi-line, contain inlined tag, etc.
 
 > [!NOTE]
 > They will be extracted as long as they are within the first root HTML comment with a `@component` tag.
@@ -90,7 +99,9 @@ Example:
 -->
 ```
 
-> [!INFO] > **There is no official specification for tags**, like in JSDoc ot TSDoc.
+> [!IMPORTANT]
+>
+> **There is no official specification for tags**, like in JSDoc or TSDoc.
 > This isn't our focus _yet_, and we are open to participate in this discussion.
 
 ---
@@ -101,7 +112,7 @@ Our goal is to **align with terminology from TypeScript Compiler API**, which is
 This also gives the library an ability to have _computed_ types, without lies.
 
 We also hope this will help you/us to communicate and understand better what is what.
-Anything that will help [Svelte] ecosystem to grow and its community to strenghten its knowledge.
+Anything that will help [Svelte] ecosystem to grow and its community to strengthen its knowledge.
 
 Currently we have three categories for type kinds.
 
@@ -167,7 +178,7 @@ We provide a set of types via `INSTANTIABLE_TYPE_KIND` and a type-guard function
 
 We try to adapt to [Svelte] maintainers principle of library being backwards compatible with one major previous version - of `svelte` library.
 
-Our library is capable to recognize when the compontent uses a _legacy syntax_.
+Our library is capable to recognize when the component uses a _legacy syntax_.
 Based on this, we provide extra information, that is related to the documentation or usage of this component.
 
 Currently previous major version of Svelte is `v4`, thus we extract data related to:
@@ -263,7 +274,7 @@ Example:
 
 #### Event handlers
 
-We believe that they should be properly typed using `"svelte/elements"`, as part of _standarization_.
+We believe that they should be properly typed using `"svelte/elements"`, as part of _standardization_.
 Whether you're interested only in those, you can extract a map of them.
 
 #### ARIA
@@ -404,6 +415,10 @@ yarn add --dev svelte-docgen
 ## Getting started
 
 The following sections should help yourself attained with using this library.
+We want to make your thought process to be simple.
+
+1. You [`parse()`](#parse) first,
+2. Then you [`analyze()`]#analyze) the docgen data.
 
 ### parse
 
