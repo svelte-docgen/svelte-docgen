@@ -271,7 +271,7 @@ Example:
 ```
 
 > [!CAUTION]
-
+>
 > [**In Svelte prior to `v4` every component is bindable**](<https://svelte.dev/docs/svelte/v5-migration-guide#Breaking-changes-in-runes-mode-Bindings-need-to-be-explicitly-defined-using-$bindable()>)!
 
 #### Event handlers
