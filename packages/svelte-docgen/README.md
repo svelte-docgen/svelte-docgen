@@ -339,7 +339,7 @@ Whether is it browser, Bun, Deno, Node.js or any Edge-runtime.
 
 ### Browser
 
-TBA - fetch from CDN.
+🚧 TBA - fetch from CDN.
 
 ### Bun
 
@@ -405,7 +405,9 @@ yarn add --dev svelte-docgen
 
 The following sections should help yourself attained with using this library.
 
-### parse This function accepts the _stringified source code_, and then it will generate the [docgen](#terminology) data.
+### parse
+
+This function accepts the _stringified source code_, and then it will generate a _raw_ [docgen](#terminology) data.
 
 Example:
 
@@ -420,11 +422,75 @@ Where as:
 - `<source code>` is the _stringified source code_ of the Svelte component.
 
 > [!NOTE]
-> Please notice that there's also passed option _(which is optional)_ `{ cache: createCacheStorage() }`.
-> **We recommended to use it when you need to parse more than one file.**
+> Please notice that there's also passed option _(which is optional)_ `{ cache: createCacheStorage() }`.\
+> **We recommend to use it when you need to parse more than one file.**
 > That's because TypeScript Compiler API takes a time to boot up, and after that it works faster.
+
+### analyze
+
+Because parser will generate a _raw_ docgen data, and there's still some work to do to make the JSON output smaller,
+which should favor you to make your bundle smaller or a smaller packet to send data via RESTful API request.
+
+Hence we move logic related to analysis of the docgen data to separate function - `analyze`.
+Internally it uses JavaScript getters and internal caching to optimize the memory usage.
+
+Example:
+
+```ts
+import { analyze, createCacheStorage, parse } from "svelte-docgen";
+
+const docgen = parse("<source code>", { cache: createCacheStorage() });
+const analyzed = analyze(docgen);
+```
+
+---
+
+## Docgen schema / API
+
+### Raw
+
+🚧 WIP
+
+### Analyzed
+
+🚧 WIP
+
+#### Component
+
+- `isLegacy`
+- `description`
+- `tags`
+- `exports`
+- `props`
+- `types`
+- `events` _(available only when `legacy: true`)_
+- `slots` _(available only when `legacy: true`)_
+
+#### Props
+
+- `all`
+- `aria`
+- `data`
+- `events`
+- `snippets`
+- `uncategorized`
+
+#### Prop
+
+- `description`
+- `tags`
+- `isBindable`
+- `isOptional`
+- `default` _(available only when `isOptional: true`)_
+- `isOptional`
+- `isExtended`
+- `isExtendedBySvelte`
+- `sources`
+- `type`
+- `isEventHandler`
+- `isSnippet`
+- `getSnippetParameters()` _(available only when `isSnippet: true`)_
 
 <!-- LINKS: -->
 
-That's because TypeScript Compiler API takes a time to boot up, and after that it works faster.
 [Svelte]: https://svelte.dev
