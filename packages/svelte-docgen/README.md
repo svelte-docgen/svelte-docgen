@@ -138,7 +138,7 @@ They don't provide any more structure other than the name of type _kind_:
 - `unknown`
 - `void`
 
-We provide a set of types via `BASIC_TYPE_KIND` and a type-guard function `isBaseType`.
+We provide a set of types via `BASIC_TYPE_KINDS` and a type-guard function `isBaseType`.
 
 #### Structured types
 
@@ -153,7 +153,7 @@ They're more advanced than _base_ types. Because they provide more data in their
 - `tuple`
 - `union`
 
-We provide a set of types via `STRUCTURE_TYPE_KIND` and a type-guard function `isStructuredType`.
+We provide a set of types via `STRUCTURE_TYPE_KINDS` and a type-guard function `isStructuredType`.
 
 #### Instantiable types
 
@@ -170,7 +170,7 @@ They have most advanced structure, so use them with caution:
 - `template-literal`
 - `type-parameter`
 
-We provide a set of types via `INSTANTIABLE_TYPE_KIND` and a type-guard function `isInsstantiableType`.
+We provide a set of types via `INSTANTIABLE_TYPE_KINDS` and a type-guard function `isInsstantiableType`.
 
 ---
 
