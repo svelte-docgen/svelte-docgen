@@ -7,6 +7,21 @@
 
 	import { Docgen } from "./docgen.svelte.ts";
 
+	const default_input = `<script lang="ts">
+	interface Props {
+		/** Example description. */
+		value?: number;
+		group?: string[];
+		presence: boolean | undefined;
+		disabled?: boolean;
+	}
+	let {
+		value = $bindable(0),
+		group = $bindable<string[]>([]),
+		presence = $bindable(false),
+	}: Props = $props();
+</` + `script>`;
+
 	const params = queryParameters({
 		input: {
 			decode(v) {
@@ -28,7 +43,7 @@
 
 	onMount(async () => {
 		if (!editor) throw new Error("Unreachable");
-		manager = new Repl.Manager({ editor, initial: params.input ?? "" });
+		manager = new Repl.Manager({ editor, initial: params.input ?? default_input });
 		docgen = await Docgen.init();
 		await tick();
 	});
