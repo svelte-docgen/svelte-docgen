@@ -45,7 +45,7 @@ export class Manager {
 		});
 		this.source = new Debounced(() => {
 			return this.update?.state.doc.toString() ?? "";
-		}, options.debounce_delay ?? 500);
+		}, options.debounce_delay ?? 400);
 		this.#init();
 	}
 
