@@ -5,6 +5,10 @@ export default defineConfig((env) => {
 	return {
 		assetsInclude: ["../../assets/**/*"],
 
+		build: {
+			target: "esnext",
+		},
+
 		resolve: {
 			alias: {
 				// Because `svelte2tsx` relies on "node:path", we need to polyfill `node:path` with `pathe`.

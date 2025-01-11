@@ -1,6 +1,7 @@
 import { indentWithTab } from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
-import { Compartment, EditorState, type EditorStateConfig } from "@codemirror/state";
+import { json } from "@codemirror/lang-json";
+import { type EditorStateConfig, Compartment, EditorState } from "@codemirror/state";
 import { type ViewUpdate, keymap, EditorView } from "@codemirror/view";
 import { svelte } from "@replit/codemirror-lang-svelte";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
@@ -10,7 +11,10 @@ import { Debounced } from "runed";
 
 const theme_config = new Compartment();
 
-export class Manager {
+export const SUPPORTED_LANGS = new Set(["json", "svelte"] as const);
+export type Lang = typeof SUPPORTED_LANGS extends Set<infer T> ? T : never;
+
+export class Context {
 	source: Debounced<string>;
 	view: EditorView;
 	update = $state<ViewUpdate>();
@@ -26,26 +30,42 @@ export class Manager {
 		// NOTE: Understand this: https://codemirror.net/examples/tab/
 		keymap.of([indentWithTab]),
 		indentUnit.of("\t"),
-		svelte(),
 	] satisfies EditorStateConfig["extensions"];
 
-	constructor(options: { editor: HTMLDivElement; initial: string; debounce_delay?: number }) {
+	constructor(props: {
+		debounce_delay?: number;
+		container: HTMLDivElement;
+		initial?: string;
+		lang: Lang;
+		readonly?: boolean;
+	}) {
+		// eslint-disable-next-line prefer-const
+		let extensions = [
+			//
+			...this.#default_extensions,
+			EditorView.updateListener.of((update) => {
+				this.update = update;
+			}),
+		];
+		if (props.lang === "json") {
+			extensions.push(json());
+		}
+		if (props.lang === "svelte") {
+			extensions.push(svelte());
+		}
+		if (props.readonly) {
+			extensions.push(EditorState.readOnly.of(true));
+		}
 		this.view = new EditorView({
-			parent: options.editor,
+			parent: props.container,
 			state: EditorState.create({
-				doc: options.initial,
-				extensions: [
-					//
-					...this.#default_extensions,
-					EditorView.updateListener.of((update) => {
-						this.update = update;
-					}),
-				],
+				doc: props.initial ?? "",
+				extensions,
 			}),
 		});
 		this.source = new Debounced(() => {
 			return this.update?.state.doc.toString() ?? "";
-		}, options.debounce_delay ?? 400);
+		}, props.debounce_delay ?? 400);
 		this.#init();
 	}
 

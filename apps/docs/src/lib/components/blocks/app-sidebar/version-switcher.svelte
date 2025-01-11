@@ -26,9 +26,9 @@
 						{...props}
 					>
 						<div
-							class="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center border border-sidebar-primary rounded-lg"
+							class="text-sidebar-primary-foreground border-sidebar-primary flex aspect-square size-8 items-center justify-center rounded-lg border"
 						>
-							<img alt="svelte-docgen logo" src={logoURL} class="size-auto">
+							<img alt="svelte-docgen logo" src={logoURL} class="size-auto" />
 						</div>
 						<div class="flex flex-col gap-0.5 leading-none">
 							<span class="font-semibold">{"svelte-docgen"}</span>

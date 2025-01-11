@@ -3,8 +3,9 @@ import { describe, expectTypeOf, it } from "vitest";
 import { create_options } from "../../tests/shared.ts";
 import { analyze, parse } from "../mod.js";
 import type { Events, Slots } from "../doc/type.ts";
+import { getType } from "./mod.js";
 
-describe("analyze", () => {
+describe(analyze.name, () => {
 	it("typing works for legacy component", ({ expect }) => {
 		const docgen = parse(
 			`
