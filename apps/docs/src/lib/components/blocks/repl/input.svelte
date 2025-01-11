@@ -6,9 +6,7 @@
 	interface Props extends Omit<ComponentProps<typeof Editor>, "lang"> {
 		context?: Context;
 	}
-	let {
-		context = $bindable(),
-	}: Props = $props();
+	let { context = $bindable(), ...rest_props }: Props = $props();
 </script>
 
-<Editor bind:context lang="svelte" />
+<Editor bind:context lang="svelte" {...rest_props} />

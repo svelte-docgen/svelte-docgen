@@ -7,7 +7,15 @@
 
 	import { Context } from "./context.svelte.ts";
 
-	const default_input = `<script lang="ts">
+	const default_input =
+		`
+<!--
+@component Example description
+
+@category Atom
+@authors ciscorn; xeho91
+-->
+<script lang="ts">
 	interface Props {
 		/** Example description. */
 		value?: number;
@@ -52,7 +60,7 @@
 
 <Repl.Root>
 	{#snippet input()}
-		<Repl.Input bind:context={ctx_editor} />
+		<Repl.Input bind:context={ctx_editor} initial={default_input} />
 	{/snippet}
 
 	{#snippet output()}

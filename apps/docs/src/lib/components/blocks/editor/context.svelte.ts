@@ -32,7 +32,7 @@ export class Context {
 		indentUnit.of("\t"),
 	] satisfies EditorStateConfig["extensions"];
 
-	constructor(options: {
+	constructor(props: {
 		debounce_delay?: number;
 		container: HTMLDivElement;
 		initial?: string;
@@ -47,25 +47,25 @@ export class Context {
 				this.update = update;
 			}),
 		];
-		if (options.lang === "json") {
+		if (props.lang === "json") {
 			extensions.push(json());
 		}
-		if (options.lang === "svelte") {
+		if (props.lang === "svelte") {
 			extensions.push(svelte());
 		}
-		if (options.readonly) {
+		if (props.readonly) {
 			extensions.push(EditorState.readOnly.of(true));
 		}
 		this.view = new EditorView({
-			parent: options.container,
+			parent: props.container,
 			state: EditorState.create({
-				doc: options.initial,
+				doc: props.initial ?? "",
 				extensions,
 			}),
 		});
 		this.source = new Debounced(() => {
 			return this.update?.state.doc.toString() ?? "";
-		}, options.debounce_delay ?? 400);
+		}, props.debounce_delay ?? 400);
 		this.#init();
 	}
 

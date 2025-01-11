@@ -1,3 +1,10 @@
+<script module lang="ts">
+	export type Items = "snippets" | "events" | "aria" | "data" | "uncategorized";
+
+	/** Session storage key */
+	export const SS_KEY = "output-overview-accordion-props";
+</script>
+
 <script lang="ts">
 	import IconBraces from "lucide-svelte/icons/braces";
 	import type { analyze } from "svelte-docgen";
@@ -13,30 +20,19 @@
 		props: ReturnType<typeof analyze>["props"];
 		types: ReturnType<typeof analyze>["types"];
 	}
-	let {
-		props,
-		types,
-		...rest_props
-	}: Props = $props();
+	let { props, types, ...rest_props }: Props = $props();
 
-	/** Session storage key */
-	const ss_key = "output-overview-accordion-props";
-	const stored = globalThis.window !== undefined ? window.sessionStorage.getItem(ss_key) : null;
-	type Items = "snippets" | "event-handlers" | "a11y" | "data" | "other";
+	const stored = globalThis.window !== undefined ? window.sessionStorage.getItem(SS_KEY) : null;
 	let accordion_state = $state<SvelteSet<Items>>(new SvelteSet(stored ? (JSON.parse(stored) as Items[]) : []));
 	let is_empty = $derived(props.all.size === 0);
 	let snippets = $derived(props.snippets);
 	let events = $derived(props.events);
 	let aria = $derived(props.aria);
 	let data = $derived(props.data);
-	let other = $derived(props.uncategorized);
+	let uncategorized = $derived(props.uncategorized);
 </script>
 
-<Accordion.Item
-	{...rest_props}
-	disabled={is_empty}
-	value="props"
->
+<Accordion.Item {...rest_props} disabled={is_empty} value="props">
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
 			<IconBraces /> Props {props.all.size > 0 ? `(${props.all.size})` : ""}
@@ -49,30 +45,33 @@
 			bind:value={() => Iterator.from(accordion_state).toArray(), (v) => (accordion_state = new SvelteSet(v))}
 		>
 			{#if snippets.size > 0}
-					<Accordion.Item value="snippets">
-						<Tooltip.Provider>
-							<Tooltip.Root>
-								<Tooltip.Trigger class="w-full">
-									<Accordion.Trigger>Snippets ({snippets.size})</Accordion.Trigger>
-								</Tooltip.Trigger>
+				<Accordion.Item value="snippets">
+					<Tooltip.Provider>
+						<Tooltip.Root>
+							<Tooltip.Trigger class="w-full">
+								<Accordion.Trigger>Snippets ({snippets.size})</Accordion.Trigger>
+							</Tooltip.Trigger>
 
-								<Tooltip.Content>
-									<p>
-										Reusable chunks of markup inside your components.<br>
-										Read more about them on <a href="https://svelte.dev/docs/svelte/snippet" class="underline">Svelte documentation</a>.
-									</p>
-								</Tooltip.Content>
-							</Tooltip.Root>
-						</Tooltip.Provider>
+							<Tooltip.Content>
+								<p>
+									Reusable chunks of markup inside your components.<br />
+									Read more about them on
+									<a href="https://svelte.dev/docs/svelte/snippet" class="underline"
+										>Svelte documentation</a
+									>.
+								</p>
+							</Tooltip.Content>
+						</Tooltip.Root>
+					</Tooltip.Provider>
 
-						<Accordion.Content>
-							<PropsTable props={snippets} {types} />
-						</Accordion.Content>
-					</Accordion.Item>
+					<Accordion.Content>
+						<PropsTable props={snippets} {types} />
+					</Accordion.Content>
+				</Accordion.Item>
 			{/if}
 
 			{#if events.size > 0}
-				<Accordion.Item value="event-handlers">
+				<Accordion.Item value="events">
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger class="w-full">
@@ -81,8 +80,13 @@
 
 							<Tooltip.Content>
 								<p>
-									Signals fired inside the browser window that notify of changes in the browser or operating system environment.<br>
-									Read more about them on <a href="https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers" class="underline">MDN documentation</a>.
+									Signals fired inside the browser window that notify of changes in the browser or
+									operating system environment.<br />
+									Read more about them on
+									<a
+										href="https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers"
+										class="underline">MDN documentation</a
+									>.
 								</p>
 							</Tooltip.Content>
 						</Tooltip.Root>
@@ -94,8 +98,8 @@
 				</Accordion.Item>
 			{/if}
 
-			{#if events.size > 0}
-				<Accordion.Item value="a11y">
+			{#if aria.size > 0}
+				<Accordion.Item value="aria">
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger class="w-full">
@@ -104,8 +108,13 @@
 
 							<Tooltip.Content>
 								<p>
-									Accessible Rich Internet Applications (ARIA) is a set of roles and attributes that define ways to make web content and web applications (especially those developed with JavaScript) more accessible to people with disabilities.
-									Read more about them on <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA" class="underline">MDN documentation</a>.
+									Accessible Rich Internet Applications (ARIA) is a set of roles and attributes that
+									define ways to make web content and web applications (especially those developed
+									with JavaScript) more accessible to people with disabilities. Read more about them
+									on <a
+										href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"
+										class="underline">MDN documentation</a
+									>.
 								</p>
 							</Tooltip.Content>
 						</Tooltip.Root>
@@ -118,7 +127,7 @@
 			{/if}
 
 			{#if data.size > 0}
-				<Accordion.Item value="data-attr">
+				<Accordion.Item value="data">
 					<Tooltip.Provider>
 						<Tooltip.Root>
 							<Tooltip.Trigger class="w-full">
@@ -127,8 +136,13 @@
 
 							<Tooltip.Content>
 								<p>
-									Custom data attributes, that allow proprietary information to be exchanged between the HTML and its DOM representation by scripts.<br>
-									Read more about them on <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*" class="underline">MDN documentation</a>.
+									Custom data attributes, that allow proprietary information to be exchanged between
+									the HTML and its DOM representation by scripts.<br />
+									Read more about them on
+									<a
+										href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*"
+										class="underline">MDN documentation</a
+									>.
 								</p>
 							</Tooltip.Content>
 						</Tooltip.Root>
@@ -140,12 +154,11 @@
 				</Accordion.Item>
 			{/if}
 
-			{#if other.size > 0}
-				<Accordion.Item value="other">
-					<Accordion.Trigger>Other ({other.size})</Accordion.Trigger>
-
+			{#if uncategorized.size > 0}
+				<Accordion.Item value="uncategorized">
+					<Accordion.Trigger>Other ({uncategorized.size})</Accordion.Trigger>
 					<Accordion.Content>
-						<PropsTable props={other} {types} />
+						<PropsTable props={uncategorized} {types} />
 					</Accordion.Content>
 				</Accordion.Item>
 			{/if}

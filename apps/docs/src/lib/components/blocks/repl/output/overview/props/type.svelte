@@ -1,5 +1,5 @@
 <script lang="ts">
-import type * as Doc from "svelte-docgen/doc";
+	import type * as Doc from "svelte-docgen/doc";
 	import { Code } from "$lib/components/ui/code/index.ts";
 
 	interface Props {
@@ -11,12 +11,12 @@ import type * as Doc from "svelte-docgen/doc";
 	let type = $derived(get_type(type_));
 
 	function get_type(t: Doc.TypeOrRef): Doc.Type {
-			if (is_type_ref(t)) {
-				const type = types.get(t);
-				if (!type) throw new Error("Unreachable");
-				return type;
-			}
-			return t;
+		if (is_type_ref(t)) {
+			const type = types.get(t);
+			if (!type) throw new Error("Unreachable");
+			return type;
+		}
+		return t;
 	}
 
 	function is_type_ref(type: Doc.TypeOrRef): type is Doc.TypeRef {
@@ -31,7 +31,8 @@ import type * as Doc from "svelte-docgen/doc";
 	function parse_type_ref(ref: Doc.TypeRef): TypeRefData {
 		const regex = /"(?<module>[^"]+)"\.(?<alias>\w+)(?:<(?<generics>[^>]*)>)?/;
 		const match = regex.exec(ref);
-		if (!match || !match.groups || !("module" in match.groups || "alias" in match.groups)) throw new Error("Unreachable");
+		if (!match || !match.groups || !("module" in match.groups || "alias" in match.groups))
+			throw new Error("Unreachable");
 		return match.groups as unknown as TypeRefData;
 	}
 </script>
@@ -48,9 +49,9 @@ import type * as Doc from "svelte-docgen/doc";
 				{#if is_type_ref(t)}
 					{@const ref = parse_type_ref(t)}
 					<Code>
-					{ref.alias}{#if ref.generics}
-						{`<${ref.generics}>`}
-					{/if}
+						{ref.alias}{#if ref.generics}
+							{`<${ref.generics}>`}
+						{/if}
 					</Code>
 				{:else}
 					<Code>{t.kind}</Code>

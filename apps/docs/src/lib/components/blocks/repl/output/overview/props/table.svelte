@@ -53,7 +53,6 @@ interface Props {
 	}
 </script>
 
-
 <Table.Root {...rest_props}>
 	<Table.Header>
 		<Table.Row>
@@ -137,14 +136,12 @@ interface Props {
 
 								<Dialog.Content>
 									<Dialog.Header>
-										<Dialog.Title
-											>How to provide a description to component prop?</Dialog.Title
-										>
+										<Dialog.Title>How to provide a description to component prop?</Dialog.Title>
 									</Dialog.Header>
 									<Dialog.Description>
 										<p>
-											Above the component prop type declaration, insert a JSDoc comment
-											with description. Example:
+											Above the component prop type declaration, insert a JSDoc comment with
+											description. Example:
 										</p>
 										<!-- eslint-disable-next-line svelte/no-at-html-tags - Is ok, is sanitized. -->
 										{@html DOMPurify.sanitize(create_dialog_description_code(name, prop))}
@@ -158,7 +155,6 @@ interface Props {
 		{/each}
 	</Table.Body>
 </Table.Root>
-
 
 <style>
 	:global(.name-and-icons svg) {

@@ -1,3 +1,10 @@
+<script module lang="ts">
+	export type Items = "description" | "exports" | "tags" | "props";
+
+	/** Session storage key */
+	export const SS_KEY = "output-overview-accordion";
+</script>
+
 <script lang="ts">
 	import { SvelteSet } from "svelte/reactivity";
 	import type { analyze } from "svelte-docgen";
@@ -15,15 +22,12 @@
 	}
 	let { data }: Props = $props();
 
-	/** Session storage key */
-	const ss_key = "output-overview-accordion";
-	const stored = globalThis.window !== undefined ? window.sessionStorage.getItem(ss_key) : null;
-	type Items = "description" | "exports" | "tags" | "props";
+	const stored = globalThis.window !== undefined ? window.sessionStorage.getItem(SS_KEY) : null;
 	let accordion_state = $state<SvelteSet<Items>>(new SvelteSet(stored ? (JSON.parse(stored) as Items[]) : []));
 
 	/** Store in session storage for better UX */
 	$effect(() => {
-		window.sessionStorage.setItem(ss_key, JSON.stringify(Iterator.from(accordion_state).toArray()));
+		window.sessionStorage.setItem(SS_KEY, JSON.stringify(Iterator.from(accordion_state).toArray()));
 	});
 </script>
 

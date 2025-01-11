@@ -5,20 +5,22 @@
 	import { Context } from "./context.svelte.ts";
 
 	type ContextParams = Omit<ConstructorParameters<typeof Context>[0], "container">;
-	type Props = ContextParams & HTMLAttributes<HTMLDivElement> & {
-		context?: Context;
-	};
+	type Props = ContextParams &
+		HTMLAttributes<HTMLDivElement> & {
+			context?: Context;
+		};
 	let {
-		//
+		// Custom
 		context = $bindable(),
 		initial,
 		lang,
 		readonly = false,
+		// Native
 		class: class_,
 		...rest_props
 	}: Props = $props();
 
-	let container: HTMLDivElement;
+	let container = $state<HTMLDivElement>();
 
 	onMount(() => {
 		if (!container) throw new Error("Unreachable");
@@ -31,15 +33,11 @@
 		// On destroy...
 		return () => {
 			context?.destroy();
-		}
+		};
 	});
 </script>
 
-<div
-	bind:this={container}
-	class={["h-full overflow-auto", class_]}
-	{...rest_props}
-></div>
+<div bind:this={container} class={["h-full overflow-auto", class_]} {...rest_props}></div>
 
 <style>
 	div {

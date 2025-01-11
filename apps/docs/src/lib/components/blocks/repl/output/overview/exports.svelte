@@ -12,11 +12,7 @@
 		exports: ReturnType<typeof analyze>["exports"];
 		types: ReturnType<typeof analyze>["types"];
 	}
-	let {
-		exports,
-		types,
-		...rest_props
-	}: Props = $props();
+	let { exports, types, ...rest_props }: Props = $props();
 
 	let is_empty = $derived(exports.size === 0);
 
@@ -30,11 +26,7 @@
 	}
 </script>
 
-<Accordion.Item
-	{...rest_props}
-	disabled={is_empty}
-	value="exports"
->
+<Accordion.Item {...rest_props} disabled={is_empty} value="exports">
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
 			<IconFileUp /> Exports

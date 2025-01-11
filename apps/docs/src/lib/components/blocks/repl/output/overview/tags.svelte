@@ -30,11 +30,7 @@
 	});
 </script>
 
-<Accordion.Item
-	{...rest_props}
-	disabled={is_empty}
-	value="tags"
->
+<Accordion.Item {...rest_props} disabled={is_empty} value="tags">
 	<Accordion.Trigger>
 		<span class="inline-flex items-center gap-2">
 			<IconTags /> Tags
@@ -60,9 +56,11 @@
 							<Tooltip.Content>
 								<ul class={[content.length > 1 && "list-disc pl-2"]}>
 									{#each content as parts}
-										<li>{#each parts as part}
+										<li>
+											{#each parts as part}
 												{part.text}
-										{/each}</li>
+											{/each}
+										</li>
 									{/each}
 								</ul>
 							</Tooltip.Content>

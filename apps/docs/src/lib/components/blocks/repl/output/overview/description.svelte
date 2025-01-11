@@ -41,10 +41,7 @@
 	}
 </script>
 
-<Accordion.Item
-	{...rest_props}
-	value="description"
->
+<Accordion.Item {...rest_props} value="description">
 	<Accordion.Trigger class="trigger">
 		<span class="inline-flex items-center gap-2">
 			<IconNotepad />

@@ -1,9 +1,10 @@
 <script lang="ts" module>
 	export const TABS = new Set(["overview", "docgen"] as const);
-	export const TYPES = new Set(["raw", "json"] as const);
 
 	export type Tab = typeof TABS extends Set<infer T> ? T : never;
-	export type Type = typeof TYPES extends Set<infer T> ? T : never;
+
+	// Session storage keys
+	const SS_KEY = "output-tab";
 </script>
 
 <script lang="ts">
@@ -22,24 +23,21 @@
 	}
 	let { data }: Props = $props();
 
+	let current_tab = $state<Tab>((window.sessionStorage.getItem(SS_KEY) as Tab) ?? "docgen");
+
 	let analyzed = $derived(analyze(data));
-
-	// Session storage keys
-	const ss_tab = "output-tab";
-
-	let current_tab = $state<Tab>((window.sessionStorage.getItem(ss_tab) as Tab) ?? "docgen");
 
 	/**
 	 * Store in session storage the current tab, because it loses output on editor update
 	 */
 	$effect(() => {
-		window.sessionStorage.setItem(ss_tab, current_tab);
+		window.sessionStorage.setItem(SS_KEY, current_tab);
 	});
 </script>
 
 <ScrollArea class="h-full">
 	<Tabs.Root bind:value={current_tab} class="h-auto">
-		<Tabs.List class="sticky top-0 z-10 grid grid-cols-2 rounded-none px-2 !h-auto pb-0">
+		<Tabs.List class="sticky top-0 z-10 grid !h-auto grid-cols-2 rounded-none px-2 pb-0">
 			<Tabs.Trigger value="overview" class="rounded-b-none !shadow-none">
 				<IconPresentation class="me-2" /> Overview
 			</Tabs.Trigger>
