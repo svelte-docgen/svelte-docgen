@@ -133,7 +133,7 @@ export function get_sources(declarations, root_path_url) {
 			/* prettier-ignore */
 			return d
 				.getSourceFile()
-				.fileName.replace(".tsx", "")
+				.fileName.replace(/\.svelte\.tsx$/, ".svelte")
 				.replace(root_path_url.pathname + pathe.sep, "");
 		}),
 	);

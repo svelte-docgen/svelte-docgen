@@ -2,17 +2,18 @@ import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
 import { parse } from "../mod.js";
-import { isTypeRef } from "../../doc/utils.js";
+import { isTypeRef } from "../../kind/guard.js";
 import type * as Doc from "../../doc/type.js";
 
 describe("Interface", () => {
 	const { props, types } = parse(
 		`
 			<script lang="ts">
-				interface A {
+				interface A<T> {
 					name: string;
 					age?: number;
 					moo: () => void;
+					t: T;
 				}
 				interface B {
 					readonly x: number;
@@ -23,7 +24,7 @@ describe("Interface", () => {
 				};
 				interface Empty {}
 				type EmptyType = {};
-				type Aliased = A;
+				type Aliased = A<number>;
 				interface Recursive {
 					recursive: Recursive;
 				}
@@ -35,7 +36,7 @@ describe("Interface", () => {
 				}
 				interface Props {
 					anonymous: { name: "Guy"; surname: "Fawkes" };
-					a: A;
+					a: A<string>;
 					b: B;
 					"as-type": AsType;
 					"empty-aliased": Empty;
@@ -43,6 +44,7 @@ describe("Interface", () => {
 					aliased: Aliased;
 					recursive: Recursive;
 					circular: CircularA;
+					record: Record<string, number>;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -84,13 +86,19 @@ describe("Interface", () => {
 
 	it("recognizes aliased interface", ({ expect }) => {
 		const a = props.get("a");
-		expect(a?.type).toBe("A");
-		const type = types.get("A") as Doc.Interface;
+		expect(a?.type).toBe("A<string>");
+		const type = types.get("A<string>") as Doc.Interface;
 		expect(type.kind).toBe("interface");
 		expect((type as Doc.Interface)?.alias).toBe("A");
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "A",
+			  "aliasSource": "interface.svelte",
+			  "aliasTypeArgs": [
+			    {
+			      "kind": "string",
+			    },
+			  ],
 			  "kind": "interface",
 			  "members": Map {
 			    "name" => {
@@ -133,9 +141,13 @@ describe("Interface", () => {
 			        "kind": "function",
 			      },
 			    },
-			  },
-			  "sources": Set {
-			    "interface.svelte",
+			    "t" => {
+			      "isOptional": false,
+			      "isReadonly": false,
+			      "type": {
+			        "kind": "string",
+			      },
+			    },
 			  },
 			}
 		`);
@@ -150,6 +162,7 @@ describe("Interface", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "B",
+			  "aliasSource": "interface.svelte",
 			  "kind": "interface",
 			  "members": Map {
 			    "x" => {
@@ -166,9 +179,6 @@ describe("Interface", () => {
 			        "kind": "number",
 			      },
 			    },
-			  },
-			  "sources": Set {
-			    "interface.svelte",
 			  },
 			}
 		`);
@@ -199,14 +209,28 @@ describe("Interface", () => {
 
 	it("understands type which is an alias to interface only", ({ expect }) => {
 		const aliased = props.get("aliased");
-		expect(aliased?.type).toBe("A");
+		expect(aliased?.type).toBe("Aliased");
+	});
+
+	it("recognizes Record", ({ expect }) => {
+		const record = props.get("record");
+		expect(record?.type).toBe("Record<string, number>");
+		const type = types.get("Record<string, number>") as Doc.Interface;
+		expect(type.kind).toBe("interface");
+		expect(type.aliasTypeArgs).toEqual([{ kind: "string" }, { kind: "number" }]);
 	});
 
 	it("collects aliased types", ({ expect }) => {
 		expect(types).toMatchInlineSnapshot(`
 			Map {
-			  "A" => {
+			  "A<string>" => {
 			    "alias": "A",
+			    "aliasSource": "interface.svelte",
+			    "aliasTypeArgs": [
+			      {
+			        "kind": "string",
+			      },
+			    ],
 			    "kind": "interface",
 			    "members": Map {
 			      "name" => {
@@ -249,13 +273,18 @@ describe("Interface", () => {
 			          "kind": "function",
 			        },
 			      },
-			    },
-			    "sources": Set {
-			      "interface.svelte",
+			      "t" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "string",
+			        },
+			      },
 			    },
 			  },
 			  "B" => {
 			    "alias": "B",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "x" => {
@@ -273,12 +302,10 @@ describe("Interface", () => {
 			        },
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "AsType" => {
 			    "alias": "AsType",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "ugly" => {
@@ -291,28 +318,76 @@ describe("Interface", () => {
 			        },
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "Empty" => {
 			    "alias": "Empty",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {},
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "EmptyType" => {
 			    "alias": "EmptyType",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {},
-			    "sources": Set {
-			      "interface.svelte",
+			  },
+			  "Aliased" => {
+			    "alias": "Aliased",
+			    "aliasSource": "interface.svelte",
+			    "kind": "interface",
+			    "members": Map {
+			      "name" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "string",
+			        },
+			      },
+			      "age" => {
+			        "isOptional": true,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "union",
+			          "nonNullable": {
+			            "kind": "number",
+			          },
+			          "types": [
+			            {
+			              "kind": "number",
+			            },
+			            {
+			              "kind": "undefined",
+			            },
+			          ],
+			        },
+			      },
+			      "moo" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "calls": [
+			            {
+			              "parameters": [],
+			              "returns": {
+			                "kind": "void",
+			              },
+			            },
+			          ],
+			          "kind": "function",
+			        },
+			      },
+			      "t" => {
+			        "isOptional": false,
+			        "isReadonly": false,
+			        "type": {
+			          "kind": "number",
+			        },
+			      },
 			    },
 			  },
 			  "Recursive" => {
 			    "alias": "Recursive",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "recursive" => {
@@ -321,12 +396,10 @@ describe("Interface", () => {
 			        "type": "Recursive",
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "CircularA" => {
 			    "alias": "CircularA",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "b" => {
@@ -344,12 +417,10 @@ describe("Interface", () => {
 			        },
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
 			  },
 			  "CircularB" => {
 			    "alias": "CircularB",
+			    "aliasSource": "interface.svelte",
 			    "kind": "interface",
 			    "members": Map {
 			      "a" => {
@@ -367,9 +438,20 @@ describe("Interface", () => {
 			        },
 			      },
 			    },
-			    "sources": Set {
-			      "interface.svelte",
-			    },
+			  },
+			  "Record<string, number>" => {
+			    "alias": "Record",
+			    "aliasSource": node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts,
+			    "aliasTypeArgs": [
+			      {
+			        "kind": "string",
+			      },
+			      {
+			        "kind": "number",
+			      },
+			    ],
+			    "kind": "interface",
+			    "members": Map {},
 			  },
 			}
 		`);

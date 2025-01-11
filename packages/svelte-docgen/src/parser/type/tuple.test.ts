@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
-import { isTypeRef } from "../../doc/utils.js";
+import { isTypeRef } from "../../kind/guard.js";
 
 describe("Tuple", () => {
 	const { props, types } = parse(
@@ -128,10 +128,8 @@ describe("Tuple", () => {
 			  },
 			  "Letter" => {
 			    "alias": "Letter",
+			    "aliasSource": "tuple.svelte",
 			    "kind": "union",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
 			    "types": [
 			      {
 			        "kind": "literal",
@@ -152,10 +150,8 @@ describe("Tuple", () => {
 			  },
 			  "Num" => {
 			    "alias": "Num",
+			    "aliasSource": "tuple.svelte",
 			    "kind": "union",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
 			    "types": [
 			      {
 			        "kind": "literal",
@@ -194,6 +190,7 @@ describe("Tuple", () => {
 			  },
 			  "Aliased" => {
 			    "alias": "Aliased",
+			    "aliasSource": "tuple.svelte",
 			    "elements": [
 			      {
 			        "kind": "string",
@@ -204,16 +201,11 @@ describe("Tuple", () => {
 			    ],
 			    "isReadonly": false,
 			    "kind": "tuple",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
 			  },
 			  "Recursive" => {
 			    "alias": "Recursive",
+			    "aliasSource": "tuple.svelte",
 			    "kind": "union",
-			    "sources": Set {
-			      "tuple.svelte",
-			    },
 			    "types": [
 			      {
 			        "kind": "number",

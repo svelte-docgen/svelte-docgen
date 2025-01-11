@@ -7,6 +7,21 @@
 
 	import { Context } from "./context.svelte.ts";
 
+	const default_input = `<script lang="ts">
+	interface Props {
+		/** Example description. */
+		value?: number;
+		group?: string[];
+		presence: boolean | undefined;
+		disabled?: boolean;
+	}
+	let {
+		value = $bindable(0),
+		group = $bindable<string[]>([]),
+		presence = $bindable(false),
+	}: Props = $props();
+</` + `script>`;
+
 	const params = queryParameters({
 		input: {
 			decode(v) {

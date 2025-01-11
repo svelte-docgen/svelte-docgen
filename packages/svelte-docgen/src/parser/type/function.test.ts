@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { create_options } from "../../../tests/shared.js";
 import { parse } from "../mod.js";
 import type * as Doc from "../../doc/type.js";
-import { isTypeRef } from "../../doc/utils.js";
+import { isTypeRef } from "../../kind/guard.js";
 
 describe("Fn", () => {
 	const { props, types } = parse(
@@ -148,7 +148,7 @@ describe("Fn", () => {
 		const aliased = types.get("Aliased");
 		if (!aliased || isTypeRef(aliased)) throw new Error("expected a type");
 		expect((aliased as Doc.Fn).alias).toBe("Aliased");
-		expect((aliased as Doc.Fn).sources).toBeDefined();
+		expect((aliased as Doc.Fn).aliasSource).toBeDefined();
 	});
 
 	it("collects aliased types", ({ expect }) => {
@@ -156,10 +156,8 @@ describe("Fn", () => {
 			Map {
 			  "Baz" => {
 			    "alias": "Baz",
+			    "aliasSource": "function.svelte",
 			    "kind": "union",
-			    "sources": Set {
-			      "function.svelte",
-			    },
 			    "types": [
 			      {
 			        "kind": "string",
@@ -171,6 +169,7 @@ describe("Fn", () => {
 			  },
 			  "Aliased" => {
 			    "alias": "Aliased",
+			    "aliasSource": "function.svelte",
 			    "calls": [
 			      {
 			        "parameters": [],
@@ -180,9 +179,6 @@ describe("Fn", () => {
 			      },
 			    ],
 			    "kind": "function",
-			    "sources": Set {
-			      "function.svelte",
-			    },
 			  },
 			}
 		`);

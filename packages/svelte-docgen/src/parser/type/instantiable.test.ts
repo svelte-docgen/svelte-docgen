@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
 import { parse } from "../mod.js";
-import { isTypeRef } from "../../doc/utils.js";
+import { isTypeRef } from "../../kind/guard.js";
 import type * as Doc from "../../doc/type.js";
 
 describe("Instantiable types", () => {
@@ -12,7 +12,7 @@ describe("Instantiable types", () => {
 		  type I<T> = keyof T;
 			type IA<T> = number[keyof T];
 			type C<T> = T extends string ? T : false;
-			type SM<T> = Uppercase<T>; 
+			type SM<T> = Uppercase<T>;
 			type TL<G extends string , T extends string> = \`\${G}, \${T}!\`;
 	 		let { ..._ }: {
 			  index: I<K>;
@@ -40,6 +40,10 @@ describe("Instantiable types", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "IA",
+			  "aliasSource": "type-parameter.svelte",
+			  "aliasTypeArgs": [
+			    "K",
+			  ],
 			  "index": {
 			    "kind": "index",
 			    "type": "K",
@@ -47,9 +51,6 @@ describe("Instantiable types", () => {
 			  "kind": "indexed-access",
 			  "object": {
 			    "kind": "number",
-			  },
-			  "sources": Set {
-			    "type-parameter.svelte",
 			  },
 			}
 		`);
@@ -69,6 +70,10 @@ describe("Instantiable types", () => {
 		expect(type).toMatchInlineSnapshot(`
 			{
 			  "alias": "C",
+			  "aliasSource": "type-parameter.svelte",
+			  "aliasTypeArgs": [
+			    "K",
+			  ],
 			  "check": "K",
 			  "extends": {
 			    "kind": "string",
@@ -79,9 +84,6 @@ describe("Instantiable types", () => {
 			    "value": false,
 			  },
 			  "kind": "conditional",
-			  "sources": Set {
-			    "type-parameter.svelte",
-			  },
 			  "truthy": {
 			    "base": "K",
 			    "constraint": {
