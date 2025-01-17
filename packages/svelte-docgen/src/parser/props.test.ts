@@ -136,6 +136,78 @@ describe("props", () => {
 		expect(disabled?.isBindable).toBe(false);
 	});
 
+	it("props are bindable when component uses legacy syntax", ({ expect }) => {
+		const { props } = parse(
+			`
+			<script lang="ts">
+				export let value = 0;
+				export let group: string[] = [];
+				export let random: any;
+			</script>
+			`,
+			create_options("bindable-legacy-props.svelte"),
+		);
+		expect(props).toMatchInlineSnapshot(`
+			Map {
+			  "value" => {
+			    "default": {
+			      "kind": "literal",
+			      "subkind": "number",
+			      "value": 0,
+			    },
+			    "isBindable": true,
+			    "isExtended": false,
+			    "isOptional": true,
+			    "tags": [],
+			    "type": {
+			      "kind": "union",
+			      "nonNullable": {
+			        "kind": "number",
+			      },
+			      "types": [
+			        {
+			          "kind": "number",
+			        },
+			        {
+			          "kind": "undefined",
+			        },
+			      ],
+			    },
+			  },
+			  "group" => {
+			    "default": "Array<never>",
+			    "isBindable": true,
+			    "isExtended": false,
+			    "isOptional": true,
+			    "tags": [],
+			    "type": {
+			      "kind": "union",
+			      "nonNullable": "Array<string>",
+			      "types": [
+			        "Array<string>",
+			        {
+			          "kind": "undefined",
+			        },
+			      ],
+			    },
+			  },
+			  "random" => {
+			    "isBindable": true,
+			    "isExtended": false,
+			    "isOptional": false,
+			    "tags": [],
+			    "type": {
+			      "kind": "any",
+			    },
+			  },
+			}
+		`);
+		expect(props.size).toBe(3);
+		for (const prop of props.values()) {
+			expect(prop.isBindable).toBe(true);
+		}
+	});
+
 	it("recognizes optional props and default values", ({ expect }) => {
 		const { props } = parse(
 			`
