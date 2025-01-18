@@ -12,15 +12,14 @@
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 	import { AppHeader, type RouteMeta } from "$lib/components/blocks/app-header/index.ts";
 	import { AppSidebar } from "$lib/components/blocks/app-sidebar/index.ts";
+	import { goto } from "$app/navigation";
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	let routes = $derived.by<RouteMeta[]>(() => {
 		let results = [];
 		for (const route of page.url.pathname.slice(1).split("/")) {
-			if (route) {
-				results.push(get_route_meta(route));
-			}
+			if (route) results.push(get_route_meta(route));
 		}
 		return results;
 	});
@@ -74,7 +73,8 @@
 			],
 		},
 		playground: {
-			items: [],
+			onplusclick: () => goto("/playground"),
+			items: data.examples,
 		},
 		bottom: {
 			items: [
