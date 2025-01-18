@@ -1,19 +1,18 @@
 import { indentWithTab } from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
 import { Compartment, EditorState, type EditorStateConfig } from "@codemirror/state";
-import { type ViewUpdate, keymap, EditorView } from "@codemirror/view";
+import { keymap, EditorView } from "@codemirror/view";
 import { svelte } from "@replit/codemirror-lang-svelte";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import { basicSetup } from "codemirror";
 import { mode } from "mode-watcher";
-import { Debounced } from "runed";
 
 const theme_config = new Compartment();
 
-export class Manager {
-	source: Debounced<string>;
+export type EditorUpdateHandler = Parameters<(typeof EditorView)["updateListener"]["of"]>[0];
+
+export class Context {
 	view: EditorView;
-	update = $state<ViewUpdate>();
 
 	scheme = $state<"light" | "dark">();
 	#scheme_unsubscriber = mode.subscribe((v) => (this.scheme = v));
@@ -29,23 +28,23 @@ export class Manager {
 		svelte(),
 	] satisfies EditorStateConfig["extensions"];
 
-	constructor(options: { editor: HTMLDivElement; initial: string; debounce_delay?: number }) {
+	constructor(options: {
+		editor: HTMLDivElement;
+		initial?: NonNullable<Parameters<typeof EditorState["create"]>[0]>["doc"];
+		on_update?: EditorUpdateHandler;
+	}) {
+		// eslint-disable-next-line prefer-const
+		let extensions = this.#default_extensions;
+		if (options.on_update) {
+			extensions.push(EditorView.updateListener.of(options.on_update));
+		}
 		this.view = new EditorView({
 			parent: options.editor,
 			state: EditorState.create({
 				doc: options.initial,
-				extensions: [
-					//
-					...this.#default_extensions,
-					EditorView.updateListener.of((update) => {
-						this.update = update;
-					}),
-				],
+				extensions,
 			}),
 		});
-		this.source = new Debounced(() => {
-			return this.update?.state.doc.toString() ?? "";
-		}, options.debounce_delay ?? 400);
 		this.#init();
 	}
 
