@@ -8,16 +8,18 @@
 
 	interface Item {
 		name: string;
-		url: string;
+		href: string;
 		icon?: Component;
 	}
 	interface Props extends ComponentProps<typeof Sidebar.Group> {
-		items: Map<string, Item>;
+		items:Item[];
+		onmoreclick: ComponentProps<typeof Sidebar.MenuButton>['onclick'];
 		onplusclick: ComponentProps<typeof Sidebar.GroupAction>['onclick'];
 	}
 	let {
 		// Custom
 		items,
+		onmoreclick,
 		onplusclick,
 		// Extended
 		class: class_,
@@ -36,11 +38,11 @@
 	</Sidebar.GroupAction>
 
 	<Sidebar.Menu>
-		{#each items as [name, item] (name)}
+		{#each items as item (item.name)}
 			<Sidebar.MenuItem>
 				<Sidebar.MenuButton>
 					{#snippet child({ props })}
-						<a href={item.url} {...props}>
+						<a href={item.href} {...props}>
 							{#if item.icon}
 								<item.icon />
 							{/if}
@@ -52,9 +54,9 @@
 		{/each}
 
 		<Sidebar.MenuItem>
-			<Sidebar.MenuButton>
+			<Sidebar.MenuButton onclick={onmoreclick}>
 				<Ellipsis />
-				<span>More</span>
+				<span>More examples</span>
 			</Sidebar.MenuButton>
 		</Sidebar.MenuItem>
 	</Sidebar.Menu>

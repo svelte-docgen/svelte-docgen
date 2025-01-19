@@ -73,8 +73,18 @@
 			],
 		},
 		playground: {
+			onmoreclick: () => goto("/examples"),
 			onplusclick: () => goto("/playground"),
-			items: data.examples,
+			items: Iterator.from(data.examples)
+						   .take(5)
+						   .map(([k, v]) => {
+								const search_params = new URLSearchParams([ ["input", v.input.encoded] ]);
+								return {
+									name: k,
+									href: `/playground?${search_params}`,
+								};
+							})
+							.toArray(),
 		},
 		bottom: {
 			items: [
