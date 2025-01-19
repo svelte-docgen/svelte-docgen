@@ -1,27 +1,25 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["config:recommended", "group:allNonMajor"],
-	"baseBranches": ["main"],
+	"extends": ["config:recommended"],
 	"dependencyDashboard": true,
 	"labels": ["dependencies"],
 	"commitMessageLowerCase": "never",
 	"commitMessageAction": "Update",
-	"commitMessageTopic": "{{depName}}",
 	"packageRules": [
 		{
 			"groupName": "GitHub Actions",
 			"baseBranches": ["main"],
 			"commitMessagePrefix": "chore(workflows): ",
-			"commitMessageTopic": null,
-			"commitMessageExtra": "",
-			"commitMessageSuffix": "{{groupName}}",
+			"commitMessageTopic": "{{groupName}}",
+			"commitMessageExtra": null,
 			"matchManagers": ["github-actions"]
 		},
 		{
 			"groupName": "workspace",
+			"baseBranches": ["main"],
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "workspace deps",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["package.json"],
 			"matchPackagePatterns": ["*"]
 		},
@@ -30,7 +28,7 @@
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(docs): ",
 			"commitMessageTopic": "deps",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["apps/docs/package.json"],
 			"matchPackagePatterns": ["*"]
 		},
@@ -39,7 +37,7 @@
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(extractor): ",
 			"commitMessageTopic": "deps",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["packages/extractor/package.json"],
 			"matchPackagePatterns": ["*"]
 		},
@@ -48,7 +46,7 @@
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(server): ",
 			"commitMessageTopic": "deps",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["packages/server/package.json"],
 			"matchPackagePatterns": ["*"]
 		},
@@ -57,7 +55,7 @@
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(docgen): ",
 			"commitMessageTopic": "deps",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["packages/svelte-docgen/package.json"],
 			"matchPackagePatterns": ["*"]
 		},
@@ -66,7 +64,7 @@
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(vite-plugin): ",
 			"commitMessageTopic": "deps",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["packages/vite-plugin-svelte-docgen/package.json"],
 			"matchPackagePatterns": ["*"]
 		},
@@ -74,7 +72,7 @@
 			"groupName": "ESLint",
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["package.json"],
 			"matchPackagePatterns": ["eslint"]
 		},
@@ -82,45 +80,48 @@
 			"groupName": "Prettier",
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["package.json"],
 			"matchPackagePatterns": ["prettier"],
 			"excludePackagePatterns": ["eslint-config-prettier"]
 		},
 		{
 			"groupName": "Svelte tools",
+			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
-			"baseBranches": ["next"],
+			"commitMessageExtra": null,
 			"matchPackageNames": ["svelte-check", "svelte2tsx"]
 		},
 		{
 			"groupName": "SvelteKit",
+			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
-			"baseBranches": ["next"],
+			"commitMessageExtra": null,
 			"matchPackagePatterns": ["@sveltejs/kit", "@sveltejs/adapter-*"]
 		},
 		{
 			"groupName": "Svelte",
+			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
-			"baseBranches": ["next"],
 			"matchPackageNames": ["svelte"]
 		},
 		{
 			"groupName": "TypeDoc",
+			"baseBranches": ["main"],
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
-			"commitMessageExtra": "",
+			"commitMessageExtra": null,
 			"matchPaths": ["package.json"],
 			"matchPackagePatterns": ["typedoc"]
 		},
 		{
 			"groupName": "TypeScript",
+			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
-			"baseBranches": ["next"],
 			"matchPackageNames": ["typescript"]
 		},
 		{
@@ -128,11 +129,13 @@
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
+			"commitMessageExtra": null,
 			"matchPackagePatterns": ["vite"],
 			"excludePackagePatterns": ["vitest"]
 		},
 		{
 			"groupName": "Vitest",
+			"baseBranches": ["main"],
 			"commitMessagePrefix": "chore: ",
 			"commitMessageTopic": "{{groupName}}",
 			"matchPaths": ["package.json"],
