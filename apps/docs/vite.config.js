@@ -1,7 +1,6 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vitest/config";
 
-// @ts-expect-error FIXME: Upstream issue
 export default defineConfig((env) => {
 	return {
 		assetsInclude: ["../../assets/**/*"],
