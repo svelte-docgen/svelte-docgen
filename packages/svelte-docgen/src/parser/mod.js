@@ -394,7 +394,7 @@ class Parser {
 		/** @type {Prop} */
 		let results = {
 			tags: this.#get_prop_tags(symbol),
-			isBindable: this.#extractor.bindings.has(symbol.name.replace(/^bind:/, "")),
+			isBindable: this.isLegacy ? true : this.#extractor.bindings.has(symbol.name.replace(/^bind:/, "")),
 			isExtended: sources ? Iterator.from(sources).some((f) => f !== this.#options.filepath) : false,
 			isOptional: is_symbol_optional(symbol),
 			type: this.#get_type_doc(type),

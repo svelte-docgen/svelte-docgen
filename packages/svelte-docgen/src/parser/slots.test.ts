@@ -45,7 +45,7 @@ describe("slots", () => {
 			Map {
 			  "header" => Map {
 			    "title" => {
-			      "isBindable": false,
+			      "isBindable": true,
 			      "isExtended": false,
 			      "isOptional": false,
 			      "tags": [],
@@ -67,7 +67,7 @@ describe("slots", () => {
 			expect(title).toBeDefined();
 			expect(title).toMatchInlineSnapshot(`
 				{
-				  "isBindable": false,
+				  "isBindable": true,
 				  "isExtended": false,
 				  "isOptional": false,
 				  "tags": [],
