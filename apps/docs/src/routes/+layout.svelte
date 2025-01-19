@@ -7,12 +7,12 @@
 	import { ModeWatcher } from "mode-watcher";
 	import type { Component, ComponentProps } from "svelte";
 
+	import { goto } from "$app/navigation";
 	import { page } from "$app/state";
 
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 	import { AppHeader, type RouteMeta } from "$lib/components/blocks/app-header/index.ts";
 	import { AppSidebar } from "$lib/components/blocks/app-sidebar/index.ts";
-	import { goto } from "$app/navigation";
 
 	let { children, data } = $props();
 
@@ -76,15 +76,15 @@
 			onmoreclick: () => goto("/examples"),
 			onplusclick: () => goto("/playground"),
 			items: Iterator.from(data.examples)
-						   .take(5)
-						   .map(([k, v]) => {
-								const search_params = new URLSearchParams([ ["input", v.input.encoded] ]);
-								return {
-									name: k,
-									href: `/playground?${search_params}`,
-								};
-							})
-							.toArray(),
+				.take(5)
+				.map(([id, example]) => {
+					const search_params = new URLSearchParams([["input", example.input.encoded]]);
+					return {
+						name: id,
+						href: `/playground?${search_params}`,
+					};
+				})
+				.toArray(),
 		},
 		bottom: {
 			items: [

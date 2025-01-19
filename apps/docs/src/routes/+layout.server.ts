@@ -45,7 +45,8 @@ export async function load() {
 				});
 				continue;
 			}
-			default: throw new Error(`Unrecognized & Unhandled file: ${base}`);
+			default:
+				throw new Error(`Unrecognized & Unhandled file: ${base}`);
 		}
 	}
 	return {

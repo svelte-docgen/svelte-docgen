@@ -1,7 +1,7 @@
 import * as str from "es-toolkit/string";
 import { compile as mdsvex_compile } from "mdsvex";
 import pathe from "pathe";
-import {ssp} from "sveltekit-search-params";
+import { ssp } from "sveltekit-search-params";
 import * as v from "valibot";
 
 export type ExampleId = string;
@@ -42,7 +42,7 @@ export function get_input(content: string): ExampleInput {
 	return {
 		raw: content,
 		encoded: ssp.lz().encode(content) ?? "",
-	}
+	};
 }
 
 export async function get_readme(content: string): Promise<ExampleReadme> {
@@ -52,7 +52,7 @@ export async function get_readme(content: string): Promise<ExampleReadme> {
 	return {
 		raw: content,
 		compiled,
-	}
+	};
 }
 
 export function get_title(dir: string): ExampleId {

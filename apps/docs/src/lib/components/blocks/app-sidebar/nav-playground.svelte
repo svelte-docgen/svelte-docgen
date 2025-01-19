@@ -12,9 +12,9 @@
 		icon?: Component;
 	}
 	interface Props extends ComponentProps<typeof Sidebar.Group> {
-		items:Item[];
-		onmoreclick: ComponentProps<typeof Sidebar.MenuButton>['onclick'];
-		onplusclick: ComponentProps<typeof Sidebar.GroupAction>['onclick'];
+		items: Item[];
+		onmoreclick: ComponentProps<typeof Sidebar.MenuButton>["onclick"];
+		onplusclick: ComponentProps<typeof Sidebar.GroupAction>["onclick"];
 	}
 	let {
 		// Custom
@@ -27,10 +27,7 @@
 	}: Props = $props();
 </script>
 
-<Sidebar.Group
-	class={["group-data-[collapsible=icon]:hidden", class_]}
-	{...rest_props}
->
+<Sidebar.Group class={["group-data-[collapsible=icon]:hidden", class_]} {...rest_props}>
 	<Sidebar.GroupLabel><SquareTerminal class="me-1" />{"Playground"}</Sidebar.GroupLabel>
 	<Sidebar.GroupAction onclick={onplusclick}>
 		<Plus />

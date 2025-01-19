@@ -30,7 +30,7 @@ export class Context {
 
 	constructor(options: {
 		editor: HTMLDivElement;
-		initial?: NonNullable<Parameters<typeof EditorState["create"]>[0]>["doc"];
+		initial?: NonNullable<Parameters<(typeof EditorState)["create"]>[0]>["doc"];
 		on_update?: EditorUpdateHandler;
 	}) {
 		// eslint-disable-next-line prefer-const
