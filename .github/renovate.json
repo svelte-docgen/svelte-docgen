@@ -1,5 +1,34 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:recommended", "group:allNonMajor"],
-	"ignoreDeps": ["mdsvex", "typescript", "vite"]
+	"baseBranches": ["main", "next"],
+	"commitMessagePrefix": "chore(deps): ",
+	"dependencyDashboard": true,
+	"labels": ["dependencies"],
+	"ignoreDeps": ["mdsvex", "typescript", "vite"],
+	"packageRules": [
+		{
+			"groupName": "Prettier",
+			"matchPackageNames": ["prettier"]
+		},
+		{
+			"groupName": "TypeDoc",
+			"matchPackageNames": ["typedoc"]
+		},
+		{
+			"groupName": "TypeScript",
+			"matchPackageNames": ["typescript"],
+			"excludePackagePatterns": ["typescript-eslint"]
+		},
+		{
+			"groupName": "Vitest",
+			"matchPackageNames": ["vitest"]
+		},
+		{
+			"groupName": "`apps/docs`",
+			"matchPaths": ["apps/docs/package.json"],
+			"matchPackagePatterns": ["*"],
+			"excludePackagePatterns": ["svelte", "tailwind", "typescript"]
+		}
+	]
 }
