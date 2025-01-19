@@ -31,7 +31,7 @@
 		"@typescript/vfs": "^1.6.0",
 		"@uiw/codemirror-theme-github": "^4.23.7",
 		"autoprefixer": "^10.4.20",
-		"bits-ui": "1.0.0-next.77",
+		"bits-ui": "1.0.0-next.78",
 		"clsx": "^2.1.1",
 		"codemirror": "^6.0.1",
 		"isomorphic-dompurify": "^2.19.0",
