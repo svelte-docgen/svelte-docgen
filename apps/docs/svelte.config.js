@@ -21,7 +21,7 @@ const config = {
 		adapter: adapter(),
 
 		alias: {
-			'$assets/*': path.resolve(__dirname, "..", "..", "assets", "*"),
+			"$assets/*": path.resolve(__dirname, "..", "..", "assets", "*"),
 		},
 
 		prerender: {
