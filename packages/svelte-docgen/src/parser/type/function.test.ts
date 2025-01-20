@@ -15,7 +15,7 @@ describe("Fn", () => {
 				interface Props {
 					void: () => void;
 					returning: () => string;
-					parametized: (foo: string, bar?: Baz) => boolean;
+					parameterized: (foo: string, bar?: Baz) => boolean;
 					spread: (...spread: any) => null;
 					aliased: Aliased;
 					"aliased-return": () => AliasedReturn;
@@ -65,9 +65,9 @@ describe("Fn", () => {
 	});
 
 	it("documents parameter(s) type if specified", ({ expect }) => {
-		const parametized = props.get("parametized");
-		expect(parametized).toBeDefined();
-		expect(parametized?.type).toMatchInlineSnapshot(`
+		const parameterized = props.get("parameterized");
+		expect(parameterized).toBeDefined();
+		expect(parameterized?.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
 			    {
@@ -102,8 +102,8 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		if (!parametized || isTypeRef(parametized?.type)) throw new Error("expected a type");
-		expect(parametized?.type.kind).toBe("function");
+		if (!parameterized || isTypeRef(parameterized?.type)) throw new Error("expected a type");
+		expect(parameterized?.type.kind).toBe("function");
 
 		const spread = props.get("spread");
 		if (!spread || isTypeRef(spread?.type)) throw new Error("expected a type");
