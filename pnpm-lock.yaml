@@ -9,6 +9,9 @@ catalogs:
     dts-buddy:
       specifier: ^0.5.4
       version: 0.5.4
+    pathe:
+      specifier: ^2.0.2
+      version: 2.0.2
     svelte:
       specifier: ^5.19.0
       version: 5.19.0
@@ -59,9 +62,6 @@ importers:
       globals:
         specifier: ^15.14.0
         version: 15.14.0
-      pathe:
-        specifier: ^2.0.0
-        version: 2.0.0
       prettier:
         specifier: ^3.4.2
         version: 3.4.2
@@ -182,6 +182,9 @@ importers:
       paneforge:
         specifier: ^1.0.0-next.2
         version: 1.0.0-next.2(svelte@5.19.0)
+      pathe:
+        specifier: 'catalog:'
+        version: 2.0.2
       runed:
         specifier: ^0.23.0
         version: 0.23.0(svelte@5.19.0)
@@ -218,6 +221,9 @@ importers:
       '@types/estree':
         specifier: ^1.0.6
         version: 1.0.6
+      pathe:
+        specifier: 'catalog:'
+        version: 2.0.2
       svelte:
         specifier: 'catalog:'
         version: 5.19.0
@@ -271,6 +277,9 @@ importers:
       '@svelte-docgen/extractor':
         specifier: workspace:*
         version: link:../extractor
+      pathe:
+        specifier: 'catalog:'
+        version: 2.0.2
       svelte:
         specifier: 'catalog:'
         version: 5.19.0
@@ -2737,9 +2746,6 @@ packages:
 
   pathe@1.1.2:
     resolution: {integrity: sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==}
-
-  pathe@2.0.0:
-    resolution: {integrity: sha512-G7n4uhtk9qJt2hlD+UFfsIGY854wpF+zs2bUbQ3CQEUTcn7v25LRsrmurOxTo4bJgjE4qkyshd9ldsEuY9M6xg==}
 
   pathe@2.0.2:
     resolution: {integrity: sha512-15Ztpk+nov8DR524R4BF7uEuzESgzUEAV4Ah7CUMNGXdE5ELuvxElxGXndBl32vMSsWa1jpNf22Z+Er3sKwq+w==}
@@ -6268,8 +6274,6 @@ snapshots:
   path-type@4.0.0: {}
 
   pathe@1.1.2: {}
-
-  pathe@2.0.0: {}
 
   pathe@2.0.2: {}
 

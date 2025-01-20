@@ -85,6 +85,7 @@
 	},
 	"dependencies": {
 		"@types/estree": "^1.0.6",
+		"pathe": "catalog:",
 		"svelte2tsx": "^0.7.31",
 		"zimmerframe": "^1.1.2"
 	},
