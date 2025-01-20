@@ -1,0 +1,33 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"ignoreBinaries": ["typos"],
+	"ignoreDependencies": ["all-contributors-cli"],
+	"workspaces": {
+		".": {
+			"entry": ["**/*.{json,js,ts}"],
+			"ignore": ["apps/docs/**", "examples/**"],
+			"typedoc": {
+				"config": ["typedoc.base.json", "typedoc.json"]
+			},
+			"vite": false
+		},
+		"packages/extractor": {
+			"entry": ["src/mod.js"],
+			"project": ["**/*.{json,js,ts}"]
+		},
+		"packages/svelte-docgen": {
+			"entry": ["src/mod.js", "src/doc/type.ts"],
+			"ignore": ["tests/custom-extended.ts"],
+			"project": ["**/*.{json,js,ts}"]
+		},
+		"packages/server": {
+			"entry": ["src/{bun,deno,node}/mod.js"],
+			"project": ["**/*.{json,js,ts}"]
+		},
+		"packages/vite-plugin-svelte-docgen": {
+			"entry": ["src/mod.js"],
+			"ignore": ["scripts/post-build.ts"],
+			"project": ["**/*.{json,js,ts}"]
+		}
+	}
+}
