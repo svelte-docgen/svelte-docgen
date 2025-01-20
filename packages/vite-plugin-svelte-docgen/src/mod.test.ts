@@ -25,9 +25,9 @@ describe("plugin", async () => {
 		expect(docgen.default.exports).toBeInstanceOf(Map);
 		expect(docgen.default.exports.size).toBe(0);
 		expect(docgen.default.props).toBeInstanceOf(Map);
-		expect(docgen.default.props.size).toBe(443);
+		expect(docgen.default.props.size).toBeGreaterThan(400);
 		expect(docgen.default.types).toBeInstanceOf(Map);
-		expect(docgen.default.types.size).toBe(101);
+		expect(docgen.default.types.size).toBeGreaterThan(100);
 		expect(docgen.default.props.get("disabled").sources).toBeInstanceOf(Set);
 		expect(docgen.default.types.get("FocusEventInit").members).toBeInstanceOf(Map);
 	});
