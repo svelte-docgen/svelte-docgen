@@ -18,6 +18,7 @@
 		"format": "prettier . --write && eslint . --fix",
 		"lint": "prettier --check . && eslint .",
 		"check": "turbo run check",
+		"knip": "knip",
 		"serve:doc": "serve \"./docs\" ",
 		"typos": "typos --verbose",
 		"typos:fix": "typos --verbose --write-changes",
