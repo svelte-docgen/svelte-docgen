@@ -21,7 +21,7 @@
 			"project": ["**/*.{json,js,ts}"]
 		},
 		"packages/server": {
-			"entry": ["src/{bun,deno,node}/mod.js"],
+			"entry": ["src/{bun,deno,node}/{mod,server}.js"],
 			"project": ["**/*.{json,js,ts}"]
 		},
 		"packages/vite-plugin-svelte-docgen": {
