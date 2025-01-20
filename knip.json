@@ -17,7 +17,7 @@
 		},
 		"packages/svelte-docgen": {
 			"entry": ["src/mod.js", "src/doc/type.ts"],
-			"ignore": ["tests/custom-extended.ts"],
+			"ignore": ["src/kind/mod.js", "tests/custom-extended.ts"],
 			"project": ["**/*.{json,js,ts}"]
 		},
 		"packages/server": {
