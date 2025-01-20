@@ -1,11 +1,15 @@
-import { Config } from "tailwindcss";
+/**
+ * @import { Config } from "tailwindcss";
+ */
+
 import { fontFamily } from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
 import containerQueries from "@tailwindcss/container-queries";
 import forms from "@tailwindcss/forms";
 import typography from "@tailwindcss/typography";
 
-const config: Config = {
+/** @satisfies {Config} */
+const config = {
 	darkMode: ["class"],
 	content: ["./src/**/*.{html,js,svelte,ts}"],
 	safelist: ["dark"],
