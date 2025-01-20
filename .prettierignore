@@ -1,9 +1,8 @@
 # Package Managers
-package-lock.json
 pnpm-lock.yaml
-yarn.lock
 
-.github/*.md
+# Reason: auto-generated
+.svelte-kit
 
 # Reason: generated with TypeDoc
-docs/
+./docs/

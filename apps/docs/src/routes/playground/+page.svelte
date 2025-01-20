@@ -7,7 +7,8 @@
 
 	import { Docgen } from "./docgen.svelte.ts";
 
-	const default_input = `<script lang="ts">
+	const default_input =
+		`<script lang="ts">
 	interface Props {
 		/** Example description. */
 		value?: number;
