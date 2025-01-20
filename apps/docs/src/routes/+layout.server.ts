@@ -23,14 +23,14 @@ export async function load() {
 	let examples: Examples = new Map();
 	for (const [filepath, mod] of Object.entries(glob_examples)) {
 		const { base, dir } = pathe.parse(filepath);
-		const title = examples_util.get_title(dir);
+		const id = examples_util.get_id(dir);
 		const content = await mod();
 		if (typeof content !== "string") throw new Error("Unreachable - expected string");
 		// @ts-expect-error WARN: Missing data will be filled after looping through every file
-		const example: Example = examples.get(title) ?? { dirpath: dir };
+		const example: Example = examples.get(id) ?? { dirpath: dir };
 		switch (base) {
 			case "input.svelte": {
-				examples.set(title, {
+				examples.set(id, {
 					...example,
 					input: examples_util.get_input(content),
 				});
@@ -38,15 +38,16 @@ export async function load() {
 			}
 			case "README.svelte.md": {
 				const readme = await examples_util.get_readme(content);
-				examples.set(title, {
+				examples.set(id, {
 					...example,
 					readme,
 					fm: examples_util.get_fm_data(readme),
 				});
 				continue;
 			}
-			default:
+			default: {
 				throw new Error(`Unrecognized & Unhandled file: ${base}`);
+			}
 		}
 	}
 	return {

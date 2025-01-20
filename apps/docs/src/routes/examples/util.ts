@@ -1,4 +1,3 @@
-import * as str from "es-toolkit/string";
 import { compile as mdsvex_compile } from "mdsvex";
 import pathe from "pathe";
 import { ssp } from "sveltekit-search-params";
@@ -55,8 +54,8 @@ export async function get_readme(content: string): Promise<ExampleReadme> {
 	};
 }
 
-export function get_title(dir: string): ExampleId {
+export function get_id(dir: string): ExampleId {
 	const parent_dir_name = dir.split(pathe.sep).at(-1);
 	if (!parent_dir_name) throw Error("Could not get parent dir name");
-	return str.upperFirst(str.lowerCase(parent_dir_name));
+	return parent_dir_name;
 }

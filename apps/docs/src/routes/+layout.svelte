@@ -77,10 +77,10 @@
 			onplusclick: () => goto("/playground"),
 			items: Iterator.from(data.examples)
 				.take(5)
-				.map(([id, example]) => {
+				.map(([_id, example]) => {
 					const search_params = new URLSearchParams([["input", example.input.encoded]]);
 					return {
-						name: id,
+						title: example.fm.title,
 						href: `/playground?${search_params}`,
 					};
 				})

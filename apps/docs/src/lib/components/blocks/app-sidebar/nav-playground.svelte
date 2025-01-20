@@ -7,7 +7,7 @@
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 
 	interface Item {
-		name: string;
+		title: string;
 		href: string;
 		icon?: Component;
 	}
@@ -35,7 +35,7 @@
 	</Sidebar.GroupAction>
 
 	<Sidebar.Menu>
-		{#each items as item (item.name)}
+		{#each items as item (item.title)}
 			<Sidebar.MenuItem>
 				<Sidebar.MenuButton>
 					{#snippet child({ props })}
@@ -43,7 +43,7 @@
 							{#if item.icon}
 								<item.icon />
 							{/if}
-							<span>{item.name}</span>
+							<span>{item.title}</span>
 						</a>
 					{/snippet}
 				</Sidebar.MenuButton>
