@@ -26,19 +26,24 @@ permissions:
   pull-requests: write
 
 jobs:
+  lint_check:
+    name: Lint
+    uses: ./.github/workflows/check.yml
+    secrets: inherit
+
   lint_eslint:
     name: Lint
     uses: ./.github/workflows/eslint.yml
     secrets: inherit
 
+  lint_knip:
+    name: Lint
+    uses: ./.github/workflows/knip.yml
+    secrets: inherit
+
   lint_prettier:
     name: Lint
     uses: ./.github/workflows/prettier.yml
-    secrets: inherit
-
-  lint_check:
-    name: Lint
-    uses: ./.github/workflows/check.yml
     secrets: inherit
 
   lint_typos:
