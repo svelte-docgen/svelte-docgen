@@ -41,6 +41,7 @@ jobs:
   lint_knip:
     name: Lint
     uses: ./.github/workflows/knip.yml
+    if: github.event_name == 'pull_request'
     secrets: inherit
 
   lint_prettier:
