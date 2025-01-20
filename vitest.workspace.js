@@ -1,12 +1,17 @@
+/**
+ * @import { UserWorkspaceConfig } from "vitest/config";
+ */
+
 import path from "node:path";
 import url from "node:url";
 
 import { loadEnv } from "vite";
-import { type UserWorkspaceConfig, defineWorkspace } from "vitest/config";
+import { defineWorkspace } from "vitest/config";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/** @satisfies {NonNullable<UserWorkspaceConfig>["test"]} */
 const SHARED = {
 	env: Object.assign(process.env, loadEnv("", path.resolve(__dirname), "")),
 	setupFiles: [path.resolve(__dirname, "tests", "setup.ts")],
@@ -14,10 +19,17 @@ const SHARED = {
 	typecheck: {
 		enabled: true,
 	},
-} satisfies NonNullable<UserWorkspaceConfig>["test"];
+};
 
 /** @see {@link https://vitest.dev/guide/workspace} */
 const config = defineWorkspace([
+	{
+		test: {
+			...SHARED,
+			name: "svelte-docgen",
+			root: path.resolve(__dirname, "packages", "svelte-docgen"),
+		},
+	},
 	{
 		test: {
 			...SHARED,
@@ -37,13 +49,6 @@ const config = defineWorkspace([
 			...SHARED,
 			name: "vite-plugin-svelte-docgen",
 			root: path.resolve(__dirname, "packages", "vite-plugin-svelte-docgen"),
-		},
-	},
-	{
-		test: {
-			...SHARED,
-			name: "svelte-docgen",
-			root: path.resolve(__dirname, "packages", "svelte-docgen"),
 		},
 	},
 ]);
