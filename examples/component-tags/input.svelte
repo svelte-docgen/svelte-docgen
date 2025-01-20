@@ -1,28 +1,25 @@
 <!--
-	@component This is a component description.
+	@component
 
+	@author ciscorn, xeho91
 	@category Atom
 	@subcategory Native
-	@author xeho91
 
 	@example Basic usage
 
-	Use it if you want to use **default** design.
-
 	```svelte
-	<Button onclick={() => alert("Awesome!")}>Click me</Button>
+	<button onclick={() => alert("Awesome!")}>Click me</button>
 	```
 
 	@example Advanced usage
 
 	```svelte
-	<Button
+	<button
 		onclick={() => alert("Awesome!")}
-		variant="outlined"
-		color="secondary"
-		size="small"
+		class="outlined small"
+		popovertarget="some-popover-id"
 	>
 		Click me
-	</Button
+	</Button>
 	```
 -->
