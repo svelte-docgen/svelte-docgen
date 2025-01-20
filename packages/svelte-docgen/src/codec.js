@@ -14,7 +14,7 @@ import * as v from "valibot";
  * @template {keyof ParsedComponent} T
  * @typedef EncodeOptions
  * @prop {Parameters<typeof JSON.stringify>[2]} [indent]
- * @prop {T[]} [keys] Pick data entries _(based on their keys name)_ you want to be encoded.
+ * @prop {T[]} [keys] Pick dota entries _(based on their keys name)_ you want to be encoded.
  */
 
 /**
@@ -66,7 +66,7 @@ export function decode(stringified) {
 			case "slots":
 				return is_mappable(value) ? new Map(value) : value;
 			case "sources":
-				return is_setable(value) ? new Set(value) : value;
+				return is_settable(value) ? new Set(value) : value;
 			default:
 				return value;
 		}
@@ -98,6 +98,6 @@ function is_mappable(input) {
  * @returns {input is Array<[string]>}
  * @internal
  */
-function is_setable(input) {
+function is_settable(input) {
 	return v.is(v.array(v.string()), input);
 }
