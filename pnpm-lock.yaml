@@ -9,6 +9,9 @@ catalogs:
     dts-buddy:
       specifier: ^0.5.4
       version: 0.5.4
+    pathe:
+      specifier: ^2.0.2
+      version: 2.0.2
     svelte:
       specifier: ^5.19.0
       version: 5.19.0
@@ -59,9 +62,6 @@ importers:
       globals:
         specifier: ^15.14.0
         version: 15.14.0
-      pathe:
-        specifier: ^2.0.0
-        version: 2.0.2
       prettier:
         specifier: ^3.4.2
         version: 3.4.2
@@ -185,6 +185,9 @@ importers:
       paneforge:
         specifier: ^1.0.0-next.2
         version: 1.0.0-next.2(svelte@5.19.0)
+      pathe:
+        specifier: 'catalog:'
+        version: 2.0.2
       runed:
         specifier: ^0.23.0
         version: 0.23.0(svelte@5.19.0)
@@ -221,9 +224,9 @@ importers:
 
   packages/extractor:
     dependencies:
-      '@types/estree':
-        specifier: ^1.0.6
-        version: 1.0.6
+      pathe:
+        specifier: 'catalog:'
+        version: 2.0.2
       svelte:
         specifier: 'catalog:'
         version: 5.19.0
@@ -237,6 +240,9 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2
     devDependencies:
+      '@types/estree':
+        specifier: ^1.0.6
+        version: 1.0.6
       dts-buddy:
         specifier: 'catalog:'
         version: 0.5.4(typescript@5.7.3)
@@ -277,6 +283,9 @@ importers:
       '@svelte-docgen/extractor':
         specifier: workspace:*
         version: link:../extractor
+      pathe:
+        specifier: 'catalog:'
+        version: 2.0.2
       svelte:
         specifier: 'catalog:'
         version: 5.19.0
