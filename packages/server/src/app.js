@@ -20,6 +20,13 @@ import { REQUEST_SCHEMA } from "./schema.js";
  */
 const APP = new Hono();
 
+/**
+ * @internal
+ * Cache storage for parsing source code of `*.svelte files.
+ * @see {@link createCacheStorage}
+ */
+const CACHE_STORAGE = createCacheStorage();
+
 APP.post(
 	"/",
 	//
@@ -45,13 +52,6 @@ APP.post(
 		return ctx.json(encode(parsed, { keys }));
 	},
 );
-
-/**
- * @internal
- * Cache storage for parsing source code of `*.svelte files.
- * @see {@link createCacheStorage}
- */
-export const CACHE_STORAGE = createCacheStorage();
 
 /**
  * Generic parameters for {@link parse_source}

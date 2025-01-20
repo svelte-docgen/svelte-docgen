@@ -17,7 +17,7 @@ const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
  * @param {ts.Type} type
  * @returns {type is ts.ObjectType}
  */
-export function is_object_type(type) {
+function is_object_type(type) {
 	return !!(type.flags & ts.TypeFlags.Object);
 }
 
