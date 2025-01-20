@@ -14,7 +14,7 @@ import * as v from "valibot";
  * @template {keyof ParsedComponent} T
  * @typedef EncodeOptions
  * @prop {Parameters<typeof JSON.stringify>[2]} [indent]
- * @prop {T[]} [keys] Pick dota entries _(based on their keys name)_ you want to be encoded.
+ * @prop {T[]} [keys] Pick data entries _(based on their keys name)_ you want to be encoded.
  */
 
 /**
