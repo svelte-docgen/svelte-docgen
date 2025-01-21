@@ -38,7 +38,8 @@ export const HIGHLIGHT = {
  * @returns {Promise<ReturnType<typeof compile>>}
  */
 export async function compile_svelte_md(content, options = {}) {
-	const { compile } = await import("mdsvex");
+	// NOTE: THANK YOU!!! https://github.com/pngwn/MDsveX/issues/201#issuecomment-2583138492
+	const { compile } = await import("mdsvex/dist/browser-es.js");
 	return compile(content, {
 		highlight: HIGHLIGHT,
 		...options,
