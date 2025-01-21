@@ -39,7 +39,9 @@ export const HIGHLIGHT = {
  */
 export async function compile_svelte_md(content, options = {}) {
 	// NOTE: THANK YOU!!! https://github.com/pngwn/MDsveX/issues/201#issuecomment-2583138492
-	const { compile } = await import("mdsvex/dist/browser-es.js");
+	const { compile } =
+		// @ts-expect-error FIXME: testing ugly hack
+		globalThis.window !== undefined ? await import("mdsvex/dist/browser-es.js") : await import("mdsvex");
 	return compile(content, {
 		highlight: HIGHLIGHT,
 		...options,
