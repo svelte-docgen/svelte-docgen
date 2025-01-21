@@ -25,6 +25,11 @@ catalogs:
       specifier: ^6.0.7
       version: 6.0.7
 
+patchedDependencies:
+  mdsvex:
+    hash: gy6ujs275dv5k24glsqcf6jmxa
+    path: patches/mdsvex.patch
+
 importers:
 
   .:
@@ -181,7 +186,7 @@ importers:
         version: 0.473.0(svelte@5.19.0)
       mdsvex:
         specifier: ^0.12.3
-        version: 0.12.3(svelte@5.19.0)
+        version: 0.12.3(patch_hash=gy6ujs275dv5k24glsqcf6jmxa)(svelte@5.19.0)
       mode-watcher:
         specifier: ^0.5.0
         version: 0.5.0(svelte@5.19.0)
@@ -6181,7 +6186,7 @@ snapshots:
       unist-util-visit: 5.0.0
       vfile: 6.0.3
 
-  mdsvex@0.12.3(svelte@5.19.0):
+  mdsvex@0.12.3(patch_hash=gy6ujs275dv5k24glsqcf6jmxa)(svelte@5.19.0):
     dependencies:
       '@types/unist': 2.0.11
       prism-svelte: 0.4.7
