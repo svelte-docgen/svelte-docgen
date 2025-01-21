@@ -7,7 +7,6 @@
  */
 
 import DOMPurify from "isomorphic-dompurify";
-import { compile, escapeSvelte } from "mdsvex";
 import { createHighlighter } from "shiki";
 
 /** @type {BuiltinTheme} */
@@ -21,6 +20,7 @@ export const highlighter = await createHighlighter({
 /** @satisfies {NonNullable<MdsvexCompileOptions['highlight']>} */
 export const HIGHLIGHT = {
 	async highlighter(code, lang) {
+		const { escapeSvelte } = await import("mdsvex");
 		const html = escapeSvelte(
 			highlighter.codeToHtml(code, {
 				lang: lang ?? "text",
@@ -38,6 +38,7 @@ export const HIGHLIGHT = {
  * @returns {Promise<ReturnType<typeof compile>>}
  */
 export async function compile_svelte_md(content, options = {}) {
+	const { compile } = await import("mdsvex");
 	return compile(content, {
 		highlight: {
 			highlighter: HIGHLIGHT.highlighter,

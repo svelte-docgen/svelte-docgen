@@ -9,7 +9,7 @@ export async function load() {
 	const [
 		//
 		pathe,
-		examples_util,
+		example_util,
 	] = await Promise.all([
 		//
 		import("pathe"),
@@ -23,25 +23,25 @@ export async function load() {
 	let examples: Examples = new Map();
 	for (const [filepath, mod] of Object.entries(glob_examples)) {
 		const { base, dir } = pathe.parse(filepath);
-		const id = examples_util.get_id(dir);
+		const id = example_util.get_id(dir);
 		const content = await mod();
 		if (typeof content !== "string") throw new Error("Unreachable - expected string");
-		const example: Example = examples.get(id) ?? { dirpath: dir };
 		// @ts-expect-error WARN: Missing data will be filled after looping through every file
+		const example: Example = examples.get(id) ?? { dirpath: dir };
 		switch (base) {
 			case "input.svelte": {
 				examples.set(id, {
 					...example,
-					input: examples_util.get_input(content),
+					input: example_util.get_input(content),
 				});
 				continue;
 			}
 			case "README.svelte.md": {
-				const readme = await examples_util.get_readme(content);
+				const readme = await example_util.get_readme(content);
 				examples.set(id, {
 					...example,
 					readme,
-					fm: examples_util.get_fm_data(readme),
+					fm: example_util.get_fm_data(readme),
 				});
 				continue;
 			}
