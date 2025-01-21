@@ -1,6 +1,6 @@
 import { building, dev } from "$app/environment";
 
-import type { Example, Examples } from "./examples/util.ts";
+import type { Example, Examples } from "$lib/util/example.ts";
 
 export const prerender = true;
 
@@ -13,7 +13,7 @@ export async function load() {
 	] = await Promise.all([
 		//
 		import("pathe"),
-		import("./examples/util.ts"),
+		import("$lib/util/example.ts"),
 	]);
 	const glob_examples = import.meta.glob("../../../../examples/**/{input.svelte,README.svelte.md}", {
 		query: "?raw",
@@ -26,8 +26,8 @@ export async function load() {
 		const id = examples_util.get_id(dir);
 		const content = await mod();
 		if (typeof content !== "string") throw new Error("Unreachable - expected string");
-		// @ts-expect-error WARN: Missing data will be filled after looping through every file
 		const example: Example = examples.get(id) ?? { dirpath: dir };
+		// @ts-expect-error WARN: Missing data will be filled after looping through every file
 		switch (base) {
 			case "input.svelte": {
 				examples.set(id, {

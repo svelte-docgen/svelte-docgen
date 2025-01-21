@@ -7,7 +7,7 @@
  */
 
 import DOMPurify from "isomorphic-dompurify";
-import { escapeSvelte } from "mdsvex";
+import { compile, escapeSvelte } from "mdsvex";
 import { createHighlighter } from "shiki";
 
 /** @type {BuiltinTheme} */
@@ -30,3 +30,18 @@ export const HIGHLIGHT = {
 		return `{@html ${DOMPurify.sanitize(html)}}`;
 	},
 };
+
+/**
+ *
+ * @param {string} content
+ * @param {Partial<Parameters<typeof compile>[1]>} options
+ * @returns {Promise<ReturnType<typeof compile>>}
+ */
+export async function compile_svelte_md(content, options = {}) {
+	return compile(content, {
+		highlight: {
+			highlighter: HIGHLIGHT.highlighter,
+		},
+		...options,
+	});
+}

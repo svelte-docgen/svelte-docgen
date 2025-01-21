@@ -2,10 +2,10 @@ import { error } from "@sveltejs/kit";
 import { compile } from "mdsvex";
 
 import { building, dev } from "$app/environment";
-import { HIGHLIGHT } from "$lib/md/highlighter.js";
 
 export async function load(ev) {
 	if (!building && !dev) throw new Error("Unreachable");
+	const { HIGHLIGHT } = await import("$lib/util/md.js");
 	const { params, parent } = ev;
 	const { packages } = await parent();
 	const pkg = packages.get(params.org ? `${params.org}/${params.name}` : params.name);

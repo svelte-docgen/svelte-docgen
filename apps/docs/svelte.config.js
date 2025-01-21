@@ -5,7 +5,7 @@ import adapter from "@sveltejs/adapter-cloudflare";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { mdsvex } from "mdsvex";
 
-import { HIGHLIGHT } from "./src/lib/md/highlighter.js";
+import { HIGHLIGHT } from "./src/lib/util/md.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

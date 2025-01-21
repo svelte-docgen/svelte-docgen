@@ -1,4 +1,3 @@
-import { compile as mdsvex_compile } from "mdsvex";
 import pathe from "pathe";
 import { ssp } from "sveltekit-search-params";
 import * as v from "valibot";
@@ -12,20 +11,20 @@ export interface ExampleInput {
 
 export interface ExampleReadme {
 	raw: string;
-	compiled: Awaited<ReturnType<typeof mdsvex_compile>>;
+	compiled: Awaited<ReturnType<typeof import("$lib/util/md.js").compile_svelte_md>>;
 }
 
-export const EXAMPLE_FM_DATA_SCHEMA = v.object({
+export const FM_DATA_SCHEMA = v.object({
 	title: v.string(),
 	description: v.string(),
 });
-export type ExampleFrontmatterData = v.InferOutput<typeof EXAMPLE_FM_DATA_SCHEMA>;
+export type ExampleFrontmatterData = v.InferOutput<typeof FM_DATA_SCHEMA>;
 
 /**
  * fm - abbreviation for frontmatter
  */
 export function get_fm_data(readme: ExampleReadme | undefined): ExampleFrontmatterData {
-	return v.parse(EXAMPLE_FM_DATA_SCHEMA, readme?.compiled?.data?.fm);
+	return v.parse(FM_DATA_SCHEMA, readme?.compiled?.data?.fm);
 }
 
 export interface Example {
@@ -45,9 +44,8 @@ export function get_input(content: string): ExampleInput {
 }
 
 export async function get_readme(content: string): Promise<ExampleReadme> {
-	const compiled = await mdsvex_compile(content, {
-		// TODO: Setup highlight later
-	});
+	const { compile_svelte_md } = await import("$lib/util/md.js");
+	const compiled = await compile_svelte_md(content);
 	return {
 		raw: content,
 		compiled,
