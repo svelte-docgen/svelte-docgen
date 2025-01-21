@@ -1,9 +1,5 @@
 /// <reference types="@types/node" />
 
-/**
- * @import { RuntimeServer } from "../server.js";
- */
-
 import fs from "node:fs";
 import url from "node:url";
 
@@ -68,6 +64,7 @@ export class NodeServer extends Server {
 }
 
 /**
+ * @internal
  * @param {string} filepath
  * @returns {string}
  */

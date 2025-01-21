@@ -1,9 +1,5 @@
 /// <reference types="@types/deno" />
 
-/**
- * @import { RuntimeServer } from "../server.js";
- */
-
 // TODO: Change to deno std lib - and figure out a way to solve typescript errors
 import url from "node:url";
 
@@ -62,6 +58,7 @@ export class DenoServer extends Server {
 }
 
 /**
+ * @knipignore
  * @param {string} filepath
  * @returns {string}
  */

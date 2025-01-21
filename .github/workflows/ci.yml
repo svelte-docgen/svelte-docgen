@@ -20,25 +20,33 @@ env:
   CI: true
 
 permissions:
+  checks: write
   contents: write
   id-token: write
+  issues: write
   pages: write
   pull-requests: write
 
 jobs:
+  lint_check:
+    name: Lint
+    uses: ./.github/workflows/check.yml
+    secrets: inherit
+
   lint_eslint:
     name: Lint
     uses: ./.github/workflows/eslint.yml
     secrets: inherit
 
+  lint_knip:
+    name: Lint
+    uses: ./.github/workflows/knip.yml
+    if: github.event_name == 'pull_request'
+    secrets: inherit
+
   lint_prettier:
     name: Lint
     uses: ./.github/workflows/prettier.yml
-    secrets: inherit
-
-  lint_check:
-    name: Lint
-    uses: ./.github/workflows/check.yml
     secrets: inherit
 
   lint_typos:
@@ -54,13 +62,13 @@ jobs:
   publish_preview:
     name: Publish
     uses: ./.github/workflows/preview.yml
-    needs: [lint_eslint, lint_prettier, lint_check, lint_typos, test]
+    needs: [lint_check, lint_eslint, lint_knip, lint_prettier, lint_typos, test]
     secrets: inherit
 
   publish_typedoc:
     name: Publish
     uses: ./.github/workflows/typedoc.yml
-    needs: [lint_eslint, lint_prettier, lint_check, lint_typos, test]
+    needs: [lint_check, lint_eslint, lint_knip, lint_prettier, lint_typos, test]
     secrets: inherit
     with:
       type: ${{ github.event_name == 'pull_request' && contains(fromJson('["opened", "reopened", "synchronize"]'), github.event.action) && 'pr-preview' || 'deploy' }}

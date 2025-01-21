@@ -106,11 +106,12 @@ export function get_type_kind(params) {
 }
 
 /**
+ * @internal
  * @param {ts.Type} type
  * @param {Extractor} extractor
  * @returns {boolean}
  */
-export function is_constructible(type, extractor) {
+function is_constructible(type, extractor) {
 	const signatures = get_construct_signatures(type, extractor);
 	// Check if the type returned by the constructor is assignable to the original `type`.
 	return signatures.some((signature) => {
@@ -121,6 +122,7 @@ export function is_constructible(type, extractor) {
 }
 
 /**
+ * @internal
  * @param {ts.Type} type
  * @returns {boolean}
  */

@@ -1,9 +1,5 @@
 /// <reference types="@types/bun" />
 
-/**
- * @import { RuntimeServer } from "../server.js";
- */
-
 import fs from "node:fs";
 
 import { APP } from "../app.js";
@@ -64,6 +60,7 @@ export class BunServer extends Server {
 }
 
 /**
+ * @internal
  * @param {string} filepath
  * @returns {string}
  */
