@@ -40,9 +40,7 @@ export const HIGHLIGHT = {
 export async function compile_svelte_md(content, options = {}) {
 	const { compile } = await import("mdsvex");
 	return compile(content, {
-		highlight: {
-			highlighter: HIGHLIGHT.highlighter,
-		},
+		highlight: HIGHLIGHT,
 		...options,
 	});
 }
