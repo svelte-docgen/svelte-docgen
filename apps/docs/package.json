@@ -21,6 +21,7 @@
 		"@codemirror/view": "^6.36.1",
 		"@icons-pack/svelte-simple-icons": "^4.0.1",
 		"@replit/codemirror-lang-svelte": "^6.0.0",
+		"@shikijs/rehype": "^2.0.3",
 		"@sveltejs/adapter-cloudflare": "^5.0.0",
 		"@sveltejs/kit": "^2.15.1",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
@@ -42,6 +43,11 @@
 		"normalize-package-data": "^7.0.0",
 		"paneforge": "^1.0.0-next.2",
 		"pathe": "catalog:",
+		"rehype-stringify": "^10.0.1",
+		"remark-frontmatter": "^5.0.0",
+		"remark-gfm": "^4.0.0",
+		"remark-parse": "^11.0.0",
+		"remark-rehype": "^11.1.1",
 		"runed": "^0.23.0",
 		"shiki": "^1.26.1",
 		"svelte": "catalog:",
@@ -52,6 +58,8 @@
 		"tailwind-variants": "^0.3.0",
 		"tailwindcss": "^3.4.17",
 		"tailwindcss-animate": "^1.0.7",
-		"valibot": "catalog:"
+		"unified": "^11.0.5",
+		"valibot": "catalog:",
+		"vfile-matter": "^5.0.0"
 	}
 }

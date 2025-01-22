@@ -32,7 +32,45 @@ export const HIGHLIGHT = {
 };
 
 /**
- *
+ * @param {string} content
+ */
+export async function compile_md(content) {
+	const [
+		{ default: rehypeShiki },
+		{ default: remarkFrontmatter },
+		{ default: remarkGfm },
+		{ default: remarkParse },
+		{ default: remarkRehype },
+		{ default: rehypeStringify },
+		{ unified },
+		{ matter },
+	] = await Promise.all([
+		import("@shikijs/rehype/core"),
+		import("remark-frontmatter"),
+		import("remark-gfm"),
+		import("remark-parse"),
+		import("remark-rehype"),
+		import("rehype-stringify"),
+		import("unified"),
+		import("vfile-matter"),
+	]);
+	return unified()
+		.use(remarkParse)
+		.use(remarkFrontmatter, ["yaml"])
+		.use(() => (_tree, file) => matter(file))
+		.use(remarkGfm)
+		.use(remarkRehype)
+		.use(rehypeShiki, highlighter, {
+			themes: {
+				dark: "github-dark",
+				light: "github-light",
+			},
+		})
+		.use(rehypeStringify)
+		.process(content);
+}
+
+/**
  * @param {string} content
  * @param {Partial<Parameters<typeof compile>[1]>} options
  * @returns {Promise<ReturnType<typeof compile>>}

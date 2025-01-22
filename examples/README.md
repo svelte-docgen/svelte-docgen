@@ -16,13 +16,11 @@ Each example must be isolated into **separated folder**.
 
 1. It will be _encoded_ to provide an URL search parameter _(`input`)_ for preview in the playground.
 
-### `README.svelte.md` file
+### `README.md` file
 
 1. Must have included `frontmatter` _(at the top in YAML format)_ with:
 
    - `title`,
    - `description`.
 
-1. Is compiled with [`mdsvex`].
-
-[`mdsvex`]: https://github.com/pngwn/mdsvex
+2. Content will be used as documentation somewhere in the future.

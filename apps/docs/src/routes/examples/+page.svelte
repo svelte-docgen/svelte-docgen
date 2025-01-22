@@ -8,9 +8,9 @@
 			{#each data.examples as [title, example] (title)}
 				{@const search_params = new URLSearchParams([["input", example.input.encoded]])}
 				<dt class="text-2xl font-semibold underline underline-offset-2">
-					<a href={`/playground?${search_params}`} class="hover:text-accent">{example.fm.title}</a>
+					<a href={`/playground?${search_params}`} class="hover:text-accent">{example.readme.matter.title}</a>
 				</dt>
-				<dd class="font-serif">{example.fm.description}</dd>
+				<dd class="font-serif">{example.readme.matter.description}</dd>
 			{/each}
 		</dl>
 	</section>

@@ -15,7 +15,7 @@ export async function load() {
 		import("pathe"),
 		import("$lib/util/example.ts"),
 	]);
-	const glob_examples = import.meta.glob("../../../../examples/**/{input.svelte,README.svelte.md}", {
+	const glob_examples = import.meta.glob("../../../../examples/*/{input.svelte,README.md}", {
 		query: "?raw",
 		import: "default",
 	});
@@ -36,12 +36,11 @@ export async function load() {
 				});
 				continue;
 			}
-			case "README.svelte.md": {
+			case "README.md": {
 				const readme = await example_util.get_readme(content);
 				examples.set(id, {
 					...example,
 					readme,
-					fm: example_util.get_fm_data(readme),
 				});
 				continue;
 			}

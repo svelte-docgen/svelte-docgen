@@ -9,29 +9,27 @@ export interface ExampleInput {
 	encoded: string;
 }
 
-export interface ExampleReadme {
-	raw: string;
-	compiled: Awaited<ReturnType<typeof import("$lib/util/md.js").compile_svelte_md>>;
-}
-
-export const FM_DATA_SCHEMA = v.object({
+export const MATTER_SCHEMA = v.object({
 	title: v.string(),
 	description: v.string(),
 });
-export type ExampleFrontmatterData = v.InferOutput<typeof FM_DATA_SCHEMA>;
 
-/**
- * fm - abbreviation for frontmatter
- */
-export function get_fm_data(readme: ExampleReadme | undefined): ExampleFrontmatterData {
-	return v.parse(FM_DATA_SCHEMA, readme?.compiled?.data?.fm);
+export type ExampleMatter = v.InferOutput<typeof MATTER_SCHEMA>;
+
+export function get_matter_data(data: Record<string, unknown>): ExampleMatter {
+	return v.parse(MATTER_SCHEMA, data.matter);
+}
+
+export interface ExampleReadme {
+	raw: string;
+	compiled: string;
+	matter: ExampleMatter;
 }
 
 export interface Example {
 	dirpath: string;
 	input: ExampleInput;
 	readme: ExampleReadme;
-	fm: ExampleFrontmatterData;
 }
 
 export type Examples = Map<ExampleId, Example>;
@@ -44,11 +42,12 @@ export function get_input(content: string): ExampleInput {
 }
 
 export async function get_readme(content: string): Promise<ExampleReadme> {
-	const { compile_svelte_md } = await import("$lib/util/md.js");
-	const compiled = await compile_svelte_md(content);
+	const { compile_md } = await import("$lib/util/md.js");
+	const compiled = await compile_md(content);
 	return {
 		raw: content,
-		compiled,
+		compiled: compiled.toString(),
+		matter: get_matter_data(compiled.data),
 	};
 }
 

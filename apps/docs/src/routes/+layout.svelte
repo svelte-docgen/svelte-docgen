@@ -80,7 +80,7 @@
 				.map(([_id, example]) => {
 					const search_params = new URLSearchParams([["input", example.input.encoded]]);
 					return {
-						title: example.fm.title,
+						title: example.readme.matter.title,
 						href: `/playground?${search_params}`,
 					};
 				})
