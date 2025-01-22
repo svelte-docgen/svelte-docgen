@@ -4,7 +4,6 @@
 	import SiGitHub from "@icons-pack/svelte-simple-icons/icons/SiGithub";
 	import Package from "lucide-svelte/icons/package";
 	import SquareTerminal from "lucide-svelte/icons/square-terminal";
-	import { ModeWatcher } from "mode-watcher";
 	import type { Component, ComponentProps } from "svelte";
 
 	import { page } from "$app/state";
@@ -88,7 +87,18 @@
 	} satisfies ComponentProps<typeof AppSidebar>;
 </script>
 
-<ModeWatcher />
+<!-- This script prevents FOUC -->
+<svelte:head>
+	<script>
+		let color_scheme = window.localStorage.getItem("color-scheme");
+		if (!color_scheme || color_scheme === "system") {
+			let prefers = window.matchMedia("(prefers-color-scheme: dark)");
+			color_scheme = prefers.matches ? "dark" : "light";
+		}
+		window.document.documentElement.setAttribute("data-color-scheme", color_scheme);
+	</script>
+</svelte:head>
+
 <Sidebar.Provider>
 	<AppSidebar {...sidebar} />
 

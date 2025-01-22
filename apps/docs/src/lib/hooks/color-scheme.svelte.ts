@@ -1,20 +1,49 @@
-export type ColorScheme = "light" | "dark" | "system";
+import { MediaQuery } from "svelte/reactivity";
 
-/** Local storage key */
-export const LS_KEY = "color-scheme";
+import { ReactiveStorage } from "./storage.svelte.ts";
 
-class Context {
-	#current = $state<ColorScheme>(this.#stored ?? "system");
+export const VALUES = new Set(["light", "dark", "system"] as const);
+export type ColorScheme = typeof VALUES extends Set<infer T> ? T : never;
+export type UsedColorScheme = Exclude<ColorScheme, "system">;
+
+/** `data-*` attribute name */
+export const DATA_ATTR = "data-color-scheme";
+
+class Watcher {
+	#stored = new ReactiveStorage<ColorScheme>("local", "color-scheme");
+	#mq_prefers_dark = new MediaQuery("prefers-color-scheme: dark");
+
+	#current: ColorScheme = $state(this.#stored.value ?? "system");
+
+	used: UsedColorScheme = $derived.by(() => {
+		const current = this.#current;
+		if (current === "system") return this.user_preference;
+		return current;
+	});
+
+	user_preference: UsedColorScheme = $derived.by(() => {
+		return this.#mq_prefers_dark.current ? "dark" : "light";
+	});
+
+	constructor() {
+		$effect(() => {
+			this.#stored.value = this.#current;
+		});
+	}
 
 	get current(): ColorScheme {
 		return this.#current;
 	}
 
-	get #stored(): ColorScheme | undefined {
-		return (window.localStorage.getItem(LS_KEY) as ColorScheme) ?? undefined;
+	set current(value: ColorScheme) {
+		this.#current = value;
 	}
 }
 
-export const COLOR_SCHEME = new Context();
+let cached_watcher: Watcher | undefined;
 
-COLOR_SCHEME.LS;
+export function get_watcher(): Watcher {
+	if (cached_watcher) return cached_watcher;
+	cached_watcher = new Watcher();
+	return cached_watcher;
+}
