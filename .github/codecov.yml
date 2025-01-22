@@ -1,7 +1,7 @@
 ignore:
   - "**/lib/components/ui/**" # shadcn-svelte
   - "apps/docs/**" # Temporarily disable until we decide to write E2E/visual tests
-  - "**/examples/**"
+  - "examples/**"
   - "**/*.config.js"
   - "**/*.config.ts"
   - "**/scripts/*.ts"

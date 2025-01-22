@@ -1,27 +1,13 @@
 <script lang="ts">
+	import { Debounced } from "runed";
 	import { onDestroy, onMount, tick } from "svelte";
 	import { encode } from "svelte-docgen";
 	import { queryParameters, ssp } from "sveltekit-search-params";
 
+	import { afterNavigate } from "$app/navigation";
 	import * as Repl from "$lib/components/blocks/repl/index.ts";
 
 	import { Docgen } from "./docgen.svelte.ts";
-
-	const default_input =
-		`<script lang="ts">
-	interface Props {
-		/** Example description. */
-		value?: number;
-		group?: string[];
-		presence: boolean | undefined;
-		disabled?: boolean;
-	}
-	let {
-		value = $bindable(0),
-		group = $bindable<string[]>([]),
-		presence = $bindable(false),
-	}: Props = $props();
-</` + `script>`;
 
 	const params = queryParameters({
 		input: {
@@ -34,26 +20,47 @@
 		},
 	});
 
+	let source = $state(params.input ?? "");
+	let debounced_source = new Debounced(() => source, 400);
 	let docgen = $state<Docgen>();
 	let editor = $state<HTMLDivElement>();
-	let manager = $state<Repl.Manager>();
+	let ctx = $state<Repl.Context>();
 	let parsed_component = $derived.by(() => {
-		if (!manager || !docgen) return;
-		return docgen.generate(manager.source.current);
+		if (!ctx || !docgen) return;
+		return docgen.generate(debounced_source.current);
 	});
+
+	function handle_editor_update(view_update: Parameters<Repl.EditorUpdateHandler>[0]) {
+		if (view_update?.docChanged) {
+			const stringified = view_update.state.doc.toString();
+			source = stringified;
+			params.input = stringified;
+		}
+	}
 
 	onMount(async () => {
 		if (!editor) throw new Error("Unreachable");
-		manager = new Repl.Manager({ editor, initial: params.input ?? default_input });
+		ctx = new Repl.Context({
+			editor,
+			initial: source,
+			on_update: handle_editor_update,
+		});
 		docgen = await Docgen.init();
 		await tick();
 	});
 	onDestroy(() => {
-		manager?.destroy();
+		ctx?.destroy();
 	});
 
-	$effect(() => {
-		params.input = manager?.source.current ?? null;
+	afterNavigate(() => {
+		if (!ctx || source === params.input) return;
+		ctx.view.dispatch({
+			changes: {
+				from: 0,
+				to: source.length,
+				insert: params.input ?? undefined,
+			},
+		});
 	});
 </script>
 

@@ -1,5 +1,5 @@
 import Root from "./root.svelte";
 import Editor from "./editor.svelte";
-import { Manager } from "./manager.svelte.ts";
+import { type EditorUpdateHandler, Context } from "./context.svelte.ts";
 
-export { Root, Editor, Manager };
+export { Root, Editor, Context, type EditorUpdateHandler };

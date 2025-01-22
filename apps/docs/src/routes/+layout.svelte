@@ -7,20 +7,19 @@
 	import { ModeWatcher } from "mode-watcher";
 	import type { Component, ComponentProps } from "svelte";
 
+	import { goto } from "$app/navigation";
 	import { page } from "$app/state";
 
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 	import { AppHeader, type RouteMeta } from "$lib/components/blocks/app-header/index.ts";
 	import { AppSidebar } from "$lib/components/blocks/app-sidebar/index.ts";
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	let routes = $derived.by<RouteMeta[]>(() => {
 		let results = [];
 		for (const route of page.url.pathname.slice(1).split("/")) {
-			if (route) {
-				results.push(get_route_meta(route));
-			}
+			if (route) results.push(get_route_meta(route));
 		}
 		return results;
 	});
@@ -74,7 +73,18 @@
 			],
 		},
 		playground: {
-			items: [],
+			onmoreclick: () => goto("/examples"),
+			onplusclick: () => goto("/playground"),
+			items: Iterator.from(data.examples)
+				.take(5)
+				.map(([_id, example]) => {
+					const search_params = new URLSearchParams([["input", example.input.encoded]]);
+					return {
+						title: example.readme.matter.title,
+						href: `/playground?${search_params}`,
+					};
+				})
+				.toArray(),
 		},
 		bottom: {
 			items: [
