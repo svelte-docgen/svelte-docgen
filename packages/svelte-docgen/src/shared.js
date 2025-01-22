@@ -2,7 +2,7 @@
  * @import { extract } from "@svelte-docgen/extractor";
  */
 
-import path from "pathe";
+import pathe from "pathe";
 import ts from "typescript";
 
 const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
@@ -14,24 +14,11 @@ const IS_NODE_LIKE = globalThis.process?.cwd !== undefined;
 
 /**
  * @internal
- * @param {string} stringified
- * @returns {ReturnType<typeof JSON.parse>}
- */
-export function parse_stringified_type(stringified) {
-	try {
-		return JSON.parse(stringified);
-	} catch {
-		return stringified;
-	}
-}
-
-/**
- * @internal
  * @param {ts.Type} type
  * @returns {type is ts.ObjectType}
  */
-export function is_object_type(type) {
-	return (type.flags & ts.TypeFlags.Object || type.flags & ts.TypeFlags.NonPrimitive) !== 0;
+function is_object_type(type) {
+	return !!(type.flags & ts.TypeFlags.Object);
 }
 
 /**
@@ -40,16 +27,16 @@ export function is_object_type(type) {
  * @returns {type is ts.TypeReference}
  */
 export function is_type_reference(type) {
-	return is_object_type(type) && (type.objectFlags & ts.ObjectFlags.Reference) !== 0;
+	return is_object_type(type) && !!(type.objectFlags & ts.ObjectFlags.Reference);
 }
 
 /**
  * @internal
  * @param {ts.Type} type
- * @returns {type is ts.TupleType}
+ * @returns {type is ts.TupleTypeReference}
  */
-export function is_tuple_type(type) {
-	return is_object_type(type) && (type.objectFlags & ts.ObjectFlags.Tuple) !== 0;
+export function is_tuple_type_reference(type) {
+	return is_type_reference(type) && !!(type.target.objectFlags & ts.ObjectFlags.Tuple);
 }
 
 /**
@@ -59,15 +46,6 @@ export function is_tuple_type(type) {
  */
 export function is_symbol_optional(symbol) {
 	return (symbol.flags & ts.SymbolFlags.Optional) !== 0;
-}
-
-/**
- * @internal
- * @param {string} source
- * @returns {string}
- */
-export function remove_tsx_extension(source) {
-	return source.replace(/\.tsx$/, "");
 }
 
 /**
@@ -88,7 +66,6 @@ export function get_type_symbol(type) {
  * @typedef GetTypeParams
  * @prop {T} type
  * @prop {Extractor} extractor
- * @prop {string} [self]
  */
 
 /**
@@ -98,9 +75,11 @@ export function get_type_symbol(type) {
  * @returns {readonly ts.Signature[]}
  */
 export function get_construct_signatures(type, extractor) {
-	const symbol = get_type_symbol(type);
-	const symbol_type = extractor.checker.getTypeOfSymbol(symbol);
-	return extractor.checker.getSignaturesOfType(symbol_type, ts.SignatureKind.Construct);
+	// Get the type of a symbol in value contexts.
+	// For example, `Map` is an interface in type contexts but a constructor in value contexts.
+	if (!type.symbol?.valueDeclaration) return [];
+	const value_type = extractor.checker.getTypeOfSymbolAtLocation(type.symbol, type.symbol.valueDeclaration);
+	return value_type.getConstructSignatures.bind(value_type)();
 }
 
 /**
@@ -138,7 +117,7 @@ export function is_symbol_readonly(symbol) {
  * @internal
  * Creates a Set with stringified **relative** paths of declaration file(s) where the type was declared.
  *
- * In order to make it relative, it trims out _root_ from the path. Also for security resons to prevent exposing the
+ * In order to make it relative, it trims out _root_ from the path. Also for security reasons to prevent exposing the
  * full path to third-parties: https://github.com/svelte-docgen/svelte-docgen/issues/29
  *
  * It also trims `.tsx` extension for the filepaths with `*.svelte` - internally is appended to make it work with
@@ -154,8 +133,8 @@ export function get_sources(declarations, root_path_url) {
 			/* prettier-ignore */
 			return d
 				.getSourceFile()
-				.fileName.replace(".tsx", "")
-				.replace(root_path_url.pathname, "");
+				.fileName.replace(/\.svelte\.tsx$/, ".svelte")
+				.replace(root_path_url.pathname + pathe.sep, "");
 		}),
 	);
 }
@@ -167,38 +146,49 @@ export function get_sources(declarations, root_path_url) {
  * Field `package.json#workspaces` is also case for: npm, yarn, Deno, and Bun.
  *
  * @param {ts.System} sys TypeScript system for I/O operations.
+ * @param {string} [directory] Directory to start searching from. Default is `process.cwd()`.
  * @returns {URL} URI with path of either monorepo root or a basename of nearest `package.json` file.
  * @throws {Error} If it cannot find nearest `package.json` file if project isn't a monorepo.
  */
-export function get_root_path_url(sys) {
+export function get_root_path_url(sys, directory) {
 	if (!IS_NODE_LIKE) {
 		// Set the root of the virtual file system (VFS) as the root
 		return new URL("file:///");
 	}
-	let directory = path.resolve(process.cwd());
-	const { root } = path.parse(directory);
+
+	directory = pathe.resolve(directory ?? process.cwd());
+	const { root } = pathe.parse(directory);
 	/** @type {string | undefined} */
-	let package_json_filepath;
-	while (directory && directory !== root) {
+	let found_dir;
+	while (directory) {
 		// Case 1: pnpm workspace
-		const pnpm_workspace_filepath = path.join(directory, "pnpm-workspace.yaml");
+		const pnpm_workspace_filepath = pathe.join(directory, "pnpm-workspace.yaml");
 		if (sys.fileExists(pnpm_workspace_filepath)) {
-			return new URL(`file://${directory}`);
+			found_dir = directory;
+			break;
 		}
 		// Case 2: Others
-		package_json_filepath = path.join(directory, "package.json");
+		const package_json_filepath = pathe.join(directory, "package.json");
 		if (sys.fileExists(package_json_filepath)) {
 			const content = sys.readFile(package_json_filepath, "utf-8");
-			if (content && JSON.parse(content).workspaces) {
-				return new URL(`file://${directory}`);
+			if (content) {
+				if (JSON.parse(content).workspaces) {
+					// workspaces field found
+					found_dir = directory;
+					break;
+				} else if (!found_dir) {
+					found_dir = directory;
+				}
 			}
 		}
 		// NOTE: This goes root up
-		directory = path.dirname(directory);
+		if (directory === root) break;
+		directory = pathe.dirname(directory);
 	}
-	if (package_json_filepath) {
-		return new URL(`file://${path.dirname(package_json_filepath)}`);
+
+	if (!found_dir) {
+		// TODO: Document error
+		throw new Error("Could not determine the the root path.");
 	}
-	// TODO: Document error
-	throw new Error("Could not determine the the root path.");
+	return new URL(`file://${found_dir}`);
 }

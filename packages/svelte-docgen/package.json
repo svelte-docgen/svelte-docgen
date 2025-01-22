@@ -88,7 +88,8 @@
 	},
 	"dependencies": {
 		"@svelte-docgen/extractor": "workspace:*",
-		"typescript": "^5.0.0",
+		"pathe": "catalog:",
+		"typescript": "catalog:",
 		"valibot": "catalog:"
 	},
 	"devDependencies": {

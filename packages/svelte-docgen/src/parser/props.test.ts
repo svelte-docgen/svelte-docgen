@@ -53,45 +53,27 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "number",
 			        },
 			        {
-			          "kind": "number",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
 			  },
 			  "group" => {
-			    "default": {
-			      "element": {
-			        "kind": "string",
-			      },
-			      "isReadonly": false,
-			      "kind": "array",
-			    },
+			    "default": "Array<string>",
 			    "isBindable": true,
 			    "isExtended": false,
 			    "isOptional": true,
 			    "tags": [],
 			    "type": {
 			      "kind": "union",
-			      "nonNullable": {
-			        "element": {
-			          "kind": "string",
-			        },
-			        "isReadonly": false,
-			        "kind": "array",
-			      },
+			      "nonNullable": "Array<string>",
 			      "types": [
+			        "Array<string>",
 			        {
 			          "kind": "undefined",
-			        },
-			        {
-			          "element": {
-			            "kind": "string",
-			          },
-			          "isReadonly": false,
-			          "kind": "array",
 			        },
 			      ],
 			    },
@@ -113,17 +95,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
+			          "kind": "boolean",
+			        },
+			        {
 			          "kind": "undefined",
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "boolean",
-			          "value": false,
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "boolean",
-			          "value": true,
 			        },
 			      ],
 			    },
@@ -140,17 +115,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
+			          "kind": "boolean",
+			        },
+			        {
 			          "kind": "undefined",
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "boolean",
-			          "value": false,
-			        },
-			        {
-			          "kind": "literal",
-			          "subkind": "boolean",
-			          "value": true,
 			        },
 			      ],
 			    },
@@ -166,6 +134,78 @@ describe("props", () => {
 		const disabled = props.get("disabled");
 		expect(disabled).toBeDefined();
 		expect(disabled?.isBindable).toBe(false);
+	});
+
+	it("props are bindable when component uses legacy syntax", ({ expect }) => {
+		const { props } = parse(
+			`
+			<script lang="ts">
+				export let value = 0;
+				export let group: string[] = [];
+				export let random: any;
+			</script>
+			`,
+			create_options("bindable-legacy-props.svelte"),
+		);
+		expect(props).toMatchInlineSnapshot(`
+			Map {
+			  "value" => {
+			    "default": {
+			      "kind": "literal",
+			      "subkind": "number",
+			      "value": 0,
+			    },
+			    "isBindable": true,
+			    "isExtended": false,
+			    "isOptional": true,
+			    "tags": [],
+			    "type": {
+			      "kind": "union",
+			      "nonNullable": {
+			        "kind": "number",
+			      },
+			      "types": [
+			        {
+			          "kind": "number",
+			        },
+			        {
+			          "kind": "undefined",
+			        },
+			      ],
+			    },
+			  },
+			  "group" => {
+			    "default": "Array<never>",
+			    "isBindable": true,
+			    "isExtended": false,
+			    "isOptional": true,
+			    "tags": [],
+			    "type": {
+			      "kind": "union",
+			      "nonNullable": "Array<string>",
+			      "types": [
+			        "Array<string>",
+			        {
+			          "kind": "undefined",
+			        },
+			      ],
+			    },
+			  },
+			  "random" => {
+			    "isBindable": true,
+			    "isExtended": false,
+			    "isOptional": false,
+			    "tags": [],
+			    "type": {
+			      "kind": "any",
+			    },
+			  },
+			}
+		`);
+		expect(props.size).toBe(3);
+		for (const prop of props.values()) {
+			expect(prop.isBindable).toBe(true);
+		}
 	});
 
 	it("recognizes optional props and default values", ({ expect }) => {
@@ -197,10 +237,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "string",
 			        },
 			        {
-			          "kind": "string",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -231,10 +271,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "string",
 			        },
 			        {
-			          "kind": "string",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -256,10 +296,10 @@ describe("props", () => {
 			      },
 			      "types": [
 			        {
-			          "kind": "undefined",
+			          "kind": "number",
 			        },
 			        {
-			          "kind": "number",
+			          "kind": "undefined",
 			        },
 			      ],
 			    },
@@ -340,7 +380,7 @@ describe("props", () => {
 			  "isExtended": true,
 			  "isOptional": true,
 			  "sources": Set {
-			    /node_modules/.pnpm/svelte@<semver>/node_modules/svelte/elements.d.ts,
+			    node_modules/.pnpm/svelte@<semver>/node_modules/svelte/elements.d.ts,
 			  },
 			  "tags": [],
 			  "type": {
@@ -350,20 +390,13 @@ describe("props", () => {
 			    },
 			    "types": [
 			      {
+			        "kind": "boolean",
+			      },
+			      {
 			        "kind": "undefined",
 			      },
 			      {
 			        "kind": "null",
-			      },
-			      {
-			        "kind": "literal",
-			        "subkind": "boolean",
-			        "value": false,
-			      },
-			      {
-			        "kind": "literal",
-			        "subkind": "boolean",
-			        "value": true,
 			      },
 			    ],
 			  },
@@ -372,11 +405,27 @@ describe("props", () => {
 		expect(disabled?.isExtended).toBe(true);
 		expect(disabled?.sources).toMatchInlineSnapshot(`
 			Set {
-			  /node_modules/.pnpm/svelte@<semver>/node_modules/svelte/elements.d.ts,
+			  node_modules/.pnpm/svelte@<semver>/node_modules/svelte/elements.d.ts,
 			}
 		`);
 		if (disabled?.isExtended && disabled?.sources) {
 			expect(Iterator.from(disabled.sources).some((s) => s.endsWith("/svelte/elements.d.ts")));
+		}
+		const custom = props.get("custom");
+		expect(custom).toBeDefined();
+		expect(custom).toMatchInlineSnapshot(`
+			{
+			  "isBindable": false,
+			  "isExtended": false,
+			  "isOptional": false,
+			  "tags": [],
+			  "type": {
+			    "kind": "string",
+			  },
+			}
+		`);
+		if (custom) {
+			expect(custom.isExtended).toBe(false);
 		}
 	});
 });

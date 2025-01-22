@@ -142,11 +142,12 @@ describe("Literal", () => {
 	});
 
 	describe("LiteralSymbol", () => {
-		const { props } = parse(
+		const { props, types } = parse(
 			`
 			<script lang="ts">
+			  const sym: unique symbol = Symbol(); 
 				interface Props {
-					reality: unique symbol;
+					reality: typeof sym;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -157,9 +158,12 @@ describe("Literal", () => {
 		it("documents 'literal' type - symbol", ({ expect }) => {
 			const reality = props.get("reality");
 			expect(reality).toBeDefined();
-			expect(reality?.type).toMatchInlineSnapshot(`
+			expect(reality?.type).toBe("sym");
+			expect(types.get("sym")).toMatchInlineSnapshot(`
 				{
-				  "kind": "symbol",
+				  "kind": "literal",
+				  "name": "sym",
+				  "subkind": "symbol",
 				}
 			`);
 		});

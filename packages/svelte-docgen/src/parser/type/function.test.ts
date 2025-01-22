@@ -1,21 +1,24 @@
 import { describe, it } from "vitest";
 
 import { create_options } from "../../../tests/shared.js";
-import type * as Doc from "../../doc/type.js";
 import { parse } from "../mod.js";
+import type * as Doc from "../../doc/type.js";
+import { isTypeRef } from "../../kind/guard.js";
 
 describe("Fn", () => {
-	const { props } = parse(
+	const { props, types } = parse(
 		`
 			<script lang="ts">
 				type Baz = string | number;
-				type Aliased = () => void;
+				type Aliased = () => number;
+				type AliasedReturn = symbol;
 				interface Props {
 					void: () => void;
 					returning: () => string;
-					parametized: (foo: string, bar?: Baz) => boolean;
+					parameterized: (foo: string, bar?: Baz) => boolean;
 					spread: (...spread: any) => null;
 					aliased: Aliased;
+					"aliased-return": () => AliasedReturn;
 				}
 				let { ..._ }: Props = $props();
 			</script>
@@ -23,10 +26,10 @@ describe("Fn", () => {
 		create_options("function.svelte"),
 	);
 
-	it("documents 'function' - retuning void", ({ expect }) => {
+	it("documents anonymous 'function' - retuning void", ({ expect }) => {
 		const void_ = props.get("void");
-		expect(void_).toBeDefined();
-		expect(void_?.type).toMatchInlineSnapshot(`
+		if (!void_ || isTypeRef(void_?.type)) throw new Error("expected a type");
+		expect(void_.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
 			    {
@@ -39,13 +42,13 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		expect(void_?.type.kind).toBe("function");
+		expect(void_.type.kind).toBe("function");
 	});
 
 	it("recognizes return type other than 'void'", ({ expect }) => {
 		const returning = props.get("returning");
-		expect(returning).toBeDefined();
-		expect(returning?.type).toMatchInlineSnapshot(`
+		if (!returning || isTypeRef(returning?.type)) throw new Error("expected a type");
+		expect(returning.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
 			    {
@@ -58,13 +61,13 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		expect(returning?.type.kind).toBe("function");
+		expect(returning.type.kind).toBe("function");
 	});
 
 	it("documents parameter(s) type if specified", ({ expect }) => {
-		const parametized = props.get("parametized");
-		expect(parametized).toBeDefined();
-		expect(parametized?.type).toMatchInlineSnapshot(`
+		const parameterized = props.get("parameterized");
+		expect(parameterized).toBeDefined();
+		expect(parameterized?.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
 			    {
@@ -81,30 +84,11 @@ describe("Fn", () => {
 			          "name": "bar",
 			          "type": {
 			            "kind": "union",
-			            "nonNullable": {
-			              "alias": "Baz",
-			              "kind": "union",
-			              "sources": Set {
-			                "function.svelte",
-			              },
-			              "types": [
-			                {
-			                  "kind": "string",
-			                },
-			                {
-			                  "kind": "number",
-			                },
-			              ],
-			            },
+			            "nonNullable": "Baz",
 			            "types": [
+			              "Baz",
 			              {
 			                "kind": "undefined",
-			              },
-			              {
-			                "kind": "string",
-			              },
-			              {
-			                "kind": "number",
 			              },
 			            ],
 			          },
@@ -118,11 +102,12 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		expect(parametized?.type.kind).toBe("function");
+		if (!parameterized || isTypeRef(parameterized?.type)) throw new Error("expected a type");
+		expect(parameterized?.type.kind).toBe("function");
 
 		const spread = props.get("spread");
-		expect(spread).toBeDefined();
-		expect(spread?.type).toMatchInlineSnapshot(`
+		if (!spread || isTypeRef(spread?.type)) throw new Error("expected a type");
+		expect(spread.type).toMatchInlineSnapshot(`
 			{
 			  "calls": [
 			    {
@@ -143,32 +128,59 @@ describe("Fn", () => {
 			  "kind": "function",
 			}
 		`);
-		expect(spread?.type.kind).toBe("function");
+		if (typeof spread?.type !== "string") {
+			expect(spread?.type.kind).toBe("function");
+			if (spread?.type.kind === "function") {
+				expect(spread?.type.calls.length).toBeGreaterThan(0);
+				expect(spread?.type.calls[0].returns).not.toBeTypeOf("string");
+				expect(spread?.type.alias).not.toBeDefined();
+				expect(spread?.type.sources).not.toBeDefined();
+				expect(spread?.type.calls[0].parameters.length).toBeGreaterThan(0);
+				if (typeof spread?.type.calls[0].returns !== "string") {
+					expect(spread?.type.calls[0].returns.kind).toBe("null");
+				}
+			}
+		}
 	});
 
 	it("recognizes aliased type", ({ expect }) => {
-		const aliased = props.get("aliased");
-		expect(aliased).toBeDefined();
-		expect(aliased?.type).toMatchInlineSnapshot(`
-			{
-			  "alias": "Aliased",
-			  "calls": [
-			    {
-			      "parameters": [],
-			      "returns": {
-			        "kind": "void",
+		expect(props.get("aliased")?.type).toBe("Aliased");
+		const aliased = types.get("Aliased");
+		if (!aliased || isTypeRef(aliased)) throw new Error("expected a type");
+		expect((aliased as Doc.Fn).alias).toBe("Aliased");
+		expect((aliased as Doc.Fn).aliasSource).toBeDefined();
+	});
+
+	it("collects aliased types", ({ expect }) => {
+		expect(types).toMatchInlineSnapshot(`
+			Map {
+			  "Baz" => {
+			    "alias": "Baz",
+			    "aliasSource": "function.svelte",
+			    "kind": "union",
+			    "types": [
+			      {
+			        "kind": "string",
 			      },
-			    },
-			  ],
-			  "kind": "function",
-			  "sources": Set {
-			    "function.svelte",
+			      {
+			        "kind": "number",
+			      },
+			    ],
+			  },
+			  "Aliased" => {
+			    "alias": "Aliased",
+			    "aliasSource": "function.svelte",
+			    "calls": [
+			      {
+			        "parameters": [],
+			        "returns": {
+			          "kind": "number",
+			        },
+			      },
+			    ],
+			    "kind": "function",
 			  },
 			}
 		`);
-		expect(aliased?.type.kind).toBe("function");
-		expect((aliased?.type as Doc.Fn).alias).toBeDefined();
-		expect((aliased?.type as Doc.Fn).alias).toBe("Aliased");
-		expect((aliased?.type as Doc.Fn).sources).toBeDefined();
 	});
 });

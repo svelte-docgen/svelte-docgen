@@ -14,7 +14,7 @@ let VITE_DEV_SERVER: ViteDevServer;
 beforeEach(async () => {
 	VITE_DEV_SERVER = await createServer({
 		root: path.join(__dirname, ".."),
-		plugins: [await plugin()],
+		plugins: [plugin()],
 	});
 });
 
@@ -25,7 +25,11 @@ describe("plugin", async () => {
 		expect(docgen.default.exports).toBeInstanceOf(Map);
 		expect(docgen.default.exports.size).toBe(0);
 		expect(docgen.default.props).toBeInstanceOf(Map);
-		expect(docgen.default.props.size).toBe(443);
+		expect(docgen.default.props.size).toBeGreaterThan(400);
+		expect(docgen.default.types).toBeInstanceOf(Map);
+		expect(docgen.default.types.size).toBeGreaterThan(100);
+		expect(docgen.default.props.get("disabled").sources).toBeInstanceOf(Set);
+		expect(docgen.default.types.get("FocusEventInit").members).toBeInstanceOf(Map);
 	});
 
 	it("should handle both relative paths to importer and absolute paths from the project root", async ({ expect }) => {

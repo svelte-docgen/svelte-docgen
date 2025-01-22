@@ -1,0 +1,8 @@
+{
+	"$schema": "https://json.schemastore.org/package",
+	"name": "npm-workspace",
+	"type": "module",
+	"workspaces": [
+		"member"
+	]
+}

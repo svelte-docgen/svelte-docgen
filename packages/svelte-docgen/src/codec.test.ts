@@ -64,17 +64,10 @@ describe("encode()", () => {
 			          "kind": "union",
 			          "types": [
 			            {
+			              "kind": "boolean"
+			            },
+			            {
 			              "kind": "undefined"
-			            },
-			            {
-			              "kind": "literal",
-			              "subkind": "boolean",
-			              "value": false
-			            },
-			            {
-			              "kind": "literal",
-			              "subkind": "boolean",
-			              "value": true
 			            }
 			          ],
 			          "nonNullable": {
@@ -90,168 +83,165 @@ describe("encode()", () => {
 			        "isBindable": false,
 			        "isExtended": false,
 			        "isOptional": false,
-			        "type": {
-			          "kind": "constructible",
-			          "name": "Date",
-			          "constructors": [
-			            [],
-			            [
-			              {
-			                "name": "value",
-			                "isOptional": false,
-			                "type": {
-			                  "kind": "union",
-			                  "types": [
-			                    {
-			                      "kind": "string"
-			                    },
-			                    {
-			                      "kind": "number"
-			                    }
-			                  ]
-			                }
+			        "type": "Date"
+			      }
+			    ]
+			  ],
+			  "types": [
+			    [
+			      "Date",
+			      {
+			        "kind": "constructible",
+			        "name": "Date",
+			        "constructors": [
+			          [],
+			          [
+			            {
+			              "name": "value",
+			              "isOptional": false,
+			              "type": {
+			                "kind": "union",
+			                "types": [
+			                  {
+			                    "kind": "string"
+			                  },
+			                  {
+			                    "kind": "number"
+			                  }
+			                ]
 			              }
-			            ],
-			            [
-			              {
-			                "name": "year",
-			                "isOptional": false,
-			                "type": {
-			                  "kind": "number"
-			                }
-			              },
-			              {
-			                "name": "monthIndex",
-			                "isOptional": false,
-			                "type": {
-			                  "kind": "number"
-			                }
-			              },
-			              {
-			                "name": "date",
-			                "isOptional": true,
-			                "type": {
-			                  "kind": "union",
-			                  "types": [
-			                    {
-			                      "kind": "undefined"
-			                    },
-			                    {
-			                      "kind": "number"
-			                    }
-			                  ],
-			                  "nonNullable": {
-			                    "kind": "number"
-			                  }
-			                }
-			              },
-			              {
-			                "name": "hours",
-			                "isOptional": true,
-			                "type": {
-			                  "kind": "union",
-			                  "types": [
-			                    {
-			                      "kind": "undefined"
-			                    },
-			                    {
-			                      "kind": "number"
-			                    }
-			                  ],
-			                  "nonNullable": {
-			                    "kind": "number"
-			                  }
-			                }
-			              },
-			              {
-			                "name": "minutes",
-			                "isOptional": true,
-			                "type": {
-			                  "kind": "union",
-			                  "types": [
-			                    {
-			                      "kind": "undefined"
-			                    },
-			                    {
-			                      "kind": "number"
-			                    }
-			                  ],
-			                  "nonNullable": {
-			                    "kind": "number"
-			                  }
-			                }
-			              },
-			              {
-			                "name": "seconds",
-			                "isOptional": true,
-			                "type": {
-			                  "kind": "union",
-			                  "types": [
-			                    {
-			                      "kind": "undefined"
-			                    },
-			                    {
-			                      "kind": "number"
-			                    }
-			                  ],
-			                  "nonNullable": {
-			                    "kind": "number"
-			                  }
-			                }
-			              },
-			              {
-			                "name": "ms",
-			                "isOptional": true,
-			                "type": {
-			                  "kind": "union",
-			                  "types": [
-			                    {
-			                      "kind": "undefined"
-			                    },
-			                    {
-			                      "kind": "number"
-			                    }
-			                  ],
-			                  "nonNullable": {
-			                    "kind": "number"
-			                  }
-			                }
-			              }
-			            ],
-			            [
-			              {
-			                "name": "value",
-			                "isOptional": false,
-			                "type": {
-			                  "kind": "union",
-			                  "types": [
-			                    {
-			                      "kind": "string"
-			                    },
-			                    {
-			                      "kind": "number"
-			                    },
-			                    {
-			                      "kind": "constructible",
-			                      "name": "Date",
-			                      "constructors": "self",
-			                      "sources": [
-			                        "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts",
-			                        "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
-			                        "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2020.date.d.ts"
-			                      ]
-			                    }
-			                  ]
-			                }
-			              }
-			            ]
+			            }
 			          ],
-			          "sources": [
-			            "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts",
-			            "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
-			            "/node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2020.date.d.ts"
+			          [
+			            {
+			              "name": "year",
+			              "isOptional": false,
+			              "type": {
+			                "kind": "number"
+			              }
+			            },
+			            {
+			              "name": "monthIndex",
+			              "isOptional": false,
+			              "type": {
+			                "kind": "number"
+			              }
+			            },
+			            {
+			              "name": "date",
+			              "isOptional": true,
+			              "type": {
+			                "kind": "union",
+			                "types": [
+			                  {
+			                    "kind": "number"
+			                  },
+			                  {
+			                    "kind": "undefined"
+			                  }
+			                ],
+			                "nonNullable": {
+			                  "kind": "number"
+			                }
+			              }
+			            },
+			            {
+			              "name": "hours",
+			              "isOptional": true,
+			              "type": {
+			                "kind": "union",
+			                "types": [
+			                  {
+			                    "kind": "number"
+			                  },
+			                  {
+			                    "kind": "undefined"
+			                  }
+			                ],
+			                "nonNullable": {
+			                  "kind": "number"
+			                }
+			              }
+			            },
+			            {
+			              "name": "minutes",
+			              "isOptional": true,
+			              "type": {
+			                "kind": "union",
+			                "types": [
+			                  {
+			                    "kind": "number"
+			                  },
+			                  {
+			                    "kind": "undefined"
+			                  }
+			                ],
+			                "nonNullable": {
+			                  "kind": "number"
+			                }
+			              }
+			            },
+			            {
+			              "name": "seconds",
+			              "isOptional": true,
+			              "type": {
+			                "kind": "union",
+			                "types": [
+			                  {
+			                    "kind": "number"
+			                  },
+			                  {
+			                    "kind": "undefined"
+			                  }
+			                ],
+			                "nonNullable": {
+			                  "kind": "number"
+			                }
+			              }
+			            },
+			            {
+			              "name": "ms",
+			              "isOptional": true,
+			              "type": {
+			                "kind": "union",
+			                "types": [
+			                  {
+			                    "kind": "number"
+			                  },
+			                  {
+			                    "kind": "undefined"
+			                  }
+			                ],
+			                "nonNullable": {
+			                  "kind": "number"
+			                }
+			              }
+			            }
+			          ],
+			          [
+			            {
+			              "name": "value",
+			              "isOptional": false,
+			              "type": {
+			                "kind": "union",
+			                "types": [
+			                  {
+			                    "kind": "string"
+			                  },
+			                  {
+			                    "kind": "number"
+			                  },
+			                  "Date"
+			                ]
+			              }
+			            }
 			          ]
-			        }
+			        ],
+			        "sources": [
+			          "node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es5.d.ts",
+			          "node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
+			          "node_modules/.pnpm/typescript@<semver>/node_modules/typescript/lib/lib.es2020.date.d.ts"
+			        ]
 			      }
 			    ]
 			  ]

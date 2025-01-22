@@ -42,7 +42,7 @@ describe("NodeServer", () => {
 				      "isExtended": true,
 				      "isOptional": false,
 				      "sources": Set {
-				        "/packages/server/examples/test.svelte",
+				        "packages/server/examples/test.svelte",
 				      },
 				      "tags": [],
 				      "type": {
@@ -54,107 +54,72 @@ describe("NodeServer", () => {
 				      "isExtended": true,
 				      "isOptional": true,
 				      "sources": Set {
-				        "/packages/server/examples/test.svelte",
+				        "packages/server/examples/test.svelte",
 				      },
 				      "tags": [],
 				      "type": {
 				        "kind": "union",
-				        "nonNullable": {
-				          "alias": "Snippet",
-				          "calls": [
-				            {
-				              "parameters": [
-				                {
-				                  "isOptional": false,
-				                  "name": "args",
-				                  "type": {
-				                    "elements": [],
-				                    "isReadonly": false,
-				                    "kind": "tuple",
-				                  },
-				                },
-				              ],
-				              "returns": {
-				                "kind": "intersection",
-				                "types": [
-				                  {
-				                    "kind": "interface",
-				                    "members": Map {
-				                      "{@render ...} must be called with a Snippet" => {
-				                        "isOptional": false,
-				                        "isReadonly": false,
-				                        "type": {
-				                          "kind": "literal",
-				                          "subkind": "string",
-				                          "value": "import type { Snippet } from 'svelte'",
-				                        },
-				                      },
-				                    },
-				                  },
-				                  {
-				                    "kind": "literal",
-				                    "subkind": "symbol",
-				                  },
-				                ],
-				              },
-				            },
-				          ],
-				          "kind": "function",
-				          "sources": Set {
-				            /node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
-				          },
-				        },
+				        "nonNullable": ""svelte".Snippet<[]>",
 				        "types": [
+				          ""svelte".Snippet<[]>",
 				          {
 				            "kind": "undefined",
 				          },
-				          {
-				            "alias": "Snippet",
-				            "calls": [
-				              {
-				                "parameters": [
-				                  {
-				                    "isOptional": false,
-				                    "name": "args",
-				                    "type": {
-				                      "elements": [],
-				                      "isReadonly": false,
-				                      "kind": "tuple",
-				                    },
-				                  },
-				                ],
-				                "returns": {
-				                  "kind": "intersection",
-				                  "types": [
-				                    {
-				                      "kind": "interface",
-				                      "members": Map {
-				                        "{@render ...} must be called with a Snippet" => {
-				                          "isOptional": false,
-				                          "isReadonly": false,
-				                          "type": {
-				                            "kind": "literal",
-				                            "subkind": "string",
-				                            "value": "import type { Snippet } from 'svelte'",
-				                          },
-				                        },
-				                      },
-				                    },
-				                    {
-				                      "kind": "literal",
-				                      "subkind": "symbol",
-				                    },
-				                  ],
-				                },
-				              },
-				            ],
-				            "kind": "function",
-				            "sources": Set {
-				              /node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
-				            },
-				          },
 				        ],
 				      },
+				    },
+				  },
+				  "types": Map {
+				    ""svelte".Snippet<[]>" => {
+				      "calls": [
+				        {
+				          "parameters": [
+				            {
+				              "isOptional": false,
+				              "name": "args",
+				              "type": "[]",
+				            },
+				          ],
+				          "returns": {
+				            "kind": "intersection",
+				            "types": [
+				              {
+				                "kind": "interface",
+				                "members": Map {
+				                  "{@render ...} must be called with a Snippet" => {
+				                    "isOptional": false,
+				                    "isReadonly": false,
+				                    "type": {
+				                      "kind": "literal",
+				                      "subkind": "string",
+				                      "value": "import type { Snippet } from 'svelte'",
+				                    },
+				                  },
+				                },
+				              },
+				              "SnippetReturn",
+				            ],
+				          },
+				        },
+				      ],
+				      "kind": "function",
+				      "name": ""svelte".Snippet",
+				      "sources": Set {
+				        node_modules/.pnpm/svelte@<semver>/node_modules/svelte/types/index.d.ts,
+				      },
+				      "typeArgs": [
+				        "[]",
+				      ],
+				    },
+				    "[]" => {
+				      "elements": [],
+				      "isReadonly": false,
+				      "kind": "tuple",
+				    },
+				    "SnippetReturn" => {
+				      "kind": "literal",
+				      "name": "SnippetReturn",
+				      "subkind": "symbol",
 				    },
 				  },
 				}

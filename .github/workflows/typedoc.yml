@@ -68,7 +68,7 @@ jobs:
 
       # https://github.com/rossjrw/pr-preview-action
       - name: Create PR preview on the GitHub Pages
-        uses: rossjrw/pr-preview-action@v1.4.7
+        uses: rossjrw/pr-preview-action@v1.6.0
         if: ${{ inputs.type == 'pr-preview' }}
         with:
           preview-branch: ${{ env.BRANCH }}
@@ -77,7 +77,7 @@ jobs:
 
       # https://github.com/JamesIves/github-pages-deploy-action
       - name: Deploy TypeDoc to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.1
+        uses: JamesIves/github-pages-deploy-action@v4.7.2
         if: ${{ inputs.type == 'deploy' }}
         with:
           clean-exclude: ${{ env.UMBRELLA_DIR }}

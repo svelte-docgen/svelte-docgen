@@ -62,10 +62,11 @@ export function decode(stringified) {
 			case "events":
 			case "members":
 			case "props":
+			case "types":
 			case "slots":
 				return is_mappable(value) ? new Map(value) : value;
 			case "sources":
-				return is_setable(value) ? new Set(value) : value;
+				return is_settable(value) ? new Set(value) : value;
 			default:
 				return value;
 		}
@@ -97,6 +98,6 @@ function is_mappable(input) {
  * @returns {input is Array<[string]>}
  * @internal
  */
-function is_setable(input) {
+function is_settable(input) {
 	return v.is(v.array(v.string()), input);
 }

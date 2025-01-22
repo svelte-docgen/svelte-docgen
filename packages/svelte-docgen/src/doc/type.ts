@@ -1,16 +1,81 @@
 import type { extract } from "@svelte-docgen/extractor";
 
-import type { TypeKind } from "./kind.js";
+import type { BaseTypeKind } from "../kind/core.js";
 
+/**
+ * Type reference as key in the map {@link Types}.
+ * The purpose of this reference is to solve circularity issue with types with optional alias {@link WithAlias}
+ * or types with required name {@link WithName}.
+ */
+export type TypeRef = string;
+
+/**
+ * Union of all possible types recognized by `svelte-docgen`.
+ */
+export type Type =
+	| BaseType
+	| Array
+	| Constructible
+	| Fn
+	| Interface
+	| Intersection
+	| Literal
+	| Tuple
+	| TypeParam
+	| Union
+	| Index
+	| IndexedAccess
+	| Conditional
+	| Substitution
+	| TemplateLiteral
+	| StringMapping;
+
+export type TypeOrRef = Type | TypeRef;
+
+/**
+ * Type that can optionally have an `alias`
+ */
+export interface WithAlias {
+	alias?: string;
+	/** Alias type arguments */
+	aliasTypeArgs?: TypeOrRef[];
+	/**
+	 * Where is this type alias declared?
+	 */
+	aliasSource?: string;
+}
+
+/**
+ * Type that can optionally have an `name`
+ */
+export interface WithName {
+	name?: string;
+	/**
+	 * Where is this type declared?
+	 */
+	sources?: Set<string>;
+}
+
+/**
+ * Type that can optionally have `typeArgs`
+ */
+export interface WithTypeArgs {
+	typeArgs?: TypeOrRef[];
+}
+
+/**
+ * Represents a documentation tag in JSDoc
+ */
 export type Tag = NonNullable<ReturnType<typeof extract>["tags"]>[number];
+export type DisplayPart = NonNullable<Tag["content"]>[number];
 
 export interface Docable {
-	description?: string;
+	description?: DisplayPart[];
 	tags?: Tag[];
 }
 
 export interface OptionalProp {
-	default?: Type;
+	default?: TypeOrRef;
 	isOptional: true;
 }
 export interface RequiredProp {
@@ -20,82 +85,46 @@ export interface RequiredProp {
 export interface LocalProp {
 	isExtended: false;
 	sources?: never;
+	aliasSource?: never;
 }
 export interface ExtendedProp {
 	isExtended: true;
 	/** Where is this extended prop declared? */
 	sources?: Set<string>;
+	aliasSource?: string;
 }
 export type Prop = Docable & {
 	isBindable: boolean;
-	type: Type;
+	type: TypeOrRef;
 } & (OptionalProp | RequiredProp) &
 	(LocalProp | ExtendedProp);
 
-export type Events = Map<string, Type>;
-export type Exports = Map<string, Type>;
+export type Events = Map<string, TypeOrRef>;
+export type Exports = Map<string, TypeOrRef>;
 export type Props = Map<string, Prop>;
 export type Slots = Map<string, Props>;
-
-export type Type =
-	| BaseType
-	| ArrayType
-	| Constructible
-	| Fn
-	| Interface
-	| Intersection
-	| Literal
-	| Tuple
-	| TypeParam
-	| Union;
-
-export interface WithAlias {
-	alias?: string;
-	/**
-	 * Where is this type declared?
-	 */
-	sources?: Set<string>;
-}
-
-export interface WithName {
-	name: string;
-	/**
-	 * Where is this type declared?
-	 */
-	sources: Set<string>;
-}
+export type Types = Map<TypeRef, Type>;
 
 export interface BaseType {
 	/** @see {@link TypeKind} */
-	kind: Exclude<
-		TypeKind,
-		| "array"
-		| "constructible"
-		| "function"
-		| "interface"
-		| "intersection"
-		| "literal"
-		| "tuple"
-		| "type-parameter"
-		| "union"
-	>;
+	kind: BaseTypeKind;
 }
 
-export interface ArrayType {
+export interface Array extends WithAlias {
 	kind: "array";
 	isReadonly: boolean;
-	element: Type;
+	element: TypeOrRef;
 }
 
-export interface Constructible extends WithName {
+export interface Constructible extends WithName, WithAlias, WithTypeArgs {
 	kind: "constructible";
 	name: string;
-	constructors: Array<FnParam[]> | "self";
+	constructors: FnParam[][];
 }
 
 export interface OptionalFnParam {
 	isOptional: true;
-	default?: Type;
+	default?: TypeOrRef;
 }
 export interface RequiredFnParam {
 	isOptional: false;
@@ -104,27 +133,27 @@ export interface RequiredFnParam {
 export type FnParam = {
 	name: string;
 	isOptional: boolean;
-	default?: Type;
-	type: Type;
+	default?: TypeOrRef;
+	type: TypeOrRef;
 } & (OptionalFnParam | RequiredFnParam);
 
 export interface FnCall {
-	parameters: (FnParam | "self")[];
-	returns: Type;
+	parameters: FnParam[];
+	returns: TypeOrRef;
 }
-export interface Fn extends WithAlias {
+export interface Fn extends WithName, WithAlias, WithTypeArgs {
 	kind: "function";
 	calls: FnCall[];
 }
 
-export interface Interface extends WithAlias {
+export interface Interface extends WithName, WithAlias, WithTypeArgs {
 	kind: "interface";
 	members: Map<string, Member>;
 }
 
 export interface Intersection extends WithAlias {
 	kind: "intersection";
-	types: Type[];
+	types: TypeOrRef[];
 }
 
 export interface LiteralBigInt {
@@ -150,31 +179,85 @@ export interface LiteralString {
 export interface LiteralSymbol {
 	kind: "literal";
 	subkind: "symbol";
+	name: string;
 }
 export type Literal = LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralString | LiteralSymbol;
 
 export interface Member {
 	isOptional: boolean;
 	isReadonly: boolean;
-	type: Type;
+	type: TypeOrRef;
 }
 
 export interface Tuple extends WithAlias {
 	kind: "tuple";
 	isReadonly: boolean;
-	elements: Type[];
+	elements: TypeOrRef[];
 }
+
+export interface Union extends WithAlias {
+	kind: "union";
+	types: TypeOrRef[];
+	nonNullable?: TypeOrRef;
+}
+
+/** Union, Intersection or Object */
+export type StructuredType = Array | Constructible | Fn | Interface | Intersection | Literal | Tuple | Union;
 
 export interface TypeParam {
 	kind: "type-parameter";
 	name: string;
 	isConst: boolean;
-	constraint: Type;
-	default?: Type;
+	constraint: TypeOrRef;
+	default?: TypeOrRef;
 }
 
-export interface Union extends WithAlias {
-	kind: "union";
-	types: Type[];
-	nonNullable?: Type;
+export interface Index {
+	kind: "index";
+	type: TypeOrRef;
 }
+
+export interface IndexedAccess extends WithAlias {
+	kind: "indexed-access";
+	object: TypeOrRef;
+	index: TypeOrRef;
+	constraint?: TypeOrRef;
+	// TODO: Commenting these out for now as it's unclear if they are useful for users
+	// simplifiedForReading?: TypeOrRef;
+	// simplifiedForWriting?: TypeOrRef;
+}
+
+export interface Conditional extends WithAlias {
+	kind: "conditional";
+	check: TypeOrRef;
+	extends: TypeOrRef;
+	truthy?: TypeOrRef;
+	falsy?: TypeOrRef;
+}
+
+export interface Substitution {
+	kind: "substitution";
+	base: TypeOrRef;
+	constraint: TypeOrRef;
+}
+
+export interface TemplateLiteral {
+	kind: "template-literal";
+	texts: readonly string[];
+	types: TypeOrRef[];
+}
+
+export interface StringMapping {
+	kind: "string-mapping";
+	type: TypeOrRef;
+	name: string;
+}
+
+export type InstantiableType =
+	| Conditional
+	| Index
+	| IndexedAccess
+	| StringMapping
+	| Substitution
+	| TemplateLiteral
+	| TypeParam;
