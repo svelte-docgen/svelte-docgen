@@ -37,7 +37,6 @@
 		"isomorphic-dompurify": "^2.19.0",
 		"lucide-svelte": "^0.469.0",
 		"mdsvex": "^0.11.2",
-		"mode-watcher": "^0.5.0",
 		"normalize-package-data": "^7.0.0",
 		"paneforge": "^1.0.0-next.2",
 		"pathe": "catalog:",
