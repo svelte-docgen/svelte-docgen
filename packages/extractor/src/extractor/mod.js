@@ -1,15 +1,15 @@
+/**
+ * @import { DisplayPart, Tag } from "./component-doc.js";
+ * @import { Source } from "../util.js";
+ * @import { createCacheStorage } from "../cache.js";
+ */
+
 import ts from "typescript";
 
 import { ComponentDocExtractor } from "./component-doc.js";
 import { Compiler } from "../compiler.js";
 import { Options } from "../options.js";
 import { Parser } from "../parser.js";
-
-/**
- * @import { Tag } from "./component-doc.js";
- * @import { Source } from "../util.js";
- * @import { createCacheStorage } from "../cache.js";
- */
 
 class Extractor {
 	/** @type {Source} */
@@ -35,7 +35,7 @@ class Extractor {
 		this.compiler = new Compiler(this.source, this.parser, this.#options);
 	}
 
-	/** @returns {string | undefined} */
+	/** @returns {DisplayPart[] | undefined} */
 	get description() {
 		return this.#component_doc_extractor?.description;
 	}
@@ -56,7 +56,18 @@ class Extractor {
 		const { props } = this.#extracted_from_render_fn;
 		// TODO: Use error: `not_found_type_props`
 		if (!props) throw new Error("props not found");
-		return new Map(Iterator.from(props.getProperties()).map((p) => [p.name, p]));
+		return new Map(
+			Iterator.from(props.getProperties()).map((p) => {
+				// Handle the `bind:` prefix, used in type declarations to indicate that props are bindable
+				const prefix = "bind:";
+				if (p.name.startsWith(prefix)) {
+					const name = p.name.slice(prefix.length);
+					this.#cached_bindings.add(name);
+					return [name, p];
+				}
+				return [p.name, p];
+			}),
+		);
 	}
 
 	/** @returns {Map<string, ts.BindingElement>} */
@@ -83,31 +94,41 @@ class Extractor {
 		return results;
 	}
 
+	/**
+	 * `svelte2tsx` doesn't check whether props are bindable if the name contains prefix `bind:`.
+	 * Another reason why we need own parser...
+	 */
+	#was_props_called = false;
+	/** @type {Set<string>} */
+	#cached_bindings = new Set();
 	/** @returns {Set<string>} */
 	get bindings() {
-		let results = new Set();
-		const { bindings } = this.#extracted_from_render_fn;
-		// TODO: Use error: `not_found_type_bindings`
-		if (!bindings) throw new Error("bindings not found");
-		// Case 1: multiple bindings
-		if (bindings.isUnion()) {
-			for (const type of bindings.types) {
-				if (!type.isStringLiteral()) {
-					// TODO: Use error: `bindngs_without_literal_string_types`
-					throw new Error("Expected bindings to be a union of literal string types");
-				}
-				results.add(type.value);
-			}
+		if (!this.#was_props_called) {
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			this.props;
+			this.#was_props_called = true;
 		}
-		// Case 2: single binding
+		const { bindings } = this.#extracted_from_render_fn;
+		// TODO: Document error
+		if (!bindings) throw new Error("bindings not found");
+		// If in legacy mode, 'bindings' is a string type
+		if (bindings.flags & ts.TypeFlags.String) return this.#cached_bindings;
+		// If there is a single binding
 		if (bindings.isStringLiteral()) {
 			// NOTE: No bindings, is empty
-			if (bindings.value !== "") results.add(bindings.value);
+			if (bindings.value === "") return this.#cached_bindings;
+			this.#cached_bindings.add(bindings.value);
+			return this.#cached_bindings;
 		}
-		// WARN: `svelte2tsx` produces an empty string `""` type (non-literal) for legacy components (v4),
-		// but it doesn't recognize any bindable props.
-		// Tracking issue: https://github.com/svelte-docgen/svelte-docgen/issues/63
-		return results;
+		// If there are multiple bindings
+		// TODO: Document error
+		if (!bindings?.isUnion()) throw new Error("bindings is not an union");
+		for (const type of bindings.types) {
+			// TODO: Document error
+			if (!type.isStringLiteral()) throw new Error("Expected bindings to be a union of string literal types");
+			this.#cached_bindings.add(type.value);
+		}
+		return this.#cached_bindings;
 	}
 
 	/**
