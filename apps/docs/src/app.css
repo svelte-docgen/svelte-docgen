@@ -34,7 +34,7 @@
 		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 
-	.dark {
+	:root:where([data-color-scheme="dark"]) {
 		--background: 20 14.3% 4.1%;
 		--foreground: 60 9.1% 97.8%;
 		--muted: 12 6.5% 15.1%;
@@ -62,6 +62,13 @@
 		--sidebar-accent-foreground: 240 4.8% 95.9%;
 		--sidebar-border: 240 3.7% 15.9%;
 		--sidebar-ring: 217.2 91.2% 59.8%;
+	}
+
+	@media (prefers-color-scheme: light) {
+		color-scheme: light;
+	}
+	@media (prefers-color-scheme: dark) {
+		color-scheme: dark;
 	}
 }
 

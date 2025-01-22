@@ -10,7 +10,7 @@ import typography from "@tailwindcss/typography";
 
 /** @satisfies {Config} */
 const config = {
-	darkMode: ["class"],
+	darkMode: ["selector", "[data-color-scheme='dark']"],
 	content: ["./src/**/*.{html,js,svelte,ts}"],
 	safelist: ["dark"],
 	theme: {

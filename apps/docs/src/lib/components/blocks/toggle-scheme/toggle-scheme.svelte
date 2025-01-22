@@ -1,13 +1,19 @@
 <script lang="ts">
 	import Sun from "lucide-svelte/icons/sun";
 	import Moon from "lucide-svelte/icons/moon";
-	import { resetMode, setMode } from "mode-watcher";
 	import type { ComponentProps } from "svelte";
 
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
+	import * as color_scheme from "$lib/hooks/color-scheme.svelte";
 
 	let { class: class_ }: ComponentProps<typeof DropdownMenu.Trigger> = $props();
+
+	const watcher = color_scheme.get_watcher();
+
+	$effect(() => {
+		window.document.documentElement.setAttribute(color_scheme.DATA_ATTR, watcher.used);
+	});
 </script>
 
 <DropdownMenu.Root>
@@ -18,8 +24,12 @@
 	</DropdownMenu.Trigger>
 
 	<DropdownMenu.Content align="end">
-		<DropdownMenu.Item onclick={() => setMode("light")}>Light</DropdownMenu.Item>
-		<DropdownMenu.Item onclick={() => setMode("dark")}>Dark</DropdownMenu.Item>
-		<DropdownMenu.Item onclick={() => resetMode()}>System</DropdownMenu.Item>
+		{#each color_scheme.VALUES as value}
+			<DropdownMenu.Item
+				onclick={() => {
+					watcher.current = value;
+				}}>{value}</DropdownMenu.Item
+			>
+		{/each}
 	</DropdownMenu.Content>
 </DropdownMenu.Root>
