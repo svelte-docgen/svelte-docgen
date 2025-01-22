@@ -64,10 +64,10 @@
 		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 
-	@media screen and (prefers-color-scheme: light) {
+	@media (prefers-color-scheme: light) {
 		color-scheme: light;
 	}
-	@media screen and (prefers-color-scheme: dark) {
+	@media (prefers-color-scheme: dark) {
 		color-scheme: dark;
 	}
 }
