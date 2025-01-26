@@ -37,3 +37,8 @@
   - changed-files:
       - any-glob-to-any-file:
           - "internals/**"
+
+"scripts":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "scripts/**"
