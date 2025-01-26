@@ -2,7 +2,8 @@
 	import Check from "lucide-svelte/icons/check";
 	import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
 
-	import logoURL from "$assets/brand/logo.svg";
+	import logoURL from "@/assets/brand/logo.svg";
+
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.ts";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
 
