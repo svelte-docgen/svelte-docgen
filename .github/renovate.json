@@ -33,30 +33,12 @@
 			"matchPackagePatterns": ["*"]
 		},
 		{
-			"groupName": "internals/md",
+			"groupName": "internals",
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(internals): ",
 			"commitMessageTopic": "deps",
 			"commitMessageExtra": null,
-			"matchPaths": ["internals/md/package.json"],
-			"matchPackagePatterns": ["*"]
-		},
-		{
-			"groupName": "internals/html",
-			"baseBranches": ["next"],
-			"commitMessagePrefix": "chore(internals): ",
-			"commitMessageTopic": "deps",
-			"commitMessageExtra": null,
-			"matchPaths": ["internals/html/package.json"],
-			"matchPackagePatterns": ["*"]
-		},
-		{
-			"groupName": "internals/yaml",
-			"baseBranches": ["next"],
-			"commitMessagePrefix": "chore(internals): ",
-			"commitMessageTopic": "deps",
-			"commitMessageExtra": null,
-			"matchPaths": ["internals/yaml/package.json"],
+			"matchFilenames": ["internals/**/package.json"],
 			"matchPackagePatterns": ["*"]
 		},
 		{
