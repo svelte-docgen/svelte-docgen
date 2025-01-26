@@ -20,6 +20,7 @@
 		"@codemirror/state": "^6.5.0",
 		"@codemirror/view": "^6.36.1",
 		"@icons-pack/svelte-simple-icons": "^4.0.1",
+		"@internals/md": "workspace:*",
 		"@replit/codemirror-lang-svelte": "^6.0.0",
 		"@sveltejs/adapter-cloudflare": "^5.0.0",
 		"@sveltejs/kit": "^2.15.1",
