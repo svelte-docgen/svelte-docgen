@@ -14,7 +14,7 @@ interface Package {
 export async function load() {
 	if (!building && !dev) throw new Error("Unreachable");
 	const [{ default: normalize }, path] = await Promise.all([import("normalize-package-data"), import("node:path")]);
-	const glob_packages = import.meta.glob("../../../../../packages/*/package.json", {
+	const glob_packages = import.meta.glob("@/packages/*/package.json", {
 		import: "default",
 	});
 	const packages = new Map<string, Package>(
@@ -34,7 +34,7 @@ export async function load() {
 			}),
 		),
 	);
-	const glob_readmes = import.meta.glob("../../../../../packages/**/README.md", {
+	const glob_readmes = import.meta.glob("@/packages/**/README.md", {
 		query: "?raw",
 		import: "default",
 	});
@@ -52,7 +52,7 @@ export async function load() {
 
 function get_pkg_dirname(params: { input: string; path: typeof import("node:path") }): string {
 	const { input, path } = params;
-	return path.dirname(path.relative("../../../../../packages", input));
+	return path.dirname(path.relative("../../packages", input));
 }
 
 function get_pkg_name(params: Parameters<typeof get_pkg_dirname>[0]): string {
