@@ -31,10 +31,9 @@
 		"test:ui": "vitest --ui"
 	},
 	"dependencies": {
-		"@internals/html": "workspace:*",
-		"@internals/yaml": "workspace:*",
 		"@shikijs/rehype": "^2.1.0",
 		"@types/mdast": "^4.0.4",
+		"isomorphic-dompurify": "catalog:",
 		"mdsvex": "^0.11.2",
 		"rehype-stringify": "^10.0.1",
 		"remark-frontmatter": "^5.0.0",

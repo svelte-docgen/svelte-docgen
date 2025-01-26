@@ -1,4 +1,3 @@
-import * as YAML from "@internals/yaml";
 import rehypeShiki from "@shikijs/rehype/core";
 import type * as AST from "mdast";
 import { compile } from "mdsvex";
@@ -10,6 +9,7 @@ import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import { unified } from "unified";
 import { matter } from "vfile-matter";
+import YAML from "yaml";
 
 import { HIGHLIGHT, highlighter } from "./highlighter.js";
 
