@@ -18,6 +18,5 @@
 		"types": ["node"],
 		"verbatimModuleSyntax": true
 	},
-	"exclude": ["node_modules/"],
-	"include": ["tests/"]
+	"exclude": ["node_modules/"]
 }
