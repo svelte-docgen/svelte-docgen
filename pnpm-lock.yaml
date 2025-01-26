@@ -27,6 +27,9 @@ catalogs:
     vite:
       specifier: ^6.0.7
       version: 6.0.7
+    yaml:
+      specifier: ^2.7.0
+      version: 2.7.0
 
 importers:
 
@@ -266,6 +269,9 @@ importers:
       vfile-matter:
         specifier: ^5.0.0
         version: 5.0.0
+      yaml:
+        specifier: 'catalog:'
+        version: 2.7.0
 
   packages/extractor:
     dependencies:

@@ -43,6 +43,7 @@
 		"remark-stringify": "^11.0.0",
 		"shiki": "^1.26.1",
 		"unified": "^11.0.5",
-		"vfile-matter": "^5.0.0"
+		"vfile-matter": "^5.0.0",
+		"yaml": "catalog:"
 	}
 }
