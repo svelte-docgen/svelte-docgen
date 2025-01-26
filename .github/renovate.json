@@ -51,6 +51,15 @@
 			"matchPackagePatterns": ["*"]
 		},
 		{
+			"groupName": "internals/yaml",
+			"baseBranches": ["next"],
+			"commitMessagePrefix": "chore(internals): ",
+			"commitMessageTopic": "deps",
+			"commitMessageExtra": null,
+			"matchPaths": ["internals/yaml/package.json"],
+			"matchPackagePatterns": ["*"]
+		},
+		{
 			"groupName": "packages/extractor",
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(extractor): ",
