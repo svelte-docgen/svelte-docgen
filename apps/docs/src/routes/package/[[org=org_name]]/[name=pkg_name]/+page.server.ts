@@ -1,8 +1,8 @@
+import { HIGHLIGHT } from "@internals/md/highlighter";
 import { error } from "@sveltejs/kit";
 import { compile } from "mdsvex";
 
 import { building, dev } from "$app/environment";
-import { HIGHLIGHT } from "$lib/md/highlighter.js";
 
 export async function load(ev) {
 	if (!building && !dev) throw new Error("Unreachable");
