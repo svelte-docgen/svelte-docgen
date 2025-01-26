@@ -33,6 +33,24 @@
 			"matchPackagePatterns": ["*"]
 		},
 		{
+			"groupName": "internals/md",
+			"baseBranches": ["next"],
+			"commitMessagePrefix": "chore(internals): ",
+			"commitMessageTopic": "deps",
+			"commitMessageExtra": null,
+			"matchPaths": ["internals/md/package.json"],
+			"matchPackagePatterns": ["*"]
+		},
+		{
+			"groupName": "internals/html",
+			"baseBranches": ["next"],
+			"commitMessagePrefix": "chore(internals): ",
+			"commitMessageTopic": "deps",
+			"commitMessageExtra": null,
+			"matchPaths": ["internals/html/package.json"],
+			"matchPackagePatterns": ["*"]
+		},
+		{
 			"groupName": "packages/extractor",
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(extractor): ",
