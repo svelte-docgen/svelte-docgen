@@ -33,6 +33,15 @@
 			"matchPackagePatterns": ["*"]
 		},
 		{
+			"groupName": "internals",
+			"baseBranches": ["next"],
+			"commitMessagePrefix": "chore(internals): ",
+			"commitMessageTopic": "deps",
+			"commitMessageExtra": null,
+			"matchFilenames": ["internals/**/package.json"],
+			"matchPackagePatterns": ["*"]
+		},
+		{
 			"groupName": "packages/extractor",
 			"baseBranches": ["next"],
 			"commitMessagePrefix": "chore(extractor): ",

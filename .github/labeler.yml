@@ -32,3 +32,8 @@
   - changed-files:
       - any-glob-to-any-file:
           - ".github/workflows/**"
+
+"internals":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "internals/**"

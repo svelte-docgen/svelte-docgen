@@ -18,7 +18,11 @@ export const highlighter = await createHighlighter({
 	langs: ["bash", "javascript", "json", "jsonc", "svelte", "text", "typescript"],
 });
 
-/** @satisfies {NonNullable<MdsvexCompileOptions['highlight']>} */
+/**
+ * Cached hightlighter
+ * @see {@link https://shiki.style/guide/best-performance}
+ * @satisfies {NonNullable<MdsvexCompileOptions['highlight']>}
+ */
 export const HIGHLIGHT = {
 	async highlighter(code, lang) {
 		const html = escapeSvelte(

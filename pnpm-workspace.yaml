@@ -1,14 +1,17 @@
 # https://pnpm.io/pnpm-workspace_yaml
 ---
 packages:
-  - "packages/*"
   - "apps/*"
+  - "internals/*"
+  - "packages/*"
 
 # https://pnpm.io/catalogs
 catalog:
   "svelte": "^5.19.0"
   "dts-buddy": "^0.5.4"
   "pathe": "^2.0.2"
+  "isomorphic-dompurify": "^2.19.0"
   "typescript": "^5.7.3"
   "valibot": "^1.0.0-beta.12"
   "vite": "^6.0.7"
+  "yaml": "^2.7.0"
