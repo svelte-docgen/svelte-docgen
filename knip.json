@@ -28,6 +28,10 @@
 			"entry": ["src/mod.js"],
 			"ignore": ["scripts/post-build.ts"],
 			"project": ["**/*.{json,js,ts}"]
+		},
+		"scripts/*": {
+			"entry": ["src/main.ts"],
+			"project": ["**/*.{json,js,ts}"]
 		}
 	}
 }
