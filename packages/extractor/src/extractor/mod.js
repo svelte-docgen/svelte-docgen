@@ -1,15 +1,16 @@
+/**
+ * @import { DisplayPart, Tag } from "./component-doc.js";
+ * @import { Source } from "../util.js";
+ * @import { createCacheStorage } from "../cache.js";
+ */
+
 import ts from "typescript";
 
 import { ComponentDocExtractor } from "./component-doc.js";
 import { Compiler } from "../compiler.js";
+import * as error from "../error.gen.js";
 import { Options } from "../options.js";
 import { Parser } from "../parser.js";
-
-/**
- * @import { Tag, DisplayPart } from "./component-doc.js";
- * @import { Source } from "../util.js";
- * @import { createCacheStorage } from "../cache.js";
- */
 
 class Extractor {
 	/** @type {Source} */
@@ -47,16 +48,14 @@ class Extractor {
 
 	/** @returns {ComponentDocExtractor | undefined} */
 	get documentation() {
-		if (this.parser.componentComment) return new ComponentDocExtractor(this.parser.componentComment);
-		return undefined;
+		if (!this.parser.componentComment) return undefined;
+		return new ComponentDocExtractor(this.parser.componentComment);
 	}
 
 	/** @returns {Map<string, ts.Symbol>} */
 	get props() {
-		this.#was_props_called = true;
 		const { props } = this.#extracted_from_render_fn;
-		// TODO: Document error
-		if (!props) throw new Error("props not found");
+		if (!props) error.not_found_type_props();
 		return new Map(
 			Iterator.from(props.getProperties()).map((p) => {
 				// Handle the `bind:` prefix, used in type declarations to indicate that props are bindable
@@ -110,8 +109,7 @@ class Extractor {
 			this.#was_props_called = true;
 		}
 		const { bindings } = this.#extracted_from_render_fn;
-		// TODO: Document error
-		if (!bindings) throw new Error("bindings not found");
+		if (!bindings) error.not_found_type_bindings();
 		// If in legacy mode, 'bindings' is a string type
 		if (bindings.flags & ts.TypeFlags.String) return this.#cached_bindings;
 		// If there is a single binding
@@ -122,11 +120,10 @@ class Extractor {
 			return this.#cached_bindings;
 		}
 		// If there are multiple bindings
-		// TODO: Document error
-		if (!bindings?.isUnion()) throw new Error("bindings is not an union");
+		if (!bindings?.isUnion()) error.bindings_without_literal_string_types();
 		for (const type of bindings.types) {
 			// TODO: Document error
-			if (!type.isStringLiteral()) throw new Error("Expected bindings to be a union of string literal types");
+			if (!type.isStringLiteral()) error.bindings_without_literal_string_types();
 			this.#cached_bindings.add(type.value);
 		}
 		return this.#cached_bindings;
@@ -138,8 +135,8 @@ class Extractor {
 	 */
 	get slots() {
 		const { slots } = this.#extracted_from_render_fn;
-		// TODO: Document error
-		if (!slots) throw new Error("slots not found");
+		// TODO: Use error: `not_found_type_slots`
+		if (!slots) error.not_found_type_slots();
 		return new Map(
 			Iterator.from(
 				slots.getProperties().map((s) => {
@@ -157,8 +154,7 @@ class Extractor {
 	 */
 	get exports() {
 		const { exports } = this.#extracted_from_render_fn;
-		// TODO: Document error
-		if (!exports) throw new Error("exports not found");
+		if (!exports) error.not_found_type_exports();
 		return new Map(Iterator.from(exports.getProperties()).map((e) => [e.name, e]));
 	}
 
@@ -168,8 +164,7 @@ class Extractor {
 	 */
 	get events() {
 		const { events } = this.#extracted_from_render_fn;
-		// TODO: Document error
-		if (!events) throw new Error("events not found");
+		if (!events) error.not_found_type_events();
 		return new Map(Iterator.from(events.getProperties()).map((e) => [e.name, e]));
 	}
 
@@ -239,7 +234,7 @@ class Extractor {
 				} else {
 					source = this.#options.host.getSourceFile(filepath, language_version_or_options, on_error);
 				}
-				if (!source) throw new Error(`Source file was not found by program: ${filepath}`);
+				if (!source) error.not_found_source_file({ filepath });
 				this.#cache.set(filepath, { source });
 				return source;
 			},
@@ -280,9 +275,7 @@ class Extractor {
 		const from_cache = this.#cache.get(this.#options.tsx_filepath)?.source;
 		if (from_cache) return from_cache;
 		const from_program = this.#program.getSourceFile(this.#options.tsx_filepath);
-		//O TODO: Document it
-		if (!from_program)
-			throw new Error(`Source file could not be found by TypeScript program: ${this.#options.tsx_filepath}`);
+		if (!from_program) error.not_found_source_file_tsx({ filepath: this.#options.tsx_filepath });
 		this.#cached_source_file = this.#cache.set(this.#options.tsx_filepath, {
 			source: from_program,
 		}).source;
@@ -304,13 +297,12 @@ class Extractor {
 				return statement;
 			}
 		}
-		// TODO: Document error
-		throw new Error("render fn not found");
+		error.not_found_render_fn();
 	}
 
 	/**
 	 * The whole line statement, like:
-	 * ```ts`
+	 * ```ts
 	 * let { ...props } = $props();
 	 * ```
 	 *
@@ -355,14 +347,12 @@ class Extractor {
 	get #extracted_from_render_fn() {
 		if (this.#cached_extracted_from_render_fn) return this.#cached_extracted_from_render_fn;
 		const signature = this.checker.getSignatureFromDeclaration(this.#fn_render);
-		// TODO: Document error
-		if (!signature) throw new Error("signature not found");
+		if (!signature) error.not_found_render_fn_signature();
 		const return_type = this.checker.getReturnTypeOfSignature(signature);
 		const properties = return_type.getProperties();
 		this.#cached_extracted_from_render_fn = {};
 		for (const prop of properties) {
 			const name = prop.getName();
-			// TODO: Add support for Svelte v4 - exports, slots, and events
 			switch (name) {
 				case "props":
 				case "bindings":

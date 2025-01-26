@@ -1,0 +1,34 @@
+{
+	"$schema": "https://json.schemastore.org/package",
+	"private": true,
+	"name": "@internals/yaml",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/mod.ts"
+		}
+	},
+	"scripts": {
+		"build": "pnpm run \"/^build:.*/\" ",
+		"build:doc": "typedoc",
+		"clean": "pnpm run \"/^clean:.*/\"; rm -rf \"./**/node_modules\" ",
+		"clean:cache": "rm -rf \"./node_modules/.cache\" ",
+		"clean:doc": "rm -rf \"./docs\" ",
+		"clean:test": "rm -rf \"./coverage\" ",
+		"clean:types": "rm -rf \"./types\" ",
+		"dev": "pnpm run \"/^(doc:watch|dev:error|dev:watch)/\" ",
+		"doc:watch": "typedoc --watch",
+		"format": "prettier . --write && eslint . --fix",
+		"lint": "prettier --check . && eslint .",
+		"check": "tsc --noEmit",
+		"typos": "typos --verbose",
+		"typos:fix": "typos --verbose --write-changes",
+		"serve:doc": "serve \"./docs\" ",
+		"test": "vitest",
+		"test:ui": "vitest --ui"
+	},
+	"devDependencies": {
+		"yaml": "^2.7.0"
+	}
+}

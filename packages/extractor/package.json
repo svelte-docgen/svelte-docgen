@@ -65,13 +65,15 @@
 	"scripts": {
 		"build": "pnpm run \"/^build:.*/\" ",
 		"build:doc": "typedoc",
+		"build:error": "generate-errors",
 		"build:pkg": "dts-buddy",
 		"clean": "pnpm run \"/^clean:.*/\"; rm -rf \"./**/node_modules\" ",
 		"clean:cache": "rm -rf \"./node_modules/.cache\" ",
 		"clean:doc": "rm -rf \"./docs\" ",
 		"clean:test": "rm -rf \"./coverage\" ",
 		"clean:types": "rm -rf \"./types\" ",
-		"dev": "pnpm run \"/^(doc:watch|dev:watch)/\" ",
+		"dev": "pnpm run \"/^(doc:watch|dev:error|dev:watch)/\" ",
+		"dev:error": "node --watch --watch-path=\"./ERRORS.md\" --experimental-strip-types \"../../scripts/generate-errors.ts\" ",
 		"doc:watch": "typedoc --watch",
 		"format": "prettier . --write && eslint . --fix",
 		"lint": "prettier --check . && eslint .",
@@ -89,6 +91,7 @@
 		"zimmerframe": "^1.1.2"
 	},
 	"devDependencies": {
+		"@scripts/generate-errors": "workspace:*",
 		"@types/estree": "^1.0.6",
 		"dts-buddy": "catalog:"
 	},

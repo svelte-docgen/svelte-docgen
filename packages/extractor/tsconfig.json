@@ -15,7 +15,7 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"target": "ESNext",
-		"types": ["node"],
+		"types": ["node", "vite/client"],
 		"verbatimModuleSyntax": true
 	},
 	"exclude": ["node_modules/"],
