@@ -1,8 +1,10 @@
 # https://pnpm.io/pnpm-workspace_yaml
 ---
 packages:
-  - "packages/*"
   - "apps/*"
+  - "internals/*"
+  - "packages/*"
+  - "scripts/*"
 
 # https://pnpm.io/catalogs
 catalog:
@@ -11,4 +13,4 @@ catalog:
   "pathe": "^2.0.2"
   "typescript": "^5.7.3"
   "valibot": "^1.0.0-beta.12"
-  "vite": "^6.0.7"
+  "vite": "^6.0.9"
