@@ -34,7 +34,7 @@ export async function load() {
 			}),
 		),
 	);
-	const glob_readmes = import.meta.glob("@/packages/**/README.md", {
+	const glob_readmes = import.meta.glob("@/packages/*/README.md", {
 		query: "?raw",
 		import: "default",
 	});
