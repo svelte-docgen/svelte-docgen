@@ -21,7 +21,8 @@ const config = {
 		adapter: adapter(),
 
 		alias: {
-			"$assets/*": path.resolve(__dirname, "..", "..", "assets", "*"),
+			// Workspace root
+			"@/*": path.resolve(__dirname, "..", "..", "*"),
 		},
 
 		prerender: {
