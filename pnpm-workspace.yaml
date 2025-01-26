@@ -4,6 +4,7 @@ packages:
   - "apps/*"
   - "internals/*"
   - "packages/*"
+  - "scripts/*"
 
 # https://pnpm.io/catalogs
 catalog:
