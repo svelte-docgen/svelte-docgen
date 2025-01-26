@@ -32,7 +32,7 @@ export function parse_html_comment_params(params: AST.Html | undefined): YAML.Do
 	/* prettier-ignore */
 	const raw_data = params?.value
 		.replace(/<!--\sparams\s/, "")
-		.replace(/-->/, "");
+		.replace(/--!?>/, "");
 	return YAML.parseDocument(raw_data);
 }
 
