@@ -14,5 +14,5 @@ catalog:
   "isomorphic-dompurify": "^2.19.0"
   "typescript": "^5.7.3"
   "valibot": "^1.0.0-beta.12"
-  "vite": "^6.0.7"
+  "vite": "^6.0.11"
   "yaml": "^2.7.0"
